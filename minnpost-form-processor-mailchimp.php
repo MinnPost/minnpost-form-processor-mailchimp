@@ -55,21 +55,6 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 
 		parent::__construct();
 
-		/*global $ad_code_manager;
-		$this->ad_code_manager = $ad_code_manager;
-
-		// ACM Ad Panel
-		$this->ad_panel = $this->ad_panel();
-
-		// tags for AppNexus
-		$this->ad_tag_ids = $this->ad_panel->ad_tag_ids();
-
-		// Default fields for AppNexus
-		$this->ad_code_args = $this->ad_panel->ad_code_args();
-
-		// front end for rendering ads
-		$this->front_end = $this->front_end();*/
-
 		// admin settings
 		$this->admin = $this->load_admin();
 
