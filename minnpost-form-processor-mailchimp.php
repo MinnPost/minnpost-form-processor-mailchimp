@@ -83,7 +83,10 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 
 	private function add_actions() {
 		add_shortcode( 'custom-account-preferences-form', array( $this, 'account_preferences_form' ), 10, 2 );
-		add_filter( 'user_account_management_pre_save_result', array( $this, 'user_mailchimp_list_settings' ), 10, 2 );
+		add_filter( 'user_account_management_add_to_user_data', array( $this, 'add_to_mailchimp_data' ), 10, 3 );
+		apply_filters( 'user_account_management_modify_user_data', array( $this, 'remove_mailchimp_from_user_data' ), 10, 1 );
+		add_filter( 'user_account_management_pre_save_result', array( $this, 'user_mailchimp_list_settings' ), 10, 1 );
+		add_filter( 'user_account_management_custom_error_message', array( $this, 'mailchimp_error_message' ), 10, 2 );
 	}
 
 	/**
@@ -94,7 +97,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 	 *
 	 * @return string  The shortcode output
 	 */
-	function account_preferences_form( $attributes, $content = null ) {
+	public function account_preferences_form( $attributes, $content = null ) {
 
 		if ( ! is_array( $attributes ) ) {
 			$attributes = array();
@@ -178,8 +181,53 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		}
 	}
 
+	/**
+	 * Adds form data for MailChimp settings to user data so it can be processed for MailChimp API
+	 *
+	 * @param  array   $user_data  The info we currently have on the user
+	 * @param  array   $posted     The info posted to the form by the user
+	 *
+	 * @return array  $user_data
+	 */
+	public function add_to_mailchimp_data( $user_data, $posted ) {
+		// mailchimp fields
+		if ( isset( $posted['_newsletters'] ) ) {
+			$user_data['_newsletters'] = $posted['_newsletters'];
+		}
+		if ( isset( $posted['_occasional_emails'] ) ) {
+			$user_data['_occasional_emails'] = $posted['_occasional_emails'];
+		}
+		return $user_data;
+	}
 
-	function user_mailchimp_list_settings( $user_data, $existing_user_data ) {
+
+	/**
+	 * Removes MailChimp settings from user meta so they aren't saved in WordPress
+	 *
+	 * @param  array   $user_data  The info submitted by the user
+	 *
+	 * @return array  $user_data
+	 */
+	public function remove_mailchimp_from_user_data( $user_data ) {
+		// remove the mailchimp fields from the user data so it doesn't get saved into the usermeta table
+		if ( isset( $user_data['_newsletters'] ) ) {
+			unset( $user_data['_newsletters'] );
+		}
+		if ( isset( $user_data['_occasional_emails'] ) ) {
+			unset( $user_data['_occasional_emails'] );
+		}
+		return $user_data;
+	}
+
+
+	/**
+	 * Saves MailChimp settings before any data is saved in WordPress
+	 *
+	 * @param  array   $user_data  The info submitted by the user
+	 *
+	 * @return array  $result
+	 */
+	public function user_mailchimp_list_settings( $user_data ) {
 		// before we update the user in WP, send their data to mailchimp and create/update their info
 		$email = isset( $user_data['user_email'] ) ? $user_data['user_email'] : '';
 		$first_name = isset( $user_data['first_name'] ) ? $user_data['first_name'] : '';
@@ -260,6 +308,33 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		*/
 
 	}
+
+
+	/**
+	 * Error messages for user pages
+	 *
+	 * @param  string   $message  Can take a default message
+	 * @param  string   $error_code     The error identifier
+	 *
+	 * @return string  $message
+	 */
+	public function mailchimp_error_message( $message, $error_code ) {
+		switch ( $error_code ) {
+			case '_newsletters':
+				$message = __( 'There was an error saving your newsletter choices. Please try again.', 'minnpost-largo' );
+				break;
+			case '_occasional_emails':
+				$message = __( 'There was an error saving your occasional MinnPost email choices. Please try again.', 'minnpost-largo' );
+				break;
+			case 'mailchimp':
+				$message = __( 'There was an error saving your email preferences. Please try again.', 'minnpost-largo' );
+				break;
+			default:
+				break;
+		}
+		return $message;
+	}
+
 
 	/**
 	* load the admin stuff
