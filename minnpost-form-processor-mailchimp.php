@@ -357,6 +357,26 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		}
 	}
 
+	/**
+	 * Get available values for user's MailChimp settings from MailChimp
+	 *
+	 * @param  string   $wp_field     What field in WordPress is going to hold the options
+	 * @param  string   $category_id  Category ID in MailChimp
+	 * @param  string   $mailchimp_field  Field that will store the values in MailChimp
+	 *
+	 * @return array  $options
+	 */
+	public function get_mailchimp_field_options( $wp_field, $category_id, $mailchimp_field = '' ) {
+		if ( '' === $mailchimp_field ) {
+			$mailchimp_field = $this->user_field;
+		}
+		$categories = $this->front_end->generate_interest_options( $this->resource_id, $category_id, $key );
+		foreach ( $categories as $key => $category ) {
+			$options = isset( $category[ $mailchimp_field ] ) ? $category[ $mailchimp_field ] : $category;
+		}
+		return $options;
+	}
+
 
 	/**
 	* load the admin stuff
