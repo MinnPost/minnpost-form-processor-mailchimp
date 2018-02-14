@@ -24,7 +24,8 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 	private $api_key;
 	private $resource_type;
 	private $resource_id;
-	private $subresource_type;
+	private $user_subresource_type;
+	private $list_subresource_type;
 
 	/**
 	 * @var object
@@ -61,7 +62,8 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		$this->api_key = $this->mailchimp->api_key;
 		$this->resource_type = 'lists';
 		$this->resource_id = '3631302e9c';
-		$this->subresource_type = 'members';
+		$this->user_subresource_type = 'members';
+		$this->list_subresource_type = 'interest-categories';
 		$this->user_field = 'interests';
 
 		$this->add_actions();
@@ -253,7 +255,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 			}
 		}
 
-		$result = $this->mailchimp->send( $this->resource_type . '/' . $this->resource_id . '/' . $this->subresource_type, 'PUT', $params );
+		$result = $this->mailchimp->send( $this->resource_type . '/' . $this->resource_id . '/' . $this->user_subresource_type, 'PUT', $params );
 		return $result;
 
 		/*$params['body'] = array(
@@ -289,7 +291,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		$params['timeout'] = 30;
 		$params['sslverify'] = false;
 
-		$rest_url = site_url( '/wp-json/form-processor-mc/v1/' . $this->resource_type . '/' . $this->resource_id . '/' . $this->subresource_type . '/?api_key=' . $this->api_key );
+		$rest_url = site_url( '/wp-json/form-processor-mc/v1/' . $this->resource_type . '/' . $this->resource_id . '/' . $this->user_subresource_type . '/?api_key=' . $this->api_key );
 		$result = wp_remote_request( $rest_url, $params );
 		*/
 
@@ -343,8 +345,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 			$user = get_userdata( $user_id );
 			$email = $user->user_email;
 
-			$front_end = $this->front_end;
-			$user_info = $front_end->get_user_info( $this->resource_id, $email, $reset );
+			$user_info = $this->get_user_info( $this->resource_id, $email, $reset );
 			$user_interests = $user_info[ $this->user_field ];
 
 			$checked = array();
@@ -370,11 +371,80 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		if ( '' === $mailchimp_field ) {
 			$mailchimp_field = $this->user_field;
 		}
-		$categories = $this->front_end->generate_interest_options( $this->resource_id, $category_id, $key );
+		$categories = $this->generate_interest_options( $this->resource_id, $category_id, $wp_field );
 		foreach ( $categories as $key => $category ) {
 			$options = isset( $category[ $mailchimp_field ] ) ? $category[ $mailchimp_field ] : $category;
 		}
 		return $options;
+	}
+
+	/**
+	* Get a user's information from MailChimp
+	*
+	* @param string $list_id
+	* @param string $email
+	* @param bool $reset
+	* @return array $user
+	*/
+	private function get_user_info( $list_id, $email, $reset = false ) {
+		if ( is_email( $email ) ) {
+			$email = md5( $email );
+		}
+		$user = $this->mailchimp->load( $this->resource_type . '/' . $list_id . '/' . $this->user_subresource_type . '/' . $email, array(), $reset );
+		return $user;
+	}
+
+	/**
+	* Generate an array of MailChimp interest options
+	*
+	* @param string $list_id
+	* @param string $category_id
+	* @param array $keys
+	* @param string field_value
+	* @return array $interest_options
+	*/
+	private function generate_interest_options( $list_id, $category_id = '', $keys = array(), $field_value = 'id' ) {
+		// need to try to generate a field this way i think
+		$interest_options = array();
+
+		$resource_type = $this->resource_type;
+		$subresource_type = $this->list_subresource_type;
+		$method = $this->user_field;
+
+		$params = array(
+			'resource_type' => $resource_type,
+			'resource' => $list_id,
+			'subresource_type' => $subresource_type,
+			'method' => $method,
+		);
+
+		if ( '' === $category_id ) {
+			$interest_categories = $this->mailchimp->load( $resource_type . '/' . $list_id . '/' . $subresource_type );
+			foreach ( $interest_categories['categories'] as $key => $category ) {
+				$id = $category['id'];
+				$title = $category['title'];
+				$params['subresource'] = $id;
+				$interests = $this->mailchimp->load( $resource_type . '/' . $list_id . '/' . $subresource_type . '/' . $category_id . '/' . $method, $params );
+				$id = isset( $keys[ $key ] ) ? $keys[ $key ] : $category['id'];
+				$interest_options[ $id ]['title'] = $title;
+				$interest_options[ $id ]['interests'] = array();
+				foreach ( $interests['interests'] as $interest ) {
+					$interest_id = $interest['id'];
+					$interest_name = $interest['name'];
+					$interest_options[ $id ]['interests'][ ${'interest_' . $field_value} ] = $interest_name;
+				}
+			}
+		} else {
+			$params['subresource'] = $category_id;
+			$interests = $this->mailchimp->load( $resource_type . '/' . $list_id . '/' . $subresource_type . '/' . $category_id . '/' . $method, $params );
+			foreach ( $interests['interests'] as $interest ) {
+				$interest_id = $interest['id'];
+				$interest_name = $interest['name'];
+				$interest_options['interests'][ ${'interest_' . $field_value} ] = $interest_name;
+			}
+		}
+
+		return $interest_options;
 	}
 
 
