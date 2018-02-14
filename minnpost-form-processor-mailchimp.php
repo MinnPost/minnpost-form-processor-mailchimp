@@ -77,6 +77,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		$this->resource_type = 'lists';
 		$this->resource_id = '3631302e9c';
 		$this->subresource_type = 'members';
+		$this->user_field = 'interests';
 
 		$this->add_actions();
 	}
@@ -248,22 +249,22 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		// that is the only way we can remove a subscription option
 		$all_newsletters = get_mailchimp_newsletter_options();
 		foreach ( $all_newsletters as $key => $value ) {
-			$params['interests'][ $key ] = 'false';
+			$params[ $this->user_field ][ $key ] = 'false';
 		}
 		$all_occasional_emails = get_mailchimp_occasional_email_options();
 		foreach ( $all_occasional_emails as $key => $value ) {
-			$params['interests'][ $key ] = 'false';
+			$params[ $this->user_field ][ $key ] = 'false';
 		}
 
 		// add the groups the user actually wants
 		if ( ! empty( $newsletters ) ) {
 			foreach ( $newsletters as $key => $value ) {
-				$params['interests'][ $value ] = 'true';
+				$params[ $this->user_field ][ $value ] = 'true';
 			}
 		}
 		if ( ! empty( $occasional_emails ) ) {
 			foreach ( $occasional_emails as $key => $value ) {
-				$params['interests'][ $value ] = 'true';
+				$params[ $this->user_field ][ $value ] = 'true';
 			}
 		}
 
@@ -333,6 +334,42 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 				break;
 		}
 		return $message;
+	}
+
+	/**
+	 * Get current values for user's MailChimp settings
+	 *
+	 * @param  bool   $reset  Whether to skip the cache
+	 *
+	 * @return array  $checked
+	 */
+	public function get_mailchimp_user_values( $reset = false ) {
+		// figure out if we have a current user and use their settings as the default selections
+		// problem: if the user has a setting for this field, this default callback won't be called
+		// solution: we should just never save this field. the mailchimp plugin's cache settings will keep from overloading the api
+		$user_id = get_query_var( 'users', '' );
+		if ( isset( $_GET['user_id'] ) ) {
+			$user_id = esc_attr( $_GET['user_id'] );
+		} else {
+			$user_id = get_current_user_id();
+		}
+
+		if ( '' !== $user_id ) {
+			$user = get_userdata( $user_id );
+			$email = $user->user_email;
+
+			$front_end = $this->front_end;
+			$user_info = $front_end->get_user_info( $this->resource_id, $email, $reset );
+			$user_interests = $user_info[ $this->user_field ];
+
+			$checked = array();
+			foreach ( $user_interests as $key => $interest ) {
+				if ( 1 === absint( $interest ) ) {
+					$checked[] = $key;
+				}
+			}
+			return $checked;
+		}
 	}
 
 
