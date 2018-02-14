@@ -346,7 +346,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 			$email = $user->user_email;
 
 			$user_info = $this->get_user_info( $this->resource_id, $email, $reset );
-			$user_interests = $user_info[ $this->user_field ];
+			$user_interests = isset( $user_info[ $this->user_field ] ) ? $user_info[ $this->user_field ] : array();
 
 			$checked = array();
 			foreach ( $user_interests as $key => $interest ) {
