@@ -239,7 +239,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 
 		// don't send any data to mailchimp if there are no settings, and there is no user id
 		// otherwise we need to, in case user wants to empty their preferences
-		if ( '' === $newsletters && '' === $occasional_emails && '' === $id ) {
+		if ( empty( $newsletters ) && empty( $occasional_emails ) && '' === $id ) {
 			return;
 		}
 
@@ -329,7 +329,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 	 * @param  array   $user_data  The info submitted by the user
 	 */
 	public function save_user_meta( $user_data ) {
-		if ( '' !== $user_data['_mailchimp_user_id'] ) {
+		if ( isset( $user_data['_mailchimp_user_id'] ) && '' !== $user_data['_mailchimp_user_id'] ) {
 			update_user_meta( $user_data['ID'], '_mailchimp_user_id', $user_data['_mailchimp_user_id'] );
 		}
 	}
