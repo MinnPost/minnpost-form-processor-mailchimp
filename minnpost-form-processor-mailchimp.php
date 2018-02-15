@@ -185,13 +185,13 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 			$user_data['_mailchimp_user_id'] = esc_attr( $posted['_mailchimp_user_id'] );
 		}
 		if ( isset( $posted['mailchimp_user_status'] ) ) {
-			$user_data['_mailchimp_user_status'] = $posted['mailchimp_user_status'];
+			$user_data['_mailchimp_user_status'] = esc_attr( $posted['mailchimp_user_status'] );
 		}
 		if ( isset( $posted['_newsletters'] ) ) {
-			$user_data['_newsletters'] = $posted['_newsletters'];
+			$user_data['_newsletters'] = array_map( 'esc_attr', $posted['_newsletters'] );
 		}
 		if ( isset( $posted['_occasional_emails'] ) ) {
-			$user_data['_occasional_emails'] = $posted['_occasional_emails'];
+			$user_data['_occasional_emails'] = array_map( 'esc_attr', $posted['_occasional_emails'] );
 		}
 		return $user_data;
 	}
