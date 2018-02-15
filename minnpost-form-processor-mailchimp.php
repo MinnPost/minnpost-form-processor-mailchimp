@@ -75,6 +75,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		add_filter( 'user_account_management_add_to_user_data', array( $this, 'add_to_mailchimp_data' ), 10, 3 );
 		apply_filters( 'user_account_management_modify_user_data', array( $this, 'remove_mailchimp_from_user_data' ), 10, 1 );
 		add_filter( 'user_account_management_pre_save_result', array( $this, 'save_user_mailchimp_list_settings' ), 10, 1 );
+		add_filter( 'user_account_management_post_user_data_save', array( $this, 'save_user_meta' ), 10, 1 );
 		add_filter( 'user_account_management_custom_error_message', array( $this, 'mailchimp_error_message' ), 10, 2 );
 	}
 
@@ -180,8 +181,8 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 	 */
 	public function add_to_mailchimp_data( $user_data, $posted ) {
 		// mailchimp fields
-		if ( isset( $posted['mailchimp_user_id'] ) ) {
-			$user_data['_mailchimp_user_id'] = $posted['mailchimp_user_id'];
+		if ( isset( $posted['_mailchimp_user_id'] ) ) {
+			$user_data['_mailchimp_user_id'] = esc_attr( $posted['_mailchimp_user_id'] );
 		}
 		if ( isset( $posted['mailchimp_user_status'] ) ) {
 			$user_data['_mailchimp_user_status'] = $posted['mailchimp_user_status'];
@@ -205,9 +206,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 	 */
 	public function remove_mailchimp_from_user_data( $user_data ) {
 		// remove the mailchimp fields from the user data so it doesn't get saved into the usermeta table
-		if ( isset( $user_data['_mailchimp_user_id'] ) ) {
-			unset( $user_data['_mailchimp_user_id'] );
-		}
+		// we want to keep the user id so we can use it elsewhere, especially since it doesn't change from other systems when user changes their preferences
 		if ( isset( $user_data['_mailchimp_user_status'] ) ) {
 			unset( $user_data['_mailchimp_user_status'] );
 		}
@@ -319,6 +318,17 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		$result = wp_remote_request( $rest_url, $params );
 		*/
 
+	}
+
+	/**
+	 * Saves any necessary items to the user's metadata
+	 *
+	 * @param  array   $user_data  The info submitted by the user
+	 */
+	public function save_user_meta( $user_data ) {
+		if ( '' !== $user_data['_mailchimp_user_id'] ) {
+			update_user_meta( $user_data['ID'], '_mailchimp_user_id', $user_data['_mailchimp_user_id'] );
+		}
 	}
 
 
