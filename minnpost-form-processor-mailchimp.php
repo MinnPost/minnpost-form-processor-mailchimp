@@ -283,17 +283,13 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 
 		/*$params['body'] = array(
 			'email_address' => $email,
-			'status' => 'subscribed',
+			'status' => $status,
 			'merge_fields[FNAME]' => $first_name,
 			'merge_fields[LNAME]' => $last_name,
 		);
-		// default is false if it is not in this form
-		// that is the only way we can remove a subscription option
-		$all_newsletters = get_mailchimp_newsletter_options();
 		foreach ( $all_newsletters as $key => $value ) {
 			$params['body'][ 'interests[' . $key . ']' ] = 'false';
 		}
-		$all_occasional_emails = get_mailchimp_occasional_email_options();
 		foreach ( $all_occasional_emails as $key => $value ) {
 			$params['body'][ 'interests[' . $key . ']' ] = 'false';
 		}
@@ -310,7 +306,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 			}
 		}
 
-		$params['method'] = 'PUT';
+		$params['method'] = $http_method;
 		$params['timeout'] = 30;
 		$params['sslverify'] = false;
 
