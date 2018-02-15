@@ -65,6 +65,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		$this->user_subresource_type = 'members';
 		$this->list_subresource_type = 'interest-categories';
 		$this->user_field = 'interests';
+		$this->user_default_new_status = 'pending';
 
 		$this->add_actions();
 	}
@@ -179,6 +180,12 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 	 */
 	public function add_to_mailchimp_data( $user_data, $posted ) {
 		// mailchimp fields
+		if ( isset( $posted['mailchimp_user_id'] ) ) {
+			$user_data['_mailchimp_user_id'] = $posted['mailchimp_user_id'];
+		}
+		if ( isset( $posted['mailchimp_user_status'] ) ) {
+			$user_data['_mailchimp_user_status'] = $posted['mailchimp_user_status'];
+		}
 		if ( isset( $posted['_newsletters'] ) ) {
 			$user_data['_newsletters'] = $posted['_newsletters'];
 		}
@@ -198,6 +205,12 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 	 */
 	public function remove_mailchimp_from_user_data( $user_data ) {
 		// remove the mailchimp fields from the user data so it doesn't get saved into the usermeta table
+		if ( isset( $user_data['_mailchimp_user_id'] ) ) {
+			unset( $user_data['_mailchimp_user_id'] );
+		}
+		if ( isset( $user_data['_mailchimp_user_status'] ) ) {
+			unset( $user_data['_mailchimp_user_status'] );
+		}
 		if ( isset( $user_data['_newsletters'] ) ) {
 			unset( $user_data['_newsletters'] );
 		}
@@ -217,17 +230,22 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 	 */
 	public function user_mailchimp_list_settings( $user_data ) {
 		// before we update the user in WP, send their data to mailchimp and create/update their info
+		$id = isset( $user_data['_mailchimp_user_id'] ) ? $user_data['_mailchimp_user_id'] : '';
+		$status = isset( $user_data['_mailchimp_user_status'] ) ? $user_data['_mailchimp_user_status'] : $this->user_default_new_status;
 		$email = isset( $user_data['user_email'] ) ? $user_data['user_email'] : '';
 		$first_name = isset( $user_data['first_name'] ) ? $user_data['first_name'] : '';
 		$last_name = isset( $user_data['last_name'] ) ? $user_data['last_name'] : '';
 		$newsletters = isset( $user_data['_newsletters'] ) ? $user_data['_newsletters'] : '';
 		$occasional_emails = isset( $user_data['_occasional_emails'] ) ? $user_data['_occasional_emails'] : '';
-		if ( '' === $newsletters && '' === $occasional_emails ) {
+
+		// don't send any data to mailchimp if there are no settings, and there is no user id
+		// otherwise we need to, in case user wants to empty their preferences
+		if ( '' === $newsletters && '' === $occasional_emails && '' === $id ) {
 			return;
 		}
 
 		$params['email_address'] = $email;
-		$params['status'] = 'subscribed';
+		$params['status'] = $status;
 		$params['merge_fields'] = array(
 			'FNAME' => $first_name,
 			'LNAME' => $last_name,
@@ -255,7 +273,13 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 			}
 		}
 
-		$result = $this->mailchimp->send( $this->resource_type . '/' . $this->resource_id . '/' . $this->user_subresource_type, 'PUT', $params );
+		if ( '' !== $id ) {
+			$http_method = 'PUT';
+		} else {
+			$http_method = 'POST';
+		}
+
+		$result = $this->mailchimp->send( $this->resource_type . '/' . $this->resource_id . '/' . $this->user_subresource_type, $http_method, $params );
 		return $result;
 
 		/*$params['body'] = array(
@@ -346,15 +370,27 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 			$email = $user->user_email;
 
 			$user_info = $this->get_user_info( $this->resource_id, $email, $reset );
+
+			if ( is_wp_error( $user_info ) ) {
+				return array();
+			}
+
+			if ( isset( $user_info['id'] ) ) {
+				$mailchimp_user['id'] = $user_info['id'];
+			}
+			if ( isset( $user_info['status'] ) ) {
+				$mailchimp_user['status'] = $user_info['status'];
+			}
+
 			$user_interests = isset( $user_info[ $this->user_field ] ) ? $user_info[ $this->user_field ] : array();
 
-			$checked = array();
+			$mailchimp_user['checked'] = array();
 			foreach ( $user_interests as $key => $interest ) {
 				if ( 1 === absint( $interest ) ) {
-					$checked[] = $key;
+					$mailchimp_user['checked'][] = $key;
 				}
 			}
-			return $checked;
+			return $mailchimp_user;
 		}
 	}
 
@@ -391,7 +427,10 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 			$email = md5( $email );
 		}
 		$user = $this->mailchimp->load( $this->resource_type . '/' . $list_id . '/' . $this->user_subresource_type . '/' . $email, array(), $reset );
-		return $user;
+		if ( 404 !== $user['status'] ) {
+			return $user;
+		}
+		return new WP_Error( $user['status'], $user['detail'] );
 	}
 
 	/**
