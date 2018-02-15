@@ -249,13 +249,16 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 			'FNAME' => $first_name,
 			'LNAME' => $last_name,
 		);
-		// default is false if it is not in this form
-		// that is the only way we can remove a subscription option
-		$all_newsletters = get_mailchimp_newsletter_options();
+
+		// we can allow forms to specify themselves to only be relevant to specific emails, otherwise it needs all of them
+		// default is false if it is not allowed in the submitted form
+		// that is the only way we can remove a subscription option if a user chooses to uncheck it
+		$all_newsletters = $this->get_mailchimp_field_options( '_newsletters', 'f88ee8cb3b' );
 		foreach ( $all_newsletters as $key => $value ) {
 			$params[ $this->user_field ][ $key ] = 'false';
 		}
-		$all_occasional_emails = get_mailchimp_occasional_email_options();
+
+		$all_occasional_emails = $this->get_mailchimp_field_options( '_occasional_emails', '93f0b57b1b' );
 		foreach ( $all_occasional_emails as $key => $value ) {
 			$params[ $this->user_field ][ $key ] = 'false';
 		}
