@@ -74,7 +74,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		add_shortcode( 'custom-account-preferences-form', array( $this, 'account_preferences_form' ), 10, 2 );
 		add_filter( 'user_account_management_add_to_user_data', array( $this, 'add_to_mailchimp_data' ), 10, 3 );
 		apply_filters( 'user_account_management_modify_user_data', array( $this, 'remove_mailchimp_from_user_data' ), 10, 1 );
-		add_filter( 'user_account_management_pre_save_result', array( $this, 'user_mailchimp_list_settings' ), 10, 1 );
+		add_filter( 'user_account_management_pre_save_result', array( $this, 'save_user_mailchimp_list_settings' ), 10, 1 );
 		add_filter( 'user_account_management_custom_error_message', array( $this, 'mailchimp_error_message' ), 10, 2 );
 	}
 
@@ -228,7 +228,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 	 *
 	 * @return array  $result
 	 */
-	public function user_mailchimp_list_settings( $user_data ) {
+	public function save_user_mailchimp_list_settings( $user_data ) {
 		// before we update the user in WP, send their data to mailchimp and create/update their info
 		$id = isset( $user_data['_mailchimp_user_id'] ) ? $user_data['_mailchimp_user_id'] : '';
 		$status = isset( $user_data['_mailchimp_user_status'] ) ? $user_data['_mailchimp_user_status'] : $this->user_default_new_status;
