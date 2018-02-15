@@ -234,8 +234,8 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		$email = isset( $user_data['user_email'] ) ? $user_data['user_email'] : '';
 		$first_name = isset( $user_data['first_name'] ) ? $user_data['first_name'] : '';
 		$last_name = isset( $user_data['last_name'] ) ? $user_data['last_name'] : '';
-		$newsletters = isset( $user_data['_newsletters'] ) ? $user_data['_newsletters'] : '';
-		$occasional_emails = isset( $user_data['_occasional_emails'] ) ? $user_data['_occasional_emails'] : '';
+		$newsletters = isset( $user_data['_newsletters'] ) ? $user_data['_newsletters'] : array();
+		$occasional_emails = isset( $user_data['_occasional_emails'] ) ? $user_data['_occasional_emails'] : array();
 
 		// don't send any data to mailchimp if there are no settings, and there is no user id
 		// otherwise we need to, in case user wants to empty their preferences
