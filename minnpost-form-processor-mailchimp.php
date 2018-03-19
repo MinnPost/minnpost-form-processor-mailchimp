@@ -59,6 +59,9 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		// admin settings
 		$this->admin = $this->load_admin();
 
+		$this->rest_namespace = 'minnpost-api/v';
+		$this->rest_version   = '1';
+
 		$this->api_key = $this->mailchimp->api_key;
 		$this->resource_type = 'lists';
 		$this->resource_id = '3631302e9c';
@@ -79,6 +82,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		add_filter( 'user_account_management_pre_save_result', array( $this, 'save_user_mailchimp_list_settings' ), 10, 1 );
 		add_filter( 'user_account_management_post_user_data_save', array( $this, 'save_user_meta' ), 10, 1 );
 		add_filter( 'user_account_management_custom_error_message', array( $this, 'mailchimp_error_message' ), 10, 2 );
+		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 	}
 
 	/**
@@ -363,16 +367,89 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 	}
 
 	/**
+	* Register REST API routes for the configured MailChimp objects
+	*
+	* @throws \Exception
+	*/
+	public function register_routes() {
+		$namespace = $this->rest_namespace . $this->rest_version;
+
+		register_rest_route( $namespace, '/mailchimp/user', array(
+			array(
+				'methods'  => array( WP_REST_Server::CREATABLE, WP_REST_Server::READABLE ),
+				'callback' => array( $this, 'process_rest' ),
+				'args'     => array(
+					'email' => array(
+						'required'    => true,
+						//'type'        => 'string',
+						'description' => 'The user\'s email address',
+						//'format'      => 'email',
+					),
+				),
+			),
+		) );
+	}
+
+	/**
+	* Process the REST API request
+	*
+	* @return $result
+	*/
+	public function process_rest( WP_REST_Request $request ) {
+		//return 'yep';
+		$http_method = $request->get_method();
+
+		switch ( $http_method ) {
+			case 'GET':
+				$newsletters = $this->get_mailchimp_field_options( '_newsletters', $this->newsletters_id );
+				$interests   = $this->get_mailchimp_field_options( '_occasional_emails', $this->occasional_emails_id );
+				$options     = array_merge( $newsletters, $interests );
+
+				$email  = $request->get_param( 'email' );
+				$result = $this->get_user_info( $this->resource_id, md5( $email ), true );
+				$user   = array();
+				if ( is_wp_error( $user ) ) {
+					return $user;
+				}
+				$user['status'] = 'success';
+				if ( ! is_object( $result ) && 'subscribed' === $result['status'] ) {
+					$user = array(
+						'reason'    => 'user exists',
+						'interests' => array_intersect_key( $result['interests'], $options ),
+					);
+				} else {
+					$user = array(
+						'reason' => 'user does not exist',
+					);
+					foreach ( $options as $key => $value ) {
+						$user['interests'][ $key ] = false;
+					}
+				}
+				return $user;
+				break;
+			case 'POST':
+				$result = $this->get_user_info( $this->resource_id, md5( $body_params['email'] ), true );
+				return $result;
+				break;
+			default:
+				return;
+				break;
+		}
+		return;
+	}
+
+	/**
 	 * Get current values for user's MailChimp settings
 	 *
 	 * @param  bool   $reset  Whether to skip the cache
 	 *
 	 * @return array  $checked
 	 */
-	public function get_mailchimp_user_values( $reset = false ) {
+	public function get_mailchimp_user_values( $reset = false, $email = '' ) {
 		// figure out if we have a current user and use their settings as the default selections
 		// problem: if the user has a setting for this field, this default callback won't be called
 		// solution: we should just never save this field. the mailchimp plugin's cache settings will keep from overloading the api
+
 		$user_id = get_query_var( 'users', '' );
 		if ( isset( $_GET['user_id'] ) ) {
 			$user_id = esc_attr( $_GET['user_id'] );
@@ -380,9 +457,11 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 			$user_id = get_current_user_id();
 		}
 
-		if ( '' !== $user_id ) {
-			$user = get_userdata( $user_id );
-			$email = $user->user_email;
+		if ( ( '' !== $user_id && 0 !== $user_id ) || '' !== $email ) {
+			if ( '' !== $user_id && 0 !== $user_id ) {
+				$user = get_userdata( $user_id );
+				$email = $user->user_email;
+			}
 
 			$user_info = $this->get_user_info( $this->resource_id, $email, $reset );
 
