@@ -52,7 +52,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 	public function __construct() {
 
 		$this->version = '0.0.1';
-		$this->slug = 'minnpost-form-processor-mailchimp';
+		$this->slug    = 'minnpost-form-processor-mailchimp';
 
 		parent::__construct();
 
@@ -62,12 +62,12 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		$this->rest_namespace = 'minnpost-api/v';
 		$this->rest_version   = '1';
 
-		$this->api_key = $this->mailchimp->api_key;
-		$this->resource_type = 'lists';
-		$this->resource_id = '3631302e9c';
-		$this->user_subresource_type = 'members';
-		$this->list_subresource_type = 'interest-categories';
-		$this->user_field = 'interests';
+		$this->api_key                 = $this->mailchimp->api_key;
+		$this->resource_type           = 'lists';
+		$this->resource_id             = '3631302e9c';
+		$this->user_subresource_type   = 'members';
+		$this->list_subresource_type   = 'interest-categories';
+		$this->user_field              = 'interests';
 		$this->user_default_new_status = 'pending';
 		$this->newsletters_id          = 'f88ee8cb3b';
 		$this->occasional_emails_id    = '93f0b57b1b';
@@ -109,7 +109,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		$can_access = false;
 		if ( class_exists( 'User_Account_Management' ) ) {
 			$account_management = User_Account_Management::get_instance();
-			$can_access = $account_management->check_user_permissions( $user_id );
+			$can_access         = $account_management->check_user_permissions( $user_id );
 		} else {
 			return;
 		}
@@ -122,7 +122,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		// we should use it for this page as well, unless and until it becomes insufficient
 
 		$attributes['current_url'] = get_current_url();
-		$attributes['redirect'] = $attributes['current_url'];
+		$attributes['redirect']    = $attributes['current_url'];
 
 		if ( ! is_user_logged_in() ) {
 			return __( 'You are not signed in.', 'user-account-management' );
@@ -149,17 +149,18 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 			}
 			$attributes['user_meta'] = get_user_meta( $attributes['user']->ID );
 
+			// todo: this should probably be in the database somewhere
 			$attributes['reading_topics'] = array(
-				'Arts & Culture' => 'Arts & Culture',
-				'Economy' => 'Economy',
-				'Education' => 'Education',
-				'Environment' => 'Environment',
+				'Arts & Culture'         => 'Arts & Culture',
+				'Economy'                => 'Economy',
+				'Education'              => 'Education',
+				'Environment'            => 'Environment',
 				'Greater Minnesota news' => 'Greater Minnesota news',
-				'Health' => 'Health',
+				'Health'                 => 'Health',
 				'MinnPost announcements' => 'MinnPost announcements',
-				'Opinion/Commentary' => 'Opinion/Commentary',
-				'Politics & Policy' => 'Politics & Policy',
-				'Sports' => 'Sports',
+				'Opinion/Commentary'     => 'Opinion/Commentary',
+				'Politics & Policy'      => 'Politics & Policy',
+				'Sports'                 => 'Sports',
 			);
 
 			$attributes['user_reading_topics'] = array();
@@ -235,12 +236,12 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 	 */
 	public function save_user_mailchimp_list_settings( $user_data ) {
 		// before we update the user in WP, send their data to mailchimp and create/update their info
-		$id = isset( $user_data['_mailchimp_user_id'] ) ? $user_data['_mailchimp_user_id'] : '';
-		$status = isset( $user_data['_mailchimp_user_status'] ) ? $user_data['_mailchimp_user_status'] : $this->user_default_new_status;
-		$email = isset( $user_data['user_email'] ) ? $user_data['user_email'] : '';
-		$first_name = isset( $user_data['first_name'] ) ? $user_data['first_name'] : '';
-		$last_name = isset( $user_data['last_name'] ) ? $user_data['last_name'] : '';
-		$newsletters = isset( $user_data['_newsletters'] ) ? $user_data['_newsletters'] : array();
+		$id                = isset( $user_data['_mailchimp_user_id'] ) ? $user_data['_mailchimp_user_id'] : '';
+		$status            = isset( $user_data['_mailchimp_user_status'] ) ? $user_data['_mailchimp_user_status'] : $this->user_default_new_status;
+		$email             = isset( $user_data['user_email'] ) ? $user_data['user_email'] : '';
+		$first_name        = isset( $user_data['first_name'] ) ? $user_data['first_name'] : '';
+		$last_name         = isset( $user_data['last_name'] ) ? $user_data['last_name'] : '';
+		$newsletters       = isset( $user_data['_newsletters'] ) ? $user_data['_newsletters'] : array();
 		$occasional_emails = isset( $user_data['_occasional_emails'] ) ? $user_data['_occasional_emails'] : array();
 
 		// don't send any data to mailchimp if there are no settings, and there is no user id
@@ -250,8 +251,8 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		}
 
 		$params['email_address'] = $email;
-		$params['status'] = $status;
-		$params['merge_fields'] = array(
+		$params['status']        = $status;
+		$params['merge_fields']  = array(
 			'FNAME' => $first_name,
 			'LNAME' => $last_name,
 		);
@@ -459,7 +460,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 
 		if ( ( '' !== $user_id && 0 !== $user_id ) || '' !== $email ) {
 			if ( '' !== $user_id && 0 !== $user_id ) {
-				$user = get_userdata( $user_id );
+				$user  = get_userdata( $user_id );
 				$email = $user->user_email;
 			}
 
@@ -540,38 +541,38 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		// need to try to generate a field this way i think
 		$interest_options = array();
 
-		$resource_type = $this->resource_type;
+		$resource_type    = $this->resource_type;
 		$subresource_type = $this->list_subresource_type;
-		$method = $this->user_field;
+		$method           = $this->user_field;
 
 		$params = array(
-			'resource_type' => $resource_type,
-			'resource' => $list_id,
+			'resource_type'    => $resource_type,
+			'resource'         => $list_id,
 			'subresource_type' => $subresource_type,
-			'method' => $method,
+			'method'           => $method,
 		);
 
 		if ( '' === $category_id ) {
 			$interest_categories = $this->mailchimp->load( $resource_type . '/' . $list_id . '/' . $subresource_type );
 			foreach ( $interest_categories['categories'] as $key => $category ) {
-				$id = $category['id'];
-				$title = $category['title'];
-				$params['subresource'] = $id;
-				$interests = $this->mailchimp->load( $resource_type . '/' . $list_id . '/' . $subresource_type . '/' . $category_id . '/' . $method, $params );
-				$id = isset( $keys[ $key ] ) ? $keys[ $key ] : $category['id'];
-				$interest_options[ $id ]['title'] = $title;
+				$id                                   = $category['id'];
+				$title                                = $category['title'];
+				$params['subresource']                = $id;
+				$interests                            = $this->mailchimp->load( $resource_type . '/' . $list_id . '/' . $subresource_type . '/' . $category_id . '/' . $method, $params );
+				$id                                   = isset( $keys[ $key ] ) ? $keys[ $key ] : $category['id'];
+				$interest_options[ $id ]['title']     = $title;
 				$interest_options[ $id ]['interests'] = array();
 				foreach ( $interests['interests'] as $interest ) {
-					$interest_id = $interest['id'];
+					$interest_id   = $interest['id'];
 					$interest_name = $interest['name'];
 					$interest_options[ $id ]['interests'][ ${'interest_' . $field_value} ] = $interest_name;
 				}
 			}
 		} else {
 			$params['subresource'] = $category_id;
-			$interests = $this->mailchimp->load( $resource_type . '/' . $list_id . '/' . $subresource_type . '/' . $category_id . '/' . $method, $params );
+			$interests             = $this->mailchimp->load( $resource_type . '/' . $list_id . '/' . $subresource_type . '/' . $category_id . '/' . $method, $params );
 			foreach ( $interests['interests'] as $interest ) {
-				$interest_id = $interest['id'];
+				$interest_id   = $interest['id'];
 				$interest_name = $interest['name'];
 				$interest_options['interests'][ ${'interest_' . $field_value} ] = $interest_name;
 			}
