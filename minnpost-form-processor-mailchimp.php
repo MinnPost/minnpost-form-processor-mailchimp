@@ -66,6 +66,8 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		$this->list_subresource_type = 'interest-categories';
 		$this->user_field = 'interests';
 		$this->user_default_new_status = 'pending';
+		$this->newsletters_id          = 'f88ee8cb3b';
+		$this->occasional_emails_id    = '93f0b57b1b';
 
 		$this->add_actions();
 	}
@@ -253,14 +255,14 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		// we can allow forms to specify themselves to only be relevant to specific emails, otherwise it needs all of them
 		// default is false if it is not allowed in the submitted form
 		// that is the only way we can remove a subscription option if a user chooses to uncheck it
-		$all_newsletters = $this->get_mailchimp_field_options( '_newsletters', 'f88ee8cb3b' );
+		$all_newsletters = $this->get_mailchimp_field_options( '_newsletters', $this->newsletters_id );
 		foreach ( $all_newsletters as $key => $value ) {
 			if ( ( ! isset( $user_data['newsletters_available'] ) && ! isset( $user_data['occasional_emails_available'] ) ) || ( isset( $user_data['newsletters_available'] ) && in_array( $key, $user_data['newsletters_available'] ) ) ) {
 				$params[ $this->user_field ][ $key ] = 'false';
 			}
 		}
 
-		$all_occasional_emails = $this->get_mailchimp_field_options( '_occasional_emails', '93f0b57b1b' );
+		$all_occasional_emails = $this->get_mailchimp_field_options( '_occasional_emails', $this->occasional_emails_id );
 		foreach ( $all_occasional_emails as $key => $value ) {
 			if ( ( ! isset( $user_data['newsletters_available'] ) && ! isset( $user_data['occasional_emails_available'] ) ) || ( isset( $user_data['occasional_emails_available'] ) && in_array( $key, $user_data['occasional_emails_available'] ) ) ) {
 				$params[ $this->user_field ][ $key ] = 'false';
