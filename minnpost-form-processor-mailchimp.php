@@ -412,7 +412,6 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 				if ( is_wp_error( $user ) ) {
 					return $user;
 				}
-				$user['status'] = 'success';
 				if ( ! is_object( $result ) && 'subscribed' === $result['status'] ) {
 					$user = array(
 						'reason'    => 'user exists',
@@ -426,6 +425,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 						$user['interests'][ $key ] = false;
 					}
 				}
+				$user['status'] = 'success';
 				return $user;
 				break;
 			case 'POST':
