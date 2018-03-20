@@ -412,25 +412,81 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 				if ( is_wp_error( $user ) ) {
 					return $user;
 				}
+				$user = array(
+					'status' => $result['status'],
+				);
 				if ( ! is_object( $result ) && 'subscribed' === $result['status'] ) {
-					$user = array(
-						'reason'    => 'user exists',
-						'interests' => array_intersect_key( $result['interests'], $options ),
-					);
+					$user['mailchimp_id'] = $result['id'];
+					$user['interests'] = array_intersect_key( $result['interests'], $options );
 				} else {
-					$user = array(
-						'reason' => 'user does not exist',
-					);
 					foreach ( $options as $key => $value ) {
 						$user['interests'][ $key ] = false;
 					}
 				}
-				$user['status'] = 'success';
 				return $user;
 				break;
 			case 'POST':
-				$result = $this->get_user_info( $this->resource_id, md5( $body_params['email'] ), true );
-				return $result;
+				$id         = $request->get_param( 'mailchimp_user_id' );
+				$status     = $request->get_param( 'mailchimp_user_status' );
+				$email      = $request->get_param( 'email' );
+				$first_name = $request->get_param( 'first_name' );
+				$last_name  = $request->get_param( 'last_name' );
+
+				$newsletters       = $request->get_param( 'newsletters' );
+				$occasional_emails = $request->get_param( 'occasional_emails' );
+
+				$newsletters_available       = $request->get_param( 'newsletters_available' );
+				$occasional_emails_available = $request->get_param( 'occasional_emails_available' );
+
+				$user_data = array(
+					'user_email' => $email,
+					'first_name' => $first_name,
+					'last_name'  => $last_name,
+				);
+
+				if ( null !== $id ) {
+					$user_data['_mailchimp_user_id'] = $id;
+				}
+				if ( null !== $status ) {
+					$user_data['_mailchimp_user_status'] = $status;
+				}
+
+				if ( ! empty( $newsletters_available ) ) {
+					$user_data['newsletters_available'] = $newsletters_available;
+				}
+				if ( ! empty( $occasional_emails_available ) ) {
+					$user_data['occasional_emails_available'] = $occasional_emails_available;
+				}
+
+				if ( ! empty( $newsletters ) ) {
+					$user_data['_newsletters'] = $newsletters;
+				}
+				if ( ! empty( $newsletters ) ) {
+					$user_data['_occasional_emails'] = $occasional_emails;
+				}
+
+				$result = $this->save_user_mailchimp_list_settings( $user_data );
+
+				/*if ( isset( $result['id'] ) ) {
+					if ( 'PUT' === $result['method'] ) {
+						$user_status = 'existing';
+					} elseif ( 'POST' === $result['method'] ) {
+						$user_status = 'new';
+						if ( 'pending' === $result['status'] ) {
+							$user_status = 'pending';
+						}
+					}
+
+					$data = array(
+						'id'          => $result['id'],
+						'user_status' => $user_status,
+					);
+					
+				}*/
+
+				$data = array();
+
+				return $data;
 				break;
 			default:
 				return;
