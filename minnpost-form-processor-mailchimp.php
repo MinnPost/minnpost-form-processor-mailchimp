@@ -82,37 +82,8 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		add_filter( 'user_account_management_pre_save_result', array( $this, 'save_user_mailchimp_list_settings' ), 10, 1 );
 		add_filter( 'user_account_management_post_user_data_save', array( $this, 'save_user_meta' ), 10, 1 );
 		add_filter( 'user_account_management_custom_error_message', array( $this, 'mailchimp_error_message' ), 10, 2 );
-		//add_action( 'rest_api_init', array( $this, 'wp_rest_allow_all_cors' ), 15 );
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
-
-		//add_filter( 'rest_authentication_errors', array( $this, 'allow_request' ), 1000 );
-		add_filter( 'rest_authentication_errors', function() {
-			error_log( 'check errors' );
-		    wp_set_current_user( 1 ); // replace with the ID of a WP user with the authorization you want
-		    return true;
-		}, -1 );
 	}
-
-	public function allow_request( $result ) {
-		$origin = get_http_origin();
-		error_log( 'origin is ' . $origin );
-		return true;
-	}
-
-	/*function wp_rest_allow_all_cors() {
-		// Remove the default filter.
-		remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
-		// Add a Custom filter.
-		add_filter( 'rest_pre_serve_request', function( $value ) {
-			error_log( 'this is a pre serve request' );
-			$origin = get_http_origin();
-			header( 'Access-Control-Allow-Origin: *' );
-			header( 'Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT' );
-			header( 'Access-Control-Allow-Credentials: true' );
-			header( 'Access-Control-Allow-Headers: Authorization, Content-Type' );
-			return $value;
-		});
-	}*/
 
 	/**
 	 * A shortcode for rendering the form used to change a logged in user's preferences
@@ -503,9 +474,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 					'user_status'  => $result['status'],
 					'mailchimp_id' => $result['id'],
 				);
-
 				return $user;
-				return '';
 				break;
 			default:
 				return;
