@@ -39,7 +39,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 	* This instance makes the class reusable by other plugins
 	*
 	* @return object
-	*   The sfapi object if it is authenticated (empty, otherwise)
+	*   new instance of the plugin
 	*
 	*/
 	static public function get_instance() {
