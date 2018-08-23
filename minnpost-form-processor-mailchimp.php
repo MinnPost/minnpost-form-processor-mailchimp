@@ -3,7 +3,7 @@
 Plugin Name: MinnPost Form Procesor for MailChimp
 Plugin URI:
 Description:
-Version: 0.0.1
+Version: 0.0.2
 Author: Jonathan Stegall
 Author URI: https://code.minnpost.com
 License: GPL2+
@@ -51,7 +51,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 
 	public function __construct() {
 
-		$this->version = '0.0.1';
+		$this->version = '0.0.2';
 		$this->slug    = 'minnpost-form-processor-mailchimp';
 
 		parent::__construct();
@@ -566,10 +566,12 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 			$email = md5( $email );
 		}
 		$user = $this->mailchimp->load( $this->resource_type . '/' . $list_id . '/' . $this->user_subresource_type . '/' . $email, array(), $reset );
-		if ( 404 !== $user['status'] ) {
+		if ( isset( $user['status'] ) && 404 !== $user['status'] ) {
 			return $user;
 		}
-		return new WP_Error( $user['status'], $user['detail'] );
+		$status = isset( $user['status'] ) ? $user['status'] : 'status missing';
+		$detail = isset( $user['detail'] ) ? $user['detail'] : 'detail missing';
+		return new WP_Error( $status, $detail );
 	}
 
 	/**
