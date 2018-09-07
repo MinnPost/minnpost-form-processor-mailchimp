@@ -3,7 +3,7 @@
 Plugin Name: MinnPost Form Procesor for MailChimp
 Plugin URI:
 Description:
-Version: 0.0.2
+Version: 0.0.3
 Author: Jonathan Stegall
 Author URI: https://code.minnpost.com
 License: GPL2+
@@ -51,7 +51,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 
 	public function __construct() {
 
-		$this->version = '0.0.2';
+		$this->version = '0.0.3';
 		$this->slug    = 'minnpost-form-processor-mailchimp';
 
 		parent::__construct();
@@ -406,7 +406,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 				$options     = array_merge( $newsletters, $interests );
 
 				$email  = $request->get_param( 'email' );
-				$result = $this->get_user_info( $this->resource_id, md5( $email ), true );
+				$result = $this->get_user_info( $this->resource_id, md5( strtolower( $email ) ), true );
 				if ( is_object( $result ) && array_key_exists( 404, $result->errors ) ) {
 					return '';
 				}
@@ -562,10 +562,16 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 	* @return array $user
 	*/
 	private function get_user_info( $list_id, $email, $reset = false ) {
+		// email needs to be lowercase before being hashed
+		// see: https://developer.mailchimp.com/documentation/mailchimp/guides/manage-subscribers-with-the-mailchimp-api/
+		/*
+		In previous versions of the API, we exposed internal database IDs eid and leid for emails and list/email combinations. In API 3.0, we no longer use or expose either of these IDs. Instead, we identify your subscribers by the MD5 hash of the lowercase version of their email address so you can easily predict the API URL of a subscriber’s data.
+		*/
 		if ( is_email( $email ) ) {
-			$email = md5( $email );
+			$email = md5( strtolower( $email ) );
 		}
 		$user = $this->mailchimp->load( $this->resource_type . '/' . $list_id . '/' . $this->user_subresource_type . '/' . $email, array(), $reset );
+
 		if ( isset( $user['status'] ) && 404 !== $user['status'] ) {
 			return $user;
 		}
