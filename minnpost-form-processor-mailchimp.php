@@ -3,7 +3,7 @@
 Plugin Name: MinnPost Form Procesor for MailChimp
 Plugin URI:
 Description:
-Version: 0.0.3
+Version: 0.0.4
 Author: Jonathan Stegall
 Author URI: https://code.minnpost.com
 License: GPL2+
@@ -51,7 +51,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 
 	public function __construct() {
 
-		$this->version = '0.0.3';
+		$this->version = '0.0.4';
 		$this->slug    = 'minnpost-form-processor-mailchimp';
 
 		parent::__construct();
@@ -614,19 +614,23 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 				$id                                   = isset( $keys[ $key ] ) ? $keys[ $key ] : $category['id'];
 				$interest_options[ $id ]['title']     = $title;
 				$interest_options[ $id ]['interests'] = array();
-				foreach ( $interests['interests'] as $interest ) {
-					$interest_id   = $interest['id'];
-					$interest_name = $interest['name'];
-					$interest_options[ $id ]['interests'][ ${'interest_' . $field_value} ] = $interest_name;
+				if ( is_array( $interests['interests'] ) ) {
+					foreach ( $interests['interests'] as $interest ) {
+						$interest_id   = $interest['id'];
+						$interest_name = $interest['name'];
+						$interest_options[ $id ]['interests'][ ${'interest_' . $field_value} ] = $interest_name;
+					}
 				}
 			}
 		} else {
 			$params['subresource'] = $category_id;
 			$interests             = $this->mailchimp->load( $resource_type . '/' . $list_id . '/' . $subresource_type . '/' . $category_id . '/' . $method, $params );
-			foreach ( $interests['interests'] as $interest ) {
-				$interest_id   = $interest['id'];
-				$interest_name = $interest['name'];
-				$interest_options['interests'][ ${'interest_' . $field_value} ] = $interest_name;
+			if ( is_array( $interests['interests'] ) ) {
+				foreach ( $interests['interests'] as $interest ) {
+					$interest_id   = $interest['id'];
+					$interest_name = $interest['name'];
+					$interest_options['interests'][ ${'interest_' . $field_value} ] = $interest_name;
+				}
 			}
 		}
 
