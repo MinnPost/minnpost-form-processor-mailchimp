@@ -268,9 +268,11 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		}
 
 		$all_occasional_emails = $this->get_mailchimp_field_options( '_occasional_emails', $this->occasional_emails_id );
-		foreach ( $all_occasional_emails as $key => $value ) {
-			if ( ( ! isset( $user_data['newsletters_available'] ) && ! isset( $user_data['occasional_emails_available'] ) ) || ( isset( $user_data['occasional_emails_available'] ) && in_array( $key, $user_data['occasional_emails_available'] ) ) ) {
-				$params[ $this->user_field ][ $key ] = 'false';
+		if ( is_array( $all_occasional_emails ) ) {
+			foreach ( $all_occasional_emails as $key => $value ) {
+				if ( ( ! isset( $user_data['newsletters_available'] ) && ! isset( $user_data['occasional_emails_available'] ) ) || ( isset( $user_data['occasional_emails_available'] ) && in_array( $key, $user_data['occasional_emails_available'] ) ) ) {
+					$params[ $this->user_field ][ $key ] = 'false';
+				}
 			}
 		}
 
