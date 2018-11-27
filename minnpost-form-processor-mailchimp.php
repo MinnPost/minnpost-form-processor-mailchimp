@@ -261,9 +261,11 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		// default is false if it is not allowed in the submitted form
 		// that is the only way we can remove a subscription option if a user chooses to uncheck it
 		$all_newsletters = $this->get_mailchimp_field_options( '_newsletters', $this->newsletters_id );
-		foreach ( $all_newsletters as $key => $value ) {
-			if ( ( ! isset( $user_data['newsletters_available'] ) && ! isset( $user_data['occasional_emails_available'] ) ) || ( isset( $user_data['newsletters_available'] ) && in_array( $key, $user_data['newsletters_available'] ) ) ) {
-				$params[ $this->user_field ][ $key ] = 'false';
+		if ( is_array( $all_newsletters ) ) {
+			foreach ( $all_newsletters as $key => $value ) {
+				if ( ( ! isset( $user_data['newsletters_available'] ) && ! isset( $user_data['occasional_emails_available'] ) ) || ( isset( $user_data['newsletters_available'] ) && in_array( $key, $user_data['newsletters_available'] ) ) ) {
+					$params[ $this->user_field ][ $key ] = 'false';
+				}
 			}
 		}
 
