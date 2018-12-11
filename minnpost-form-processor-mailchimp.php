@@ -3,7 +3,7 @@
 Plugin Name: MinnPost Form Procesor for MailChimp
 Plugin URI:
 Description:
-Version: 0.0.4
+Version: 0.0.5
 Author: Jonathan Stegall
 Author URI: https://code.minnpost.com
 License: GPL2+
@@ -51,7 +51,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 
 	public function __construct() {
 
-		$this->version = '0.0.4';
+		$this->version = '0.0.5';
 		$this->slug    = 'minnpost-form-processor-mailchimp';
 
 		parent::__construct();
@@ -62,6 +62,29 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		$this->rest_namespace = 'minnpost-api/v';
 		$this->rest_version   = '1';
 
+		$this->add_actions();
+	}
+
+	/**
+	* Do actions
+	*
+	*/
+	private function add_actions() {
+		add_shortcode( 'custom-account-preferences-form', array( $this, 'account_preferences_form' ), 10, 2 );
+		add_filter( 'user_account_management_add_to_user_data', array( $this, 'add_to_mailchimp_data' ), 10, 3 );
+		apply_filters( 'user_account_management_modify_user_data', array( $this, 'remove_mailchimp_from_user_data' ), 10, 1 );
+		add_filter( 'user_account_management_pre_save_result', array( $this, 'save_user_mailchimp_list_settings' ), 10, 1 );
+		add_filter( 'user_account_management_post_user_data_save', array( $this, 'save_user_meta' ), 10, 1 );
+		add_filter( 'user_account_management_custom_error_message', array( $this, 'mailchimp_error_message' ), 10, 2 );
+		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
+		add_action( 'plugins_loaded', array( $this, 'load_mc_plugin' ) );
+	}
+
+	/**
+	* Load and set values we don't need until the parent plugin is actually loaded
+	*
+	*/
+	public function load_mc_plugin() {
 		$this->api_key                 = $this->mailchimp->api_key;
 		$this->resource_type           = 'lists';
 		$this->resource_id             = '3631302e9c';
@@ -71,18 +94,6 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		$this->user_default_new_status = 'pending';
 		$this->newsletters_id          = 'f88ee8cb3b';
 		$this->occasional_emails_id    = '93f0b57b1b';
-
-		$this->add_actions();
-	}
-
-	private function add_actions() {
-		add_shortcode( 'custom-account-preferences-form', array( $this, 'account_preferences_form' ), 10, 2 );
-		add_filter( 'user_account_management_add_to_user_data', array( $this, 'add_to_mailchimp_data' ), 10, 3 );
-		apply_filters( 'user_account_management_modify_user_data', array( $this, 'remove_mailchimp_from_user_data' ), 10, 1 );
-		add_filter( 'user_account_management_pre_save_result', array( $this, 'save_user_mailchimp_list_settings' ), 10, 1 );
-		add_filter( 'user_account_management_post_user_data_save', array( $this, 'save_user_meta' ), 10, 1 );
-		add_filter( 'user_account_management_custom_error_message', array( $this, 'mailchimp_error_message' ), 10, 2 );
-		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 	}
 
 	/**
