@@ -85,15 +85,18 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 	*
 	*/
 	public function load_mc_plugin() {
-		$this->api_key                 = $this->mailchimp->api_key;
-		$this->resource_type           = 'lists';
-		$this->resource_id             = '3631302e9c';
-		$this->user_subresource_type   = 'members';
-		$this->list_subresource_type   = 'interest-categories';
-		$this->user_field              = 'interests';
-		$this->user_default_new_status = 'pending';
-		$this->newsletters_id          = 'f88ee8cb3b';
-		$this->occasional_emails_id    = '93f0b57b1b';
+		// don't try to do this until the plugin is loaded
+		if ( class_exists( 'Form_Processor_MailChimp' ) ) {
+			$this->api_key                 = $this->mailchimp->api_key;
+			$this->resource_type           = 'lists';
+			$this->resource_id             = '3631302e9c';
+			$this->user_subresource_type   = 'members';
+			$this->list_subresource_type   = 'interest-categories';
+			$this->user_field              = 'interests';
+			$this->user_default_new_status = 'pending';
+			$this->newsletters_id          = 'f88ee8cb3b';
+			$this->occasional_emails_id    = '93f0b57b1b';
+		}
 	}
 
 	/**
