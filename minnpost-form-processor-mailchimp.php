@@ -115,7 +115,7 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		}
 		// if we are on the current user, or if this user can edit users
 		if ( false === $can_access ) {
-			return __( 'You do not have permission to access this page.', 'minnpost-largo' );
+			return __( 'You do not have permission to access this page.', 'minnpost-form-processor-mailchimp' );
 		}
 
 		// this functionality is mostly from https://pippinsplugins.com/change-password-form-short-code/
@@ -125,12 +125,12 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		$attributes['redirect']    = $attributes['current_url'];
 
 		if ( ! is_user_logged_in() ) {
-			return __( 'You are not signed in.', 'user-account-management' );
+			return __( 'You are not signed in.', 'minnpost-form-processor-mailchimp' );
 		} else {
 			//$attributes['login'] = rawurldecode( $_REQUEST['login'] );
 
 			// translators: instructions on top of the form
-			$attributes['instructions'] = sprintf( '<p class="a-form-instructions">' . esc_html__( 'If you have set up reading or email preferences, you can update them below.', 'minnpost-largo' ) . '</p>' );
+			$attributes['instructions'] = sprintf( '<p class="a-form-instructions">' . esc_html__( 'If you have set up reading or email preferences, you can update them below.', 'minnpost-form-processor-mailchimp' ) . '</p>' );
 
 			// Error messages
 			$errors = array();
@@ -151,16 +151,16 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 
 			// todo: this should probably be in the database somewhere
 			$attributes['reading_topics'] = array(
-				'Arts & Culture'         => 'Arts & Culture',
-				'Economy'                => 'Economy',
-				'Education'              => 'Education',
-				'Environment'            => 'Environment',
-				'Greater Minnesota news' => 'Greater Minnesota news',
-				'Health'                 => 'Health',
-				'MinnPost announcements' => 'MinnPost announcements',
-				'Opinion/Commentary'     => 'Opinion/Commentary',
-				'Politics & Policy'      => 'Politics & Policy',
-				'Sports'                 => 'Sports',
+				'Arts & Culture'         => __( 'Arts & Culture', 'minnpost-form-processor-mailchimp' ),
+				'Economy'                => __( 'Economy', 'minnpost-form-processor-mailchimp' ),
+				'Education'              => __( 'Education', 'minnpost-form-processor-mailchimp' ),
+				'Environment'            => __( 'Environment', 'minnpost-form-processor-mailchimp' ),
+				'Greater Minnesota news' => __( 'Greater Minnesota news', 'minnpost-form-processor-mailchimp' ),
+				'Health'                 => __( 'Health', 'minnpost-form-processor-mailchimp' ),
+				'MinnPost announcements' => __( 'MinnPost announcements', 'minnpost-form-processor-mailchimp' ),
+				'Opinion/Commentary'     => __( 'Opinion/Commentary', 'minnpost-form-processor-mailchimp' ),
+				'Politics & Policy'      => __( 'Politics & Policy', 'minnpost-form-processor-mailchimp' ),
+				'Sports'                 => __( 'Sports', 'minnpost-form-processor-mailchimp' ),
 			);
 
 			$attributes['user_reading_topics'] = array();
@@ -357,13 +357,13 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 	public function mailchimp_error_message( $message, $error_code ) {
 		switch ( $error_code ) {
 			case '_newsletters':
-				$message = __( 'There was an error saving your newsletter choices. Please try again.', 'minnpost-largo' );
+				$message = __( 'There was an error saving your newsletter choices. Please try again.', 'minnpost-form-processor-mailchimp' );
 				break;
 			case '_occasional_emails':
-				$message = __( 'There was an error saving your occasional MinnPost email choices. Please try again.', 'minnpost-largo' );
+				$message = __( 'There was an error saving your occasional MinnPost email choices. Please try again.', 'minnpost-form-processor-mailchimp' );
 				break;
 			case 'mailchimp':
-				$message = __( 'There was an error saving your email preferences. Please try again.', 'minnpost-largo' );
+				$message = __( 'There was an error saving your email preferences. Please try again.', 'minnpost-form-processor-mailchimp' );
 				break;
 			default:
 				break;
