@@ -12,12 +12,13 @@ Text Domain: minnpost-form-processor-mailchimp
 */
 
 if ( ! class_exists( 'Form_Processor_MailChimp' ) ) {
-	die();
+	return;
 }
 
-class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
+class Minnpost_Form_Processor_MailChimp {
 
 	public $option_prefix;
+	public $parent_option_prefix;
 	public $version;
 	public $slug;
 
@@ -26,6 +27,24 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 	private $resource_id;
 	private $user_subresource_type;
 	private $list_subresource_type;
+
+	/**
+	* @var object
+	* Load the parent plugin
+	*/
+	public $parent;
+
+	/**
+	* @var object
+	* Load the MailChimp API wrapper from the parent
+	*/
+	public $mailchimp;
+
+	/**
+	* @var object
+	* Administrative interface
+	*/
+	public $admin;
 
 	/**
 	 * @var object
@@ -51,10 +70,18 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 
 	public function __construct() {
 
-		$this->version = '0.0.5';
-		$this->slug    = 'minnpost-form-processor-mailchimp';
+		$this->option_prefix        = 'minnpost_form_processor_mailchimp_';
+		$this->parent_option_prefix = 'form_process_mc_';
+		$this->version              = '0.0.5';
+		$this->slug                 = 'minnpost-form-processor-mailchimp';
+		$this->plugin_file          = __FILE__;
 
-		parent::__construct();
+		// parent plugin
+		$this->parent = $this->load_parent();
+
+		// mailchimp api
+		$this->mailchimp = $this->parent->mailchimp;
+
 
 		// admin settings
 		$this->admin = $this->load_admin();
@@ -62,40 +89,36 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		$this->rest_namespace = 'minnpost-api/v';
 		$this->rest_version   = '1';
 
-		$this->add_actions();
+		add_action( 'plugins_loaded', array( $this, 'add_actions' ) );
 	}
 
 	/**
 	* Do actions
 	*
 	*/
-	private function add_actions() {
 		add_shortcode( 'custom-account-preferences-form', array( $this, 'account_preferences_form' ), 10, 2 );
+	public function add_actions() {
 		add_filter( 'user_account_management_add_to_user_data', array( $this, 'add_to_mailchimp_data' ), 10, 3 );
 		apply_filters( 'user_account_management_modify_user_data', array( $this, 'remove_mailchimp_from_user_data' ), 10, 1 );
 		add_filter( 'user_account_management_pre_save_result', array( $this, 'save_user_mailchimp_list_settings' ), 10, 1 );
 		add_filter( 'user_account_management_post_user_data_save', array( $this, 'save_user_meta' ), 10, 1 );
 		add_filter( 'user_account_management_custom_error_message', array( $this, 'mailchimp_error_message' ), 10, 2 );
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
-		add_action( 'plugins_loaded', array( $this, 'load_mc_plugin' ) );
 	}
 
 	/**
 	* Load and set values we don't need until the parent plugin is actually loaded
 	*
 	*/
-	public function load_mc_plugin() {
-		// don't try to do this until the plugin is loaded
-		if ( class_exists( 'Form_Processor_MailChimp' ) ) {
-			$this->api_key                 = $this->mailchimp->api_key;
-			$this->resource_type           = 'lists';
-			$this->resource_id             = '3631302e9c';
-			$this->user_subresource_type   = 'members';
-			$this->list_subresource_type   = 'interest-categories';
-			$this->user_field              = 'interests';
-			$this->user_default_new_status = 'pending';
-			$this->newsletters_id          = 'f88ee8cb3b';
-			$this->occasional_emails_id    = '93f0b57b1b';
+	public function load_parent() {
+		// get the base class
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
+		if ( is_plugin_active( 'form-processor-mailchimp/form-processor-mailchimp.php' ) ) {
+			require_once plugin_dir_path( $this->plugin_file ) . '../form-processor-mailchimp/form-processor-mailchimp.php';
+			$plugin = form_processor_mailchimp();
+			return $plugin;
 		}
 	}
 
@@ -190,6 +213,16 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 			return $account_management->get_template_html( 'account-preferences-form', 'front-end', $attributes );
 
 		}
+	/**
+	* load the admin stuff
+	* creates admin menu to save the config options
+	*
+	* @throws \Exception
+	*/
+	public function load_admin() {
+		require_once( plugin_dir_path( $this->plugin_file ) . 'classes/class-' . $this->slug . '-admin.php' );
+		$admin = new Minnpost_Form_Processor_MailChimp_Admin( $this->option_prefix, $this->parent_option_prefix, $this->version, $this->slug, $this->plugin_file, $this->parent );
+		return $admin;
 	}
 
 	/**
@@ -653,35 +686,6 @@ class Minnpost_Form_Processor_MailChimp extends Form_Processor_MailChimp {
 		}
 
 		return $interest_options;
-	}
-
-
-	/**
-	* load the admin stuff
-	* creates admin menu to save the config options
-	*
-	* @throws \Exception
-	*/
-	public function load_admin() {
-		$admin = '';
-		add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
-		return $admin;
-	}
-
-	/**
-	* Display a Settings link on the main Plugins page
-	*
-	* @param array $links
-	* @param string $file
-	* @return array $links
-	* These are the links that go with this plugin's entry
-	*/
-	public function plugin_action_links( $links, $file ) {
-		if ( plugin_basename( __FILE__ ) === $file ) {
-			$settings = '<a href="' . get_admin_url() . 'options-general.php?page=' . $this->slug . '">' . __( 'Settings', 'minnpost-form-processor-mailchimp' ) . '</a>';
-			array_unshift( $links, $settings );
-		}
-		return $links;
 	}
 
 }
