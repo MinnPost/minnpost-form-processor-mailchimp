@@ -1,48 +1,43 @@
 <?php
 /**
- * Class file for the Minnpost_Form_Processor_MailChimp_Admin class.
+ * Class file for the MinnPost_Form_Processor_MailChimp_Admin class.
  *
  * @file
  */
 
-if ( ! class_exists( 'Minnpost_Form_Processor_MailChimp' ) ) {
+if ( ! class_exists( 'MinnPost_Form_Processor_MailChimp' ) ) {
 	die();
 }
 
 /**
  * Create default WordPress admin functionality to configure the plugin.
  */
-class Minnpost_Form_Processor_MailChimp_Admin {
+class MinnPost_Form_Processor_MailChimp_Admin {
 
-	protected $option_prefix;
-	protected $parent_option_prefix;
-	protected $version;
-	protected $slug;
-	protected $plugin_file;
+	public $option_prefix;
+	public $parent_option_prefix;
+	public $version;
+	public $slug;
+	public $plugin_file;
 
 	public $parent;
 
 	/**
 	* Constructor which sets up admin pages
-	*
-	* @param string $option_prefix
-	* @param string $parent_option_prefix
-	* @param string $version
-	* @param string $slug
-	* @param string $api_key
-	* @throws \Exception
 	*/
-	public function __construct( $option_prefix, $parent_option_prefix, $version, $slug, $plugin_file, $parent ) {
+	public function __construct() {
 
-		$this->option_prefix        = $option_prefix;
-		$this->parent_option_prefix = $parent_option_prefix;
-		$this->version              = $version;
-		$this->slug                 = $slug;
-		$this->plugin_file          = $plugin_file;
+		$this->option_prefix        = minnpost_form_processor_mailchimp()->option_prefix;
+		$this->parent_option_prefix = minnpost_form_processor_mailchimp()->parent_option_prefix;
+		$this->version              = minnpost_form_processor_mailchimp()->version;
+		$this->slug                 = minnpost_form_processor_mailchimp()->slug;
+		$this->plugin_file          = minnpost_form_processor_mailchimp()->plugin_file;
 
-		$this->parent = $parent;
+		$this->parent = minnpost_form_processor_mailchimp()->parent;
 
 		$this->tabs = $this->get_admin_tabs();
+
+		$this->list_member_statuses = array( 'subscribed', 'unsubscribed', 'cleaned', 'pending' );
 
 		$this->add_actions();
 
@@ -93,7 +88,7 @@ class Minnpost_Form_Processor_MailChimp_Admin {
 	* @return void
 	*/
 	public function admin_scripts_and_styles() {
-		//wp_enqueue_script( $this->slug . '-admin', plugins_url( 'assets/js/' . $this->slug . '-admin.min.js', dirname( __FILE__ ) ), array( 'jquery' ), $this->version, true );
+		wp_enqueue_script( $this->slug . '-admin', plugins_url( 'assets/js/admin.min.js', dirname( __FILE__ ) ), array( 'jquery' ), $this->version, true );
 		//wp_enqueue_style( $this->slug . '-admin', plugins_url( 'assets/css/' . $this->slug . '-admin.min.css', dirname( __FILE__ ) ), array(), $this->version, 'all' );
 	}
 
@@ -262,11 +257,11 @@ class Minnpost_Form_Processor_MailChimp_Admin {
 			foreach ( $form_sections as $key => $value ) {
 				$section = $key;
 				// translators: 1 is the name of the shortcode
-				$title = sprintf( 'Shortcode: %1$s',
+				$title = sprintf( 'Shortcode: [%1$s]',
 					esc_attr( strtolower( $value ) )
 				);
 
-				$page    = $section;
+				$page = $section;
 				add_settings_section( $section, $title, null, $page );
 
 				// shared options for each form
@@ -274,53 +269,140 @@ class Minnpost_Form_Processor_MailChimp_Admin {
 				/*
 				$this->user_subresource_type   = 'members';
 				$this->list_subresource_type   = 'interest-categories';
+
 				$this->user_field              = 'interests';
 				$this->user_default_new_status = 'pending';
 				$this->newsletters_id          = 'f88ee8cb3b';
 				$this->occasional_emails_id    = '93f0b57b1b';
 				*/
 
-				if ( count( $this->get_resource_types() ) > 1 ) {
-					$settings[ $key . '_resource_type' ] = array(
-						'title'    => __( 'Resource type', 'minnpost-form-processor-mailchimp' ),
-						'callback' => $callbacks['select'],
-						'page'     => $section,
-						'section'  => $section,
-						'args'     => array(
-							'desc'     => '',
-							'constant' => '',
-							'type'     => 'select',
-							'items'    => $this->get_resource_types(),
-						),
-					);
-				} else {
-					$resource_type                       = key( $this->get_resource_types() );
-					$settings[ $key . '_resource_type' ] = array(
-						'title'    => __( 'Resource type', 'minnpost-form-processor-mailchimp' ),
-						'callback' => $callbacks['text'],
-						'page'     => $section,
-						'section'  => $section,
-						'class'    => 'disabled',
-						'args'     => array(
-							'desc'     => __( 'There is currently only one available resource type. If more become available, this field will be editable.', 'minnpost-form-processor-mailchimp' ),
-							'constant' => '',
-							'type'     => 'text',
-							'default'  => $resource_type,
-						),
-					);
-				}
-				$settings[ $key . '_resource_id' ] = array(
-					'title'    => __( 'Resource name', 'minnpost-form-processor-mailchimp' ),
+				$settings[ $section . '_resource_type' ] = array(
+					'title'    => __( 'Resource type', 'minnpost-form-processor-mailchimp' ),
 					'callback' => $callbacks['select'],
-					'page'     => $section,
+					'page'     => $page,
 					'section'  => $section,
 					'args'     => array(
-						'desc'     => __( 'This is the name (or id, if there is no name) of the MailChimp resource associated with this form.', 'minnpost-form-processor-mailchimp' ),
+						'desc'     => '',
+						'constant' => '',
+						'type'     => 'select',
+						'items'    => $this->get_resource_types(),
+					),
+				);
+				$resource_type                           = get_option( $this->option_prefix . 'newsletter_form_resource_type', '' );
+				$settings[ $section . '_resource_id' ]   = array(
+					'title'    => __( 'Resource name', 'minnpost-form-processor-mailchimp' ),
+					'callback' => $callbacks['select'],
+					'page'     => $page,
+					'section'  => $section,
+					'args'     => array(
+						'desc'     => __( 'This is the name (or id, if there is no name) of the MailChimp resource this form can modify.', 'minnpost-form-processor-mailchimp' ),
 						'constant' => '',
 						'type'     => 'select',
 						'items'    => $this->get_resource_ids( $resource_type ),
 					),
 				);
+				$resource_id                             = get_option( $this->option_prefix . 'newsletter_form_resource_id', '' );
+				if ( '' === $resource_id ) {
+					continue;
+				}
+
+				if ( 'lists' === $resource_type ) {
+					//list_member_statuses
+					$settings[ $section . '_' . $resource_type . 'default_member_status' ] = array(
+						'title'    => __( 'Default member status', 'minnpost-form-processor-mailchimp' ),
+						'callback' => $callbacks['select'],
+						'page'     => $page,
+						'section'  => $section,
+						'args'     => array(
+							'desc'     => __( 'When subscribing users to this list, unless otherwise specified they will be added with this status.', 'minnpost-form-processor-mailchimp' ),
+							'constant' => '',
+							'type'     => 'select',
+							'items'    => $this->get_member_statuses(),
+						),
+					);
+				}
+				$subresource_types = get_option( $this->parent_option_prefix . 'subresource_types_' . $resource_type, array() );
+				if ( empty( $subresource_types ) ) {
+					continue;
+				}
+				if ( ! empty( $subresource_types[ $resource_type ] ) ) {
+					$subresource_types = $subresource_types[ $resource_type ];
+					foreach ( $subresource_types as $subresource_type ) {
+
+						$items = get_option( $this->parent_option_prefix . 'subresources_' . $resource_id . '_' . $subresource_type, array() );
+						if ( empty( $items ) ) {
+							continue;
+						}
+						if ( ! empty( $items[ $resource_type ][ $resource_id ][ $subresource_type ] ) ) {
+
+							$subresources = $items[ $resource_type ][ $resource_id ][ $subresource_type ];
+
+							$methods = get_option( $this->parent_option_prefix . 'subresource_methods', array() );
+							if ( empty( $methods ) ) {
+								continue;
+							}
+							if ( ! empty( $methods[ $resource_type ][ $resource_id ][ $subresource_type ] ) ) {
+								$methods = $methods[ $resource_type ][ $resource_id ][ $subresource_type ];
+
+								foreach ( $subresources as $subresource ) {
+
+									foreach ( $methods as $method ) {
+
+										$default_items = $this->get_default_items( $resource_type, $resource_id, $subresource_type, $subresource, $method );
+
+										foreach ( $default_items as $default_item ) {
+											//error_log( 'default is ' . print_r( $default_item, true ) );
+											$settings[ $section . '_' . $subresource_type . '_' . $subresource . '_' . $method . '_' . $default_item['id'] . '_title' ] = array(
+												'title'    => 'Title',
+												'callback' => $callbacks['text'],
+												'page'     => $page,
+												'section'  => $section,
+												'class'    => 'minnpost-form-processor-mailchimp-group minnpost-form-processor-mailchimp-group-' . sanitize_title( $default_item['text'] ),
+												'args'     => array(
+													'desc'     => __( 'If this form is submitted without values for this field, it will default to these values, unless otherwise defined in the shortcode.', 'minnpost-form-processor-mailchimp' ),
+													'constant' => '',
+													'type'     => 'text',
+												),
+											);
+											$settings[ $section . '_' . $subresource_type . '_' . $subresource . '_' . $method . '_' . $default_item['id'] . '_description' ] = array(
+												'title'    => 'Description',
+												'callback' => $callbacks['textarea'],
+												'page'     => $page,
+												'section'  => $section,
+												'class'    => 'minnpost-form-processor-mailchimp-group minnpost-form-processor-mailchimp-group-' . sanitize_title( $default_item['text'] ),
+												'args'     => array(
+													'desc'     => __( 'If this form is submitted without values for this field, it will default to these values, unless otherwise defined in the shortcode.', 'minnpost-form-processor-mailchimp' ),
+													'constant' => '',
+													'type'     => 'text',
+													'data'     => 'data-name="' . $default_item['text'] . '"',
+												),
+											);
+										}
+
+										// translators: parameter is the name of the group
+										$group_title = $this->parent->mailchimp->get_name( $resource_type, $resource_id, $subresource_type, $subresource );
+										$title       = sprintf( 'Default values - %1$s',
+											$group_title
+										);
+										$settings[ $section . '_' . $subresource_type . '_' . $subresource . '_' . $method . '_default' ] = array(
+											'title'    => $title,
+											'callback' => $callbacks['checkboxes'],
+											'page'     => $page,
+											'section'  => $section,
+											'args'     => array(
+												'desc'     => __( 'If this form is submitted without values for this field, it will default to these values, unless otherwise defined in the shortcode.', 'minnpost-form-processor-mailchimp' ),
+												'constant' => '',
+												'type'     => 'select',
+												'items'    => $default_items,
+											),
+										);
+
+									} // End foreach().
+								} // End foreach().
+							}
+						}
+					} // End foreach().
+				}
 			}
 		}
 		foreach ( $settings as $key => $attributes ) {
@@ -346,6 +428,7 @@ class Minnpost_Form_Processor_MailChimp_Admin {
 			if ( isset( $attributes['args']['constant'] ) && defined( $attributes['args']['constant'] ) ) {
 				$validate = '';
 			}
+
 			add_settings_field( $id, $title, $callback, $page, $section, $args );
 			register_setting( $section, $id );
 		}
@@ -424,34 +507,100 @@ class Minnpost_Form_Processor_MailChimp_Admin {
 	/**
 	* Generate an array of resource ids
 	*
+	* @param string $resource_type
 	* @return array $options
 	*
 	*/
-	private function get_resource_ids( $key = '' ) {
+	private function get_resource_ids( $resource_type = '' ) {
 		$options = array();
 		if ( ! isset( $_GET['page'] ) || $this->slug !== $_GET['page'] ) {
 			return $options;
 		}
-		if ( '' !== $key ) {
-			$resource_type = $key;
-		} else {
-			$resource_type = get_option( $this->option_prefix . 'resource_type', '' );
+		if ( '' === $resource_type ) {
+			$resource_type = get_option( $this->option_prefix . 'newsletter_form_resource_type', '' );
 		}
 		$resource_ids = get_option( $this->parent_option_prefix . 'resources_' . $resource_type, array() );
-		if ( ! empty( $resource_ids ) ) {
+		if ( ! empty( $resource_ids ) && ! empty( $resource_ids[ $resource_type ] ) ) {
 			$resource_ids = $resource_ids[ $resource_type ];
 		}
-		$resources = $this->parent->mailchimp->load( $resource_type . '/' . $resource_id )[ $resource_type ];
 		foreach ( $resource_ids as $id ) {
-			$key            = array_search( $id, array_column( $resources, 'id' ) );
-			$resource       = $resources[ $key ];
+			$resource_name  = $this->parent->mailchimp->get_name( $resource_type, $id );
 			$options[ $id ] = array(
-				'text'    => isset( $resource['name'] ) ? $resource['name'] : $id,
+				'text'    => isset( $resource_name ) ? $resource_name : $id,
 				'id'      => $id,
 				'value'   => $id,
 				'desc'    => '',
 				'default' => '',
 			);
+		}
+		return $options;
+	}
+
+	/**
+	* Generate an array of member status fields
+	*
+	* @return array $options
+	*
+	*/
+	private function get_member_statuses() {
+		$options = array();
+		if ( ! isset( $_GET['page'] ) || $this->slug !== $_GET['page'] ) {
+			return $options;
+		}
+		$statuses = $this->list_member_statuses;
+		foreach ( $statuses as $status ) {
+			$options[ $status ] = array(
+				'text'    => $status,
+				'id'      => $status,
+				'value'   => $status,
+				'desc'    => '',
+				'default' => '',
+			);
+		}
+		return $options;
+	}
+
+	/**
+	* Generate an array of default items
+	*
+	* @param string $resource_type
+	* @param string $resource_id
+	* @param string $subresource_type
+	* @param string $subresource
+	* @param string $method
+	* @return array $options
+	*
+	*/
+	private function get_default_items( $resource_type, $resource_id, $subresource_type, $subresource, $method ) {
+		$options = array();
+		if ( ! isset( $_GET['page'] ) || $this->slug !== $_GET['page'] ) {
+			return $options;
+		}
+
+		$all_items = get_option( $this->parent_option_prefix . 'items_' . $resource_id . '_' . $subresource_type . '_' . $subresource . '_' . $method, array() );
+		if ( empty( $all_items ) ) {
+			return $options;
+		}
+		$all_items = $all_items[ $resource_type ][ $resource_id ][ $subresource_type ];
+		$mc_items  = $this->parent->mailchimp->load( $resource_type . '/' . $resource_id . '/' . $subresource_type . '/' . $subresource . '/' . $method );
+
+		$key = $method;
+		if ( ! isset( $mc_items[ $key ] ) ) {
+			return $options;
+		}
+
+		if ( ! empty( $all_items ) ) {
+			foreach ( $all_items as $item ) {
+				$data_key         = array_search( $item, array_column( $mc_items[ $key ], 'id' ) );
+				$mc_data          = $mc_items[ $key ][ $data_key ];
+				$options[ $item ] = array(
+					'text'    => $mc_data['name'],
+					'id'      => $item,
+					'value'   => $item,
+					'desc'    => '',
+					'default' => '',
+				);
+			}
 		}
 		return $options;
 	}
@@ -529,11 +678,14 @@ class Minnpost_Form_Processor_MailChimp_Admin {
 				$value = $args['default'];
 			}
 
-			echo sprintf( '<textarea name="%1$s" id="%2$s" class="%3$s" rows="10">%4$s</textarea>',
+			$data = isset( $args['data'] ) ? $args['data'] : '';
+
+			echo sprintf( '<textarea name="%1$s" id="%2$s" class="%3$s" rows="10"%5$s>%4$s</textarea>',
 				esc_attr( $name ),
 				esc_attr( $id ),
 				sanitize_html_class( $class . esc_html( ' code' ) ),
-				esc_attr( $value )
+				esc_attr( $value ),
+				$data
 			);
 			if ( '' !== $desc ) {
 				echo sprintf( '<p class="description">%1$s</p>',
