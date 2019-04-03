@@ -264,18 +264,6 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 				$page = $section;
 				add_settings_section( $section, $title, null, $page );
 
-				// shared options for each form
-
-				/*
-				$this->user_subresource_type   = 'members';
-				$this->list_subresource_type   = 'interest-categories';
-
-				$this->user_field              = 'interests';
-				$this->user_default_new_status = 'pending';
-				$this->newsletters_id          = 'f88ee8cb3b';
-				$this->occasional_emails_id    = '93f0b57b1b';
-				*/
-
 				$settings[ $section . '_resource_type' ] = array(
 					'title'    => __( 'Resource type', 'minnpost-form-processor-mailchimp' ),
 					'callback' => $callbacks['select'],
@@ -348,54 +336,46 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 
 									foreach ( $methods as $method ) {
 
-										$default_items = $this->get_default_items( $resource_type, $resource_id, $subresource_type, $subresource, $method );
+										$all_items = $this->get_all_items( $resource_type, $resource_id, $subresource_type, $subresource, $method );
 
-										foreach ( $default_items as $default_item ) {
-											//error_log( 'default is ' . print_r( $default_item, true ) );
-											$settings[ $section . '_' . $subresource_type . '_' . $subresource . '_' . $method . '_' . $default_item['id'] . '_title' ] = array(
-												'title'    => 'Title',
+										foreach ( $all_items as $item ) {
+											$settings[ $section . '_' . $subresource_type . '_' . $subresource . '_' . $method . '_' . $item['id'] . '_title' ] = array(
+												'title'    => __( 'Title', 'minnpost-form-processor-mailchimp' ),
 												'callback' => $callbacks['text'],
 												'page'     => $page,
 												'section'  => $section,
-												'class'    => 'minnpost-form-processor-mailchimp-group minnpost-form-processor-mailchimp-group-' . sanitize_title( $default_item['text'] ),
+												'class'    => 'minnpost-form-processor-mailchimp-group minnpost-form-processor-mailchimp-group-' . sanitize_title( $item['text'] ),
 												'args'     => array(
-													'desc'     => __( 'If this form is submitted without values for this field, it will default to these values, unless otherwise defined in the shortcode.', 'minnpost-form-processor-mailchimp' ),
+													'desc'     => __( 'When a form shortcode displays information about this item, it will use this value for the title.', 'minnpost-form-processor-mailchimp' ),
 													'constant' => '',
 													'type'     => 'text',
 												),
 											);
-											$settings[ $section . '_' . $subresource_type . '_' . $subresource . '_' . $method . '_' . $default_item['id'] . '_description' ] = array(
-												'title'    => 'Description',
+											$settings[ $section . '_' . $subresource_type . '_' . $subresource . '_' . $method . '_' . $item['id'] . '_description' ] = array(
+												'title'    => __( 'Description', 'minnpost-form-processor-mailchimp' ),
 												'callback' => $callbacks['textarea'],
 												'page'     => $page,
 												'section'  => $section,
-												'class'    => 'minnpost-form-processor-mailchimp-group minnpost-form-processor-mailchimp-group-' . sanitize_title( $default_item['text'] ),
+												'class'    => 'minnpost-form-processor-mailchimp-group minnpost-form-processor-mailchimp-group-' . sanitize_title( $item['text'] ),
 												'args'     => array(
-													'desc'     => __( 'If this form is submitted without values for this field, it will default to these values, unless otherwise defined in the shortcode.', 'minnpost-form-processor-mailchimp' ),
+													'desc'     => __( 'When a form shortcode displays information about this item, it will use this value for the description.', 'minnpost-form-processor-mailchimp' ),
 													'constant' => '',
 													'type'     => 'text',
 												),
 											);
+											$settings[ $section . '_' . $subresource_type . '_' . $subresource . '_' . $method . '_' . $item['id'] . '_default' ] = array(
+												'title'    => __( 'Is default', 'minnpost-form-processor-mailchimp' ),
+												'callback' => $callbacks['text'],
+												'page'     => $page,
+												'section'  => $section,
+												'class'    => 'minnpost-form-processor-mailchimp-group minnpost-form-processor-mailchimp-group-' . sanitize_title( $item['text'] ),
+												'args'     => array(
+													'desc'     => __( 'If this form is submitted without user settings, the user settings will include this item by default.', 'minnpost-form-processor-mailchimp' ),
+													'constant' => '',
+													'type'     => 'checkbox',
+												),
+											);
 										}
-
-										// translators: parameter is the name of the group
-										$group_title = $this->parent->mailchimp->get_name( $resource_type, $resource_id, $subresource_type, $subresource );
-										$title       = sprintf( 'Default values - %1$s',
-											$group_title
-										);
-										$settings[ $section . '_' . $subresource_type . '_' . $subresource . '_' . $method . '_default' ] = array(
-											'title'    => $title,
-											'callback' => $callbacks['checkboxes'],
-											'page'     => $page,
-											'section'  => $section,
-											'args'     => array(
-												'desc'     => __( 'If this form is submitted without values for this field, it will default to these values, unless otherwise defined in the shortcode.', 'minnpost-form-processor-mailchimp' ),
-												'constant' => '',
-												'type'     => 'select',
-												'items'    => $default_items,
-											),
-										);
-
 									} // End foreach().
 								} // End foreach().
 							}
@@ -560,7 +540,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 	}
 
 	/**
-	* Generate an array of default items
+	* Generate an array of MailChimp items that can be acted upon
 	*
 	* @param string $resource_type
 	* @param string $resource_id
@@ -570,7 +550,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 	* @return array $options
 	*
 	*/
-	private function get_default_items( $resource_type, $resource_id, $subresource_type, $subresource, $method ) {
+	private function get_all_items( $resource_type, $resource_id, $subresource_type, $subresource, $method ) {
 		$options = array();
 		if ( ! isset( $_GET['page'] ) || $this->slug !== $_GET['page'] ) {
 			return $options;
@@ -629,7 +609,8 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 		if ( ! isset( $args['constant'] ) || ! defined( $args['constant'] ) ) {
 			$value = esc_attr( get_option( $id, '' ) );
 			if ( 'checkbox' === $type ) {
-				if ( '1' === $value ) {
+				$value = filter_var( get_option( $id, false ), FILTER_VALIDATE_BOOLEAN );
+				if ( true === $value ) {
 					$checked = 'checked ';
 				}
 				$value = 1;
