@@ -296,7 +296,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 
 				if ( 'lists' === $resource_type ) {
 					//list_member_statuses
-					$settings[ $section . '_' . $resource_type . 'default_member_status' ] = array(
+					$settings[ $section . '_' . $resource_type . '_default_member_status' ] = array(
 						'title'    => __( 'Default member status', 'minnpost-form-processor-mailchimp' ),
 						'callback' => $callbacks['select'],
 						'page'     => $page,
