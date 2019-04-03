@@ -15,12 +15,14 @@ const browserSync = require('browser-sync').create();
 // Some config data for our tasks
 const config = {
   styles: {
-    src: 'assets/sass/styles.scss',
+    admin: 'assets/sass/admin.scss',
+    front_end: 'assets/sass/front-end.scss',
     srcDir: 'assets/sass',
     dest: 'assets/css'
   },
   scripts: {
     admin: './assets/js/admin/**/*.js',
+    front_end: './assets/js/front-end/**/*.js',
     dest: './assets/js'
   },
   browserSync: {
@@ -29,8 +31,8 @@ const config = {
   }
 };
 
-function styles() {
-  return gulp.src(config.styles.src)
+function adminstyles() {
+  return gulp.src(config.styles.admin)
     .pipe(sourcemaps.init()) // Sourcemaps need to init before compilation
     .pipe(sassGlob()) // Allow for globbed @import statements in SCSS
     .pipe(sass()) // Compile
@@ -46,7 +48,24 @@ function styles() {
     .pipe(gulp.dest(config.styles.dest)) // Drop the resulting CSS file in the specified dir
     .pipe(browserSync.stream());
 }
-exports.styles = styles; // Allows task to be run independantly in command line: 'gulp styles'
+
+function frontendstyles() {
+  return gulp.src(config.styles.front_end)
+    .pipe(sourcemaps.init()) // Sourcemaps need to init before compilation
+    .pipe(sassGlob()) // Allow for globbed @import statements in SCSS
+    .pipe(sass()) // Compile
+    .on('error', sass.logError) // Error reporting
+    .pipe(postcss([
+      autoprefixer(), // Autoprefix resulting CSS
+      cssnano() // Minify
+    ]))
+    .pipe(rename({ // Rename to .min.css
+      suffix: '.min'
+    }))
+    .pipe(sourcemaps.write()) // Write the sourcemap files
+    .pipe(gulp.dest(config.styles.dest)) // Drop the resulting CSS file in the specified dir
+    .pipe(browserSync.stream());
+}
 
 function adminscripts() {
   return gulp.src(config.scripts.admin)
@@ -63,7 +82,22 @@ function adminscripts() {
     .pipe(gulp.dest(config.scripts.dest))
     .pipe(browserSync.stream());
 }
-exports.adminscripts = adminscripts;
+
+function frontendscripts() {
+  return gulp.src(config.scripts.front_end)
+    .pipe(sourcemaps.init())
+    .pipe(babel({
+      presets: ['@babel/preset-env']
+    }))
+    .pipe(concat('front-end.js')) // Concatenate
+    .pipe(uglify()) // Minify + compress
+    .pipe(rename({
+      suffix: '.min'
+    }))
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest(config.scripts.dest))
+    .pipe(browserSync.stream());
+}
 
 // Injects changes into browser
 function browserSyncTask() {
@@ -90,12 +124,18 @@ function watch() {
     gulp.watch('./**/*.php', browserSyncReload);
   }
 }
+
+// export tasks
+exports.adminstyles = adminstyles;
+exports.frontendstyles = frontendstyles;
+exports.adminscripts = adminscripts;
+exports.frontendscripts = frontendscripts;
 exports.watch = watch;
 
 // What happens when we run gulp?
 gulp.task('default',
   gulp.series(
-    gulp.parallel(styles, adminscripts), // First run these tasks asynchronously
+    gulp.parallel(adminstyles, frontendstyles, adminscripts, frontendscripts), // First run these tasks asynchronously
     gulp.parallel(watch, browserSyncTask) // Then start watching files and browsersyncing
   )
 );

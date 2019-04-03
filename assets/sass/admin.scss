@@ -1,0 +1,18 @@
+.minnpost-mailchimp-fields-wrap {
+	h4 {
+		cursor: pointer;
+	}
+	table {
+		display: none;
+	}
+	.minnpost-mailchimp-group-settings-visible {
+		h4.minnpost-mailchimp-group-settings {
+			span {
+				transform: rotate(90deg);
+			}
+		}
+		table {
+			display: block;
+		}
+	}
+}

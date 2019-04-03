@@ -89,7 +89,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 	*/
 	public function admin_scripts_and_styles() {
 		wp_enqueue_script( $this->slug . '-admin', plugins_url( 'assets/js/admin.min.js', dirname( __FILE__ ) ), array( 'jquery' ), $this->version, true );
-		//wp_enqueue_style( $this->slug . '-admin', plugins_url( 'assets/css/' . $this->slug . '-admin.min.css', dirname( __FILE__ ) ), array(), $this->version, 'all' );
+		wp_enqueue_style( $this->slug . '-admin', plugins_url( 'assets/css/admin.min.css', dirname( __FILE__ ) ), array(), $this->version, 'all' );
 	}
 
 	private function get_admin_tabs() {
@@ -374,7 +374,6 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 													'desc'     => __( 'If this form is submitted without values for this field, it will default to these values, unless otherwise defined in the shortcode.', 'minnpost-form-processor-mailchimp' ),
 													'constant' => '',
 													'type'     => 'text',
-													'data'     => 'data-name="' . $default_item['text'] . '"',
 												),
 											);
 										}
@@ -678,14 +677,11 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 				$value = $args['default'];
 			}
 
-			$data = isset( $args['data'] ) ? $args['data'] : '';
-
-			echo sprintf( '<textarea name="%1$s" id="%2$s" class="%3$s" rows="10"%5$s>%4$s</textarea>',
+			echo sprintf( '<textarea name="%1$s" id="%2$s" class="%3$s" rows="10">%4$s</textarea>',
 				esc_attr( $name ),
 				esc_attr( $id ),
 				sanitize_html_class( $class . esc_html( ' code' ) ),
-				esc_attr( $value ),
-				$data
+				esc_attr( $value )
 			);
 			if ( '' !== $desc ) {
 				echo sprintf( '<p class="description">%1$s</p>',
