@@ -520,7 +520,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 		$mc_resource_items = array();
 		global $pagenow;
 		if ( ( 'options.php' !== $pagenow ) && ( ! isset( $_GET['page'] ) || $this->slug !== $_GET['page'] ) ) {
-			return $mc_resource_items();
+			return $mc_resource_items;
 		}
 
 		$subresource_types = get_option( $this->parent_option_prefix . 'subresource_types_' . $resource_type, array() );
