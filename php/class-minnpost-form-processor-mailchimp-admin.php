@@ -509,7 +509,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 	}
 
 	/**
-	* Generate an array of valid MailChimp items available to the given resource. This is used to store settings about each item.
+	* Generate an array of valid MailChimp items available to the given resource. This is used to store settings about each item. Note: here we check the $_GET['page'] value and the global $pagenow value. We don't use get_current_screen() here because it returns an error.
 	*
 	* @param string $resource_type
 	* @param string $resource_id
@@ -518,6 +518,11 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 	*/
 	private function get_mc_resource_items( $resource_type, $resource_id ) {
 		$mc_resource_items = array();
+		global $pagenow;
+		if ( ( 'options.php' !== $pagenow ) && ( ! isset( $_GET['page'] ) || $this->slug !== $_GET['page'] ) ) {
+			return $mc_resource_items();
+		}
+
 		$subresource_types = get_option( $this->parent_option_prefix . 'subresource_types_' . $resource_type, array() );
 		if ( empty( $subresource_types ) || ! isset( $subresource_types[ $resource_type ] ) ) {
 			return $mc_resource_items;
