@@ -250,7 +250,6 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 	}
 
 	private function form_settings( $page, $section, $callbacks ) {
-		//if ( isset( $this->get_admin_pages()[ $page ] ) ) {
 		$form_sections = $this->setup_form_sections();
 		$settings      = array();
 		if ( ! empty( $form_sections ) ) {
