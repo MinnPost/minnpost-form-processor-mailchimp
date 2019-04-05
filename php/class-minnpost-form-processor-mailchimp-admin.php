@@ -310,21 +310,47 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 					);
 				} // End if().
 
-				$addable_items = $this->get_addable_items( $resource_type, $resource_id );
+				$mc_resource_items = $this->get_mc_resource_items( $resource_type, $resource_id );
 
-				if ( ! empty( $addable_items ) ) {
-					foreach ( $addable_items as $key => $value ) {
-						$settings[ $section . '_' . $key . '_title' ] = array(
+				if ( ! empty( $mc_resource_items ) ) {
+					foreach ( $mc_resource_items as $key => $mc_resource_item ) {
+						$settings[ $section . '_' . $key . '_title' ]       = array(
 							'title'    => __( 'Title', 'minnpost-form-processor-mailchimp' ),
 							'callback' => $callbacks['text'],
 							'page'     => $page,
 							'section'  => $section,
+							'class'    => 'minnpost-form-processor-mailchimp-group minnpost-form-processor-mailchimp-group-' . sanitize_title( $mc_resource_item['text'] ),
 							'args'     => array(
 								'desc'     => __( 'When a form shortcode displays information about this item, it will use this value for the title.', 'minnpost-form-processor-mailchimp' ),
+								'constant' => '',
 								'type'     => 'text',
-								//'validate' => 'sanitize_text_field',
 							),
 						);
+						$settings[ $section . '_' . $key . '_description' ] = array(
+							'title'    => __( 'Description', 'minnpost-form-processor-mailchimp' ),
+							'callback' => $callbacks['textarea'],
+							'page'     => $page,
+							'section'  => $section,
+							'class'    => 'minnpost-form-processor-mailchimp-group minnpost-form-processor-mailchimp-group-' . sanitize_title( $mc_resource_item['text'] ),
+							'args'     => array(
+								'desc'     => __( 'When a form shortcode displays information about this item, it will use this value for the description.', 'minnpost-form-processor-mailchimp' ),
+								'constant' => '',
+								'type'     => 'text',
+							),
+						);
+						$settings[ $section . '_' . $key . '_is_default' ]  = array(
+							'title'    => __( 'Is default', 'minnpost-form-processor-mailchimp' ),
+							'callback' => $callbacks['text'],
+							'page'     => $page,
+							'section'  => $section,
+							'class'    => 'minnpost-form-processor-mailchimp-group minnpost-form-processor-mailchimp-group-' . sanitize_title( $mc_resource_item['text'] ),
+							'args'     => array(
+								'desc'     => __( 'If this form is submitted without user settings, the user settings will include this item by default.', 'minnpost-form-processor-mailchimp' ),
+								'constant' => '',
+								'type'     => 'checkbox',
+							),
+						);
+
 					} // End foreach().
 				} // End if().
 			} // End foreach().
@@ -483,41 +509,46 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 		return $options;
 	}
 
-	private function get_addable_items( $resource_type, $resource_id ) {
-		$all_items = array();
+	/**
+	* Generate an array of valid MailChimp items available to the given resource. This is used to store settings about each item.
+	*
+	* @param string $resource_type
+	* @param string $resource_id
+	* @return array $mc_resource_items
+	*
+	*/
+	private function get_mc_resource_items( $resource_type, $resource_id ) {
+		$mc_resource_items = array();
 		$subresource_types = get_option( $this->parent_option_prefix . 'subresource_types_' . $resource_type, array() );
 		if ( empty( $subresource_types ) || ! isset( $subresource_types[ $resource_type ] ) ) {
-
-			error_log( 'resource type is ' . $resource_type . ' and subresource types is ' . print_r( $subresource_types, true ) );
-
-			return $all_items;
+			return $mc_resource_items;
 		}
 		$subresource_types = $subresource_types[ $resource_type ];
 		foreach ( $subresource_types as $subresource_type ) {
 			$items = get_option( $this->parent_option_prefix . 'subresources_' . $resource_id . '_' . $subresource_type, array() );
 			if ( empty( $items ) || ! isset( $items[ $resource_type ][ $resource_id ][ $subresource_type ] ) ) {
-				return $all_items;
+				return $mc_resource_items;
 			}
 			$subresources = $items[ $resource_type ][ $resource_id ][ $subresource_type ];
 			$methods      = get_option( $this->parent_option_prefix . 'subresource_methods', array() );
 			if ( empty( $methods ) || empty( $subresources ) ) {
-				return $all_items;
+				return $mc_resource_items;
 			}
 			$methods = $methods[ $resource_type ][ $resource_id ][ $subresource_type ];
 			foreach ( $subresources as $subresource ) {
 				foreach ( $methods as $method ) {
 					$method_items = $this->get_all_items( $resource_type, $resource_id, $subresource_type, $subresource, $method );
 					foreach ( $method_items as $method_item ) {
-						$all_items[ $subresource_type . '_' . $subresource . '_' . $method . '_' . $method_item['id'] ] = $method_item;
+						$mc_resource_items[ $subresource_type . '_' . $subresource . '_' . $method . '_' . $method_item['id'] ] = $method_item;
 					} // End foreach().
 				} // End foreach().
 			} // End foreach().
 		} // End foreach().
-		return $all_items;
+		return $mc_resource_items;
 	}
 
 	/**
-	* Generate an array of MailChimp items that can be acted upon
+	* Generate an array of MailChimp items that can be acted upon. This doesn't need to check for the current $_GET['page'] because it is not called automatically.
 	*
 	* @param string $resource_type
 	* @param string $resource_id
@@ -528,25 +559,22 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 	*
 	*/
 	private function get_all_items( $resource_type, $resource_id, $subresource_type, $subresource, $method ) {
-		$options = array();
-		/*if ( ! isset( $_GET['page'] ) || $this->slug !== $_GET['page'] ) {
-			return $options;
-		}*/
+		$options   = array();
 		$all_items = get_option( $this->parent_option_prefix . 'items_' . $resource_id . '_' . $subresource_type . '_' . $subresource . '_' . $method, array() );
 		if ( empty( $all_items ) ) {
 			return $options;
 		}
-		$all_items = $all_items[ $resource_type ][ $resource_id ][ $subresource_type ];
-		$mc_items  = $this->parent->mailchimp->load( $resource_type . '/' . $resource_id . '/' . $subresource_type . '/' . $subresource . '/' . $method );
-		$key = $method;
-		if ( ! isset( $mc_items[ $key ] ) ) {
+		$all_items     = $all_items[ $resource_type ][ $resource_id ][ $subresource_type ];
+		$mc_items      = $this->parent->mailchimp->load( $resource_type . '/' . $resource_id . '/' . $subresource_type . '/' . $subresource . '/' . $method );
+		$mailchimp_key = $method;
+		if ( ! isset( $mc_items[ $mailchimp_key ] ) ) {
 			return $options;
 		}
 
 		if ( ! empty( $all_items ) ) {
 			foreach ( $all_items as $item ) {
-				$data_key         = array_search( $item, array_column( $mc_items[ $key ], 'id' ) );
-				$mc_data          = $mc_items[ $key ][ $data_key ];
+				$data_key         = array_search( $item, array_column( $mc_items[ $mailchimp_key ], 'id' ) );
+				$mc_data          = $mc_items[ $mailchimp_key ][ $data_key ];
 				$options[ $item ] = array(
 					'text'    => $mc_data['name'],
 					'id'      => $item,
