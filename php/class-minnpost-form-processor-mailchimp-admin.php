@@ -529,9 +529,9 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 	*/
 	private function get_all_items( $resource_type, $resource_id, $subresource_type, $subresource, $method ) {
 		$options = array();
-		if ( ! isset( $_GET['page'] ) || $this->slug !== $_GET['page'] ) {
+		/*if ( ! isset( $_GET['page'] ) || $this->slug !== $_GET['page'] ) {
 			return $options;
-		}
+		}*/
 		$all_items = get_option( $this->parent_option_prefix . 'items_' . $resource_id . '_' . $subresource_type . '_' . $subresource . '_' . $method, array() );
 		if ( empty( $all_items ) ) {
 			return $options;
