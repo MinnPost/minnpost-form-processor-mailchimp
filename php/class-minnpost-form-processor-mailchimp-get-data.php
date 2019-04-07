@@ -10,7 +10,7 @@ if ( ! class_exists( 'MinnPost_Form_Processor_MailChimp' ) ) {
 }
 
 /**
- * Rest API methods
+ * Get MailChimp Data
  */
 class MinnPost_Form_Processor_MailChimp_Get_Data {
 
