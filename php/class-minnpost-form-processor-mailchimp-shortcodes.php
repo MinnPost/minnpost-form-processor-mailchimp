@@ -45,6 +45,30 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 	}
 
 	/**
+	* Get the resource type for a shortcode
+	*
+	* @param string $shortcode
+	* @return string $resource_type
+	*
+	*/
+	private function get_resource_type( $shortcode = '' ) {
+		$resource_type = get_option( $this->option_prefix . $shortcode . '_resource_type', '' );
+		return $resource_type;
+	}
+
+	/**
+	* Get the resource ID for a shortcode
+	*
+	* @param string $shortcode
+	* @return string $resource_id
+	*
+	*/
+	private function get_resource_id( $shortcode = '' ) {
+		$resource_id = get_option( $this->option_prefix . $shortcode . '_resource_id', '' );
+		return $resource_id;
+	}
+
+	/**
 	* Add newsletter embed shortcode
 	* This manages the display settings for the newsletter form
 	*
@@ -56,38 +80,72 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		$html    = '';
 		$message = '';
 
-		$resource_type = get_option( $this->option_prefix . 'newsletter_form_resource_type', '' );
+		$shortcode = 'newsletter_form';
+
+		$resource_type = $this->get_resource_type( $shortcode );
 		if ( '' === $resource_type ) {
 			return $html;
 		}
 
-		$resource_id = get_option( $this->option_prefix . 'newsletter_form_resource_id', '' );
+		$resource_id = $this->get_resource_id( $shortcode );
 		if ( '' === $resource_id ) {
 			return $html;
 		}
-
-		$subresources = array();
 
 		if ( is_admin() ) {
 			return $html;
 		}
 		$form = shortcode_atts(
 			array(
-				'show_elements'   => '',
-				'hide_elements'   => '',
-				'confirm_message' => '',
-				'redirect_url'    => '',
-				'content'         => '',
-				'placement'       => '',
-				'groups'          => '',
+				'placement'        => '', // where this is used. fullpage, instory, or sidebar
+				'groups_available' => '', // mailchimp groups allowed. default (plugin settings), all, or array of group names
+				'show_elements'    => '', // title, description. default is based on placement
+				'hide_elements'    => '', // title, description. default is based on placement
+				'content_above'    => '', // used above form. default is empty.
+				'content_below'    => '', // used below form. default is empty.
+				'categories'       => '', // categories corresponding to groups. default is empty.
+				'confirm_message'  => '', // after submission. default should be in the plugin settings, but it can be customized for specific usage
+				'redirect_url'     => $this->get_current_url(), // if not ajax, form will go to this url.
 			),
 			$attributes
 		);
 
-		$form['user'] = wp_get_current_user();
+		// these are not shortcode attrs bc they can't be overridden
+		$form['user']   = wp_get_current_user();
+		$form['action'] = $shortcode;
 
-		if ( '' !== $form['subresources'] ) {
-			$form['subresources'] = array_map( 'trim', explode( ',', $form['subresources'] ) );
+		$resource_items = array();
+		// the shortcode has group names in it
+		if ( '' !== $form['groups_available'] ) {
+
+			$form['groups_available'] = array_map( 'trim', explode( ',', $form['groups_available'] ) );
+
+			$group_ids         = array();
+			$mc_resource_items = $this->get_data->get_mc_resource_items( $resource_type, $resource_id );
+			foreach ( $mc_resource_items as $key => $value ) {
+				$option = get_option( $this->option_prefix . $shortcode . '_' . $key . '_name_in_shortcode', '' );
+				if ( '' !== $option ) {
+					$group_ids[ $option ] = $value['id'];
+				}
+			}
+
+
+
+			foreach ( $form['groups_available'] as $group_name ) {
+				
+				if ( in_array( $group_name, array_keys( $group_ids ) ) ) {
+					error_log( 'the ' . $group_name . ' item is available' );
+				}
+			}
+
+			//
+
+			/*foreach ( $form['groups_available'] as $group_name ) {
+				error_log( 'group name is ' . $group_name );
+			}*/
+		} else {
+			// the shortcode does not have group names in it. use the defaults.
+			$form['groups_available'] = get_option( $this->option_prefix . $shortcode . '_form_default_mc_resource_items', array() );
 		}
 
 		if ( isset( $_GET['subscribe-message'] ) ) {
@@ -119,7 +177,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		}
 
 		// Generate a custom nonce value for the WordPress form submission
-		$form['newsletter_nonce'] = wp_create_nonce( 'mp_newsletter_form_nonce' );
+		$form['newsletter_nonce'] = wp_create_nonce( 'minnpost_form_processor_mailchimp_nonce' );
 
 		if ( '' !== $form['placement'] ) {
 			$html = $this->get_form_html( $form['placement'], 'shortcodes', $form );
@@ -129,7 +187,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		if ( '' !== $form['newsletter'] ) {
 			if ( 'dc' === $args['newsletter'] ) {
 				set_query_var( 'newsletter', 'dc' );
-				set_query_var( 'redirect_url', get_current_url() . '#form-newsletter-shortcode-' . $args['newsletter'] );
+				set_query_var( 'redirect_url', $form['redirect_url'] . '#form-newsletter-shortcode-' . $args['newsletter'] );
 				set_query_var( 'message', $message );
 				ob_start();
 				$file = get_template_part( 'inc/forms/newsletter', 'shortcode-dc' );
@@ -139,7 +197,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 			} elseif ( 'default' === $args['newsletter'] ) {
 				set_query_var( 'newsletter', 'default' );
 				set_query_var( 'newsletter_nonce', $newsletter_nonce );
-				set_query_var( 'redirect_url', get_current_url() );
+				set_query_var( 'redirect_url', $form['redirect_url'] );
 				set_query_var( 'message', $message );
 				ob_start();
 				$file = get_template_part( 'inc/forms/newsletter', 'shortcode' );
@@ -149,7 +207,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 			} elseif ( 'full' === $args['newsletter'] ) {
 				set_query_var( 'newsletter', 'full' );
 				set_query_var( 'newsletter_nonce', $newsletter_nonce );
-				set_query_var( 'redirect_url', get_current_url() );
+				set_query_var( 'redirect_url', $form['redirect_url'] );
 				set_query_var( 'message', $message );
 				ob_start();
 				$file = get_template_part( 'inc/forms/newsletter', 'full' );
@@ -159,7 +217,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 			} elseif ( 'full-dc' === $args['newsletter'] ) {
 				set_query_var( 'newsletter', 'full-dc' );
 				set_query_var( 'newsletter_nonce', $newsletter_nonce );
-				set_query_var( 'redirect_url', get_current_url() );
+				set_query_var( 'redirect_url', $form['redirect_url'] );
 				set_query_var( 'message', $message );
 				ob_start();
 				$file = get_template_part( 'inc/forms/newsletter', 'full-dc' );
@@ -170,7 +228,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		} else {
 			set_query_var( 'newsletter', 'email' );
 			set_query_var( 'newsletter_nonce', $newsletter_nonce );
-			set_query_var( 'redirect_url', get_current_url() );
+			set_query_var( 'redirect_url', $form['redirect_url'] );
 			set_query_var( 'message', $message );
 			set_query_var( 'confirm_message', $confirm_message );
 			ob_start();
@@ -311,6 +369,21 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		ob_end_clean();
 
 		return $html;
+	}
+
+	/**
+	 * Return the current URL
+	 *
+	 * @return string $current_url
+	 */
+	public function get_current_url() {
+		if ( is_page() || is_single() ) {
+			$current_url = wp_get_canonical_url();
+		} else {
+			global $wp;
+			$current_url = home_url( add_query_arg( array(), $wp->request ) );
+		}
+		return $current_url;
 	}
 
 }
