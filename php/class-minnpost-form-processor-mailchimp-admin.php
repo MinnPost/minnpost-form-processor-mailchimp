@@ -47,7 +47,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 	* Create the action hooks to create the admin page(s)
 	*
 	*/
-	public function add_actions() {
+	private function add_actions() {
 		if ( is_admin() ) {
 			add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
 			add_action( 'admin_menu', array( $this, 'create_admin_menu' ) );
