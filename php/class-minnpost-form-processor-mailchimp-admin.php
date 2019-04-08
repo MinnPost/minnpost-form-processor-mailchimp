@@ -736,6 +736,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 		$name         = $args['name'];
 		$overall_desc = $args['desc'];
 		$options      = get_option( $name, array() );
+		$html         = '<div class="checkboxes">';
 		foreach ( $args['items'] as $key => $value ) {
 			$text        = $value['text'];
 			$id          = $value['id'];
@@ -750,7 +751,8 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 					$checked = 'checked';
 				}
 			}
-			echo sprintf( '<div class="checkbox"><label><input type="%1$s" value="%2$s" name="%3$s[]" id="%4$s"%5$s>%6$s</label></div>',
+			$html .= sprintf(
+				'<div class="checkbox"><label><input type="%1$s" value="%2$s" name="%3$s[]" id="%4$s"%5$s>%6$s</label></div>',
 				esc_attr( $type ),
 				$field_value,
 				esc_attr( $name ),
@@ -759,16 +761,20 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 				esc_html( $text )
 			);
 			if ( '' !== $desc ) {
-				echo sprintf( '<p class="description">%1$s</p>',
+				$html .= sprintf(
+					'<p class="description">%1$s</p>',
 					esc_html( $desc )
 				);
 			}
 		}
 		if ( '' !== $overall_desc ) {
-			echo sprintf( '<p class="description">%1$s</p>',
+			$html .= sprintf(
+				'<p class="description">%1$s</p>',
 				esc_html( $overall_desc )
 			);
 		}
+		$html .= '</div>';
+		echo $html;
 	}
 
 	/**
