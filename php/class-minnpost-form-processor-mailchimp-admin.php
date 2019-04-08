@@ -349,6 +349,18 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 								'type'     => 'checkbox',
 							),
 						);
+						$settings[ $section . '_' . $key . '_categories' ]  = array(
+							'title'    => __( 'Categories', 'minnpost-form-processor-mailchimp' ),
+							'callback' => $callbacks['checkboxes'],
+							'page'     => $page,
+							'section'  => $section,
+							'class'    => 'minnpost-form-processor-mailchimp-group minnpost-form-processor-mailchimp-group-' . sanitize_title( $mc_resource_item['text'] ) . ' minnpost-form-processor-mailchimp-categories',
+							'args'     => array(
+								'desc'  => __( 'If a shortcode has categories associated with it and they match these categories, the user settings will include this item.', 'minnpost-form-processor-mailchimp' ),
+								'type'  => 'select',
+								'items' => $this->get_categories(),
+							),
+						);
 
 					} // End foreach().
 				} // End if().
