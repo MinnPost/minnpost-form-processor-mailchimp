@@ -604,6 +604,35 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 	}
 
 	/**
+	* Generate an array of WordPress categories
+	*
+	* @return array $options
+	*
+	*/
+	private function get_categories() {
+		$options = array();
+		if ( ! isset( $_GET['page'] ) || $this->slug !== $_GET['page'] ) {
+			return $options;
+		}
+		$categories = get_categories(
+			array(
+				'orderby' => 'name',
+				'order'   => 'ASC',
+			)
+		);
+		foreach ( $categories as $category ) {
+			$options[ $category->term_id ] = array(
+				'text'    => $category->name,
+				'id'      => $category->term_id,
+				'value'   => $category->term_id,
+				'desc'    => '',
+				'default' => '',
+			);
+		}
+		return $options;
+	}
+
+	/**
 	* Default display for <input> fields
 	*
 	* @param array $args
