@@ -34,6 +34,84 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	}
 
 	/**
+	* Generate an array of valid MailChimp items available to the given resource. This is used to store settings about each item. Note: here we check the $_GET['page'] value and the global $pagenow value. We don't use get_current_screen() here because it returns an error.
+	*
+	* @param string $resource_type
+	* @param string $resource_id
+	* @return array $mc_resource_items
+	*
+	*/
+	public function get_mc_resource_items( $resource_type, $resource_id ) {
+		$mc_resource_items = array();
+		$subresource_types = get_option( $this->parent_option_prefix . 'subresource_types_' . $resource_type, array() );
+		if ( empty( $subresource_types ) || ! isset( $subresource_types[ $resource_type ] ) ) {
+			return $mc_resource_items;
+		}
+		$subresource_types = $subresource_types[ $resource_type ];
+		foreach ( $subresource_types as $subresource_type ) {
+			$items = get_option( $this->parent_option_prefix . 'subresources_' . $resource_id . '_' . $subresource_type, array() );
+			if ( empty( $items ) || ! isset( $items[ $resource_type ][ $resource_id ][ $subresource_type ] ) ) {
+				return $mc_resource_items;
+			}
+			$subresources = $items[ $resource_type ][ $resource_id ][ $subresource_type ];
+			$methods      = get_option( $this->parent_option_prefix . 'subresource_methods', array() );
+			if ( empty( $methods ) || empty( $subresources ) ) {
+				return $mc_resource_items;
+			}
+			$methods = $methods[ $resource_type ][ $resource_id ][ $subresource_type ];
+			foreach ( $subresources as $subresource ) {
+				foreach ( $methods as $method ) {
+					$method_items = $this->get_all_items( $resource_type, $resource_id, $subresource_type, $subresource, $method );
+					foreach ( $method_items as $method_item ) {
+						$mc_resource_items[ $subresource_type . '_' . $subresource . '_' . $method . '_' . $method_item['id'] ] = $method_item;
+					} // End foreach().
+				} // End foreach().
+			} // End foreach().
+		} // End foreach().
+		return $mc_resource_items;
+	}
+
+	/**
+	* Generate an array of MailChimp items that can be acted upon. This doesn't need to check for the current $_GET['page'] because it is not called automatically.
+	*
+	* @param string $resource_type
+	* @param string $resource_id
+	* @param string $subresource_type
+	* @param string $subresource
+	* @param string $method
+	* @return array $options
+	*
+	*/
+	private function get_all_items( $resource_type, $resource_id, $subresource_type, $subresource, $method ) {
+		$options   = array();
+		$all_items = get_option( $this->parent_option_prefix . 'items_' . $resource_id . '_' . $subresource_type . '_' . $subresource . '_' . $method, array() );
+		if ( empty( $all_items ) ) {
+			return $options;
+		}
+		$all_items     = $all_items[ $resource_type ][ $resource_id ][ $subresource_type ];
+		$mc_items      = $this->parent->mailchimp->load( $resource_type . '/' . $resource_id . '/' . $subresource_type . '/' . $subresource . '/' . $method );
+		$mailchimp_key = $method;
+		if ( ! isset( $mc_items[ $mailchimp_key ] ) ) {
+			return $options;
+		}
+
+		if ( ! empty( $all_items ) ) {
+			foreach ( $all_items as $item ) {
+				$data_key         = array_search( $item, array_column( $mc_items[ $mailchimp_key ], 'id' ), true );
+				$mc_data          = $mc_items[ $mailchimp_key ][ $data_key ];
+				$options[ $item ] = array(
+					'text'    => $mc_data['name'],
+					'id'      => $item,
+					'value'   => $item,
+					'desc'    => '',
+					'default' => '',
+				);
+			}
+		}
+		return $options;
+	}
+
+	/**
 	* Get a user's information from MailChimp
 	*
 	* @param string $resource_id
