@@ -311,6 +311,19 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 
 				$mc_resource_items = $this->get_mc_resource_items( $resource_type, $resource_id );
 
+				$settings[ $section . '_default_mc_resource_items' ] = array(
+					'title'    => __( 'Default MailChimp items', 'minnpost-form-processor-mailchimp' ),
+					'callback' => $callbacks['checkboxes'],
+					'page'     => $page,
+					'section'  => $section,
+					'args'     => array(
+						'desc'     => __( 'If not otherwise specified, these will be the default settings given to users.', 'minnpost-form-processor-mailchimp' ),
+						'constant' => '',
+						'type'     => 'select',
+						'items'    => $this->default_item_choices( $mc_resource_items ),
+					),
+				);
+
 				if ( ! empty( $mc_resource_items ) ) {
 					foreach ( $mc_resource_items as $key => $mc_resource_item ) {
 						$settings[ $section . '_' . $key . '_title' ]       = array(
@@ -337,18 +350,6 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 								'type'     => 'text',
 							),
 						);
-						$settings[ $section . '_' . $key . '_is_default' ]  = array(
-							'title'    => __( 'Is default', 'minnpost-form-processor-mailchimp' ),
-							'callback' => $callbacks['text'],
-							'page'     => $page,
-							'section'  => $section,
-							'class'    => 'minnpost-form-processor-mailchimp-group minnpost-form-processor-mailchimp-group-' . sanitize_title( $mc_resource_item['text'] ),
-							'args'     => array(
-								'desc'     => __( 'If this form is submitted without user settings, the user settings will include this item by default.', 'minnpost-form-processor-mailchimp' ),
-								'constant' => '',
-								'type'     => 'checkbox',
-							),
-						);
 						$settings[ $section . '_' . $key . '_categories' ]  = array(
 							'title'    => __( 'Categories', 'minnpost-form-processor-mailchimp' ),
 							'callback' => $callbacks['checkboxes'],
@@ -361,7 +362,6 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 								'items' => $this->get_categories(),
 							),
 						);
-
 					} // End foreach().
 				} // End if().
 			} // End foreach().
@@ -628,6 +628,32 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 				'desc'    => '',
 				'default' => '',
 			);
+		}
+		return $options;
+	}
+
+	/**
+	* Generate an array of choices for the default items associated with this shortcode.
+	*
+	* @param array $mc_resource_items
+	* @return array $options
+	*
+	*/
+	private function default_item_choices( $mc_resource_items ) {
+		$options = array();
+		if ( ! isset( $_GET['page'] ) || $this->slug !== $_GET['page'] ) {
+			return $options;
+		}
+		if ( ! empty( $mc_resource_items ) ) {
+			foreach ( $mc_resource_items as $item ) {
+				$options[ $item['id'] ] = array(
+					'text'    => $item['text'],
+					'id'      => $item['id'],
+					'value'   => $item['id'],
+					'desc'    => '',
+					'default' => '',
+				);
+			}
 		}
 		return $options;
 	}
