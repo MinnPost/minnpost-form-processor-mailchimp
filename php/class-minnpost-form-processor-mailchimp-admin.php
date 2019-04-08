@@ -18,6 +18,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 	public $parent_option_prefix;
 	public $version;
 	public $slug;
+	public $get_data;
 	public $plugin_file;
 
 	public $parent;
@@ -31,6 +32,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 		$this->parent_option_prefix = minnpost_form_processor_mailchimp()->parent_option_prefix;
 		$this->version              = minnpost_form_processor_mailchimp()->version;
 		$this->slug                 = minnpost_form_processor_mailchimp()->slug;
+		$this->get_data             = minnpost_form_processor_mailchimp()->get_data;
 		$this->plugin_file          = minnpost_form_processor_mailchimp()->plugin_file;
 
 		$this->parent = minnpost_form_processor_mailchimp()->parent;
@@ -534,73 +536,8 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 		if ( ( 'options.php' !== $pagenow ) && ( ! isset( $_GET['page'] ) || $this->slug !== $_GET['page'] ) ) {
 			return $mc_resource_items;
 		}
-
-		$subresource_types = get_option( $this->parent_option_prefix . 'subresource_types_' . $resource_type, array() );
-		if ( empty( $subresource_types ) || ! isset( $subresource_types[ $resource_type ] ) ) {
-			return $mc_resource_items;
-		}
-		$subresource_types = $subresource_types[ $resource_type ];
-		foreach ( $subresource_types as $subresource_type ) {
-			$items = get_option( $this->parent_option_prefix . 'subresources_' . $resource_id . '_' . $subresource_type, array() );
-			if ( empty( $items ) || ! isset( $items[ $resource_type ][ $resource_id ][ $subresource_type ] ) ) {
-				return $mc_resource_items;
-			}
-			$subresources = $items[ $resource_type ][ $resource_id ][ $subresource_type ];
-			$methods      = get_option( $this->parent_option_prefix . 'subresource_methods', array() );
-			if ( empty( $methods ) || empty( $subresources ) ) {
-				return $mc_resource_items;
-			}
-			$methods = $methods[ $resource_type ][ $resource_id ][ $subresource_type ];
-			foreach ( $subresources as $subresource ) {
-				foreach ( $methods as $method ) {
-					$method_items = $this->get_all_items( $resource_type, $resource_id, $subresource_type, $subresource, $method );
-					foreach ( $method_items as $method_item ) {
-						$mc_resource_items[ $subresource_type . '_' . $subresource . '_' . $method . '_' . $method_item['id'] ] = $method_item;
-					} // End foreach().
-				} // End foreach().
-			} // End foreach().
-		} // End foreach().
+		$mc_resource_items = $this->get_data->get_mc_resource_items( $resource_type, $resource_id );
 		return $mc_resource_items;
-	}
-
-	/**
-	* Generate an array of MailChimp items that can be acted upon. This doesn't need to check for the current $_GET['page'] because it is not called automatically.
-	*
-	* @param string $resource_type
-	* @param string $resource_id
-	* @param string $subresource_type
-	* @param string $subresource
-	* @param string $method
-	* @return array $options
-	*
-	*/
-	private function get_all_items( $resource_type, $resource_id, $subresource_type, $subresource, $method ) {
-		$options   = array();
-		$all_items = get_option( $this->parent_option_prefix . 'items_' . $resource_id . '_' . $subresource_type . '_' . $subresource . '_' . $method, array() );
-		if ( empty( $all_items ) ) {
-			return $options;
-		}
-		$all_items     = $all_items[ $resource_type ][ $resource_id ][ $subresource_type ];
-		$mc_items      = $this->parent->mailchimp->load( $resource_type . '/' . $resource_id . '/' . $subresource_type . '/' . $subresource . '/' . $method );
-		$mailchimp_key = $method;
-		if ( ! isset( $mc_items[ $mailchimp_key ] ) ) {
-			return $options;
-		}
-
-		if ( ! empty( $all_items ) ) {
-			foreach ( $all_items as $item ) {
-				$data_key         = array_search( $item, array_column( $mc_items[ $mailchimp_key ], 'id' ) );
-				$mc_data          = $mc_items[ $mailchimp_key ][ $data_key ];
-				$options[ $item ] = array(
-					'text'    => $mc_data['name'],
-					'id'      => $item,
-					'value'   => $item,
-					'desc'    => '',
-					'default' => '',
-				);
-			}
-		}
-		return $options;
 	}
 
 	/**

@@ -18,6 +18,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 	public $parent_option_prefix;
 	public $version;
 	public $slug;
+	public $get_data;
 
 	/**
 	* Constructor which sets up shortcodes
@@ -28,6 +29,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		$this->parent_option_prefix = minnpost_form_processor_mailchimp()->parent_option_prefix;
 		$this->version              = minnpost_form_processor_mailchimp()->version;
 		$this->slug                 = minnpost_form_processor_mailchimp()->slug;
+		$this->get_data             = minnpost_form_processor_mailchimp()->get_data;
 
 		add_action( 'plugins_loaded', array( $this, 'add_actions' ) );
 
