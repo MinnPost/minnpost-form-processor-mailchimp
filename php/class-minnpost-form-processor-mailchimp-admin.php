@@ -328,7 +328,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 
 				if ( ! empty( $mc_resource_items ) ) {
 					foreach ( $mc_resource_items as $key => $mc_resource_item ) {
-						$settings[ $section . '_' . $key . '_title' ]       = array(
+						$settings[ $section . '_' . $key . '_title' ]             = array(
 							'title'    => __( 'Title', 'minnpost-form-processor-mailchimp' ),
 							'callback' => $callbacks['text'],
 							'page'     => $page,
@@ -340,7 +340,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 								'type'     => 'text',
 							),
 						);
-						$settings[ $section . '_' . $key . '_description' ] = array(
+						$settings[ $section . '_' . $key . '_description' ]       = array(
 							'title'    => __( 'Description', 'minnpost-form-processor-mailchimp' ),
 							'callback' => $callbacks['textarea'],
 							'page'     => $page,
@@ -352,7 +352,19 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 								'type'     => 'text',
 							),
 						);
-						$settings[ $section . '_' . $key . '_categories' ]  = array(
+						$settings[ $section . '_' . $key . '_name_in_shortcode' ] = array(
+							'title'    => __( 'Shortcode name', 'minnpost-form-processor-mailchimp' ),
+							'callback' => $callbacks['text'],
+							'page'     => $page,
+							'section'  => $section,
+							'class'    => 'minnpost-form-processor-mailchimp-group minnpost-form-processor-mailchimp-group-' . sanitize_title( $mc_resource_item['text'] ),
+							'args'     => array(
+								'desc'     => __( 'When a shortcode contains groups in its attribute list, this value can be used to specify this item.', 'minnpost-form-processor-mailchimp' ),
+								'constant' => '',
+								'type'     => 'text',
+							),
+						);
+						$settings[ $section . '_' . $key . '_categories' ]        = array(
 							'title'    => __( 'Categories', 'minnpost-form-processor-mailchimp' ),
 							'callback' => $callbacks['checkboxes'],
 							'page'     => $page,
