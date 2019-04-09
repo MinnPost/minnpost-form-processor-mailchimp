@@ -19,7 +19,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 	public $version;
 	public $slug;
 	public $get_data;
-	public $parent;
+	//public $parent;
 
 	/**
 	* Constructor which sets up post data processing
@@ -30,7 +30,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 		$this->version              = minnpost_form_processor_mailchimp()->version;
 		$this->slug                 = minnpost_form_processor_mailchimp()->slug;
 		$this->get_data             = minnpost_form_processor_mailchimp()->get_data;
-		$this->parent               = minnpost_form_processor_mailchimp()->parent;
+		//$this->parent               = minnpost_form_processor_mailchimp()->parent;
 
 		$this->add_actions();
 	}
@@ -145,39 +145,6 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 				}
 			}*/
 
-			/*$params['body'] = array(
-				'email_address' => $email,
-				'status' => $status,
-				'merge_fields[FNAME]' => $first_name,
-				'merge_fields[LNAME]' => $last_name,
-			);
-			foreach ( $all_newsletters as $key => $value ) {
-				$params['body'][ 'interests[' . $key . ']' ] = 'false';
-			}
-			foreach ( $all_occasional_emails as $key => $value ) {
-				$params['body'][ 'interests[' . $key . ']' ] = 'false';
-			}
-
-			// add the groups the user actually wants
-			if ( ! empty( $newsletters ) ) {
-				foreach ( $newsletters as $key => $value ) {
-					$params['body'][ 'interests[' . $value . ']' ] = 'true';
-				}
-			}
-			if ( ! empty( $occasional_emails ) ) {
-				foreach ( $occasional_emails as $key => $value ) {
-					$params['body'][ 'interests[' . $value . ']' ] = 'true';
-				}
-			}
-
-			$params['method'] = $http_method;
-			$params['timeout'] = 30;
-			$params['sslverify'] = false;
-
-			$rest_url = site_url( '/wp-json/form-processor-mc/v1/lists/3631302e9c/members/?api_key=0334e149b481a2391cfdd428238358a9-us1' );
-			$result = wp_remote_request( $rest_url, $params );*/
-
-			//error_log( 'result is ' . print_r( $result, true ) );
 		} else {
 			if ( isset( $_GET['redirect_url'] ) && '' !== $_GET['redirect_url'] ) {
 				$redirect_url = wp_validate_redirect( $_GET['redirect_url'] );
