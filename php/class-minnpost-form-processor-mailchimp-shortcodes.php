@@ -41,7 +41,6 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 	*/
 	public function add_actions() {
 		add_shortcode( 'newsletter_form', array( $this, 'newsletter_form' ) );
-		add_shortcode( 'custom-account-preferences-form', array( $this, 'account_preferences_form' ), 10, 2 );
 	}
 
 	/**
@@ -236,99 +235,6 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 			$html = ob_get_contents();
 			ob_end_clean();
 			return $html;
-		}
-	}
-
-	/**
-	 * A shortcode for rendering the form used to change a logged in user's preferences
-	 *
-	 * @param  array   $attributes  Shortcode attributes.
-	 * @param  string  $content     The text content for shortcode.
-	 *
-	 * @return string  The shortcode output
-	 */
-	public function account_preferences_form( $attributes, $content = null ) {
-
-		if ( ! is_array( $attributes ) ) {
-			$attributes = array();
-		}
-
-		$user_id = get_query_var( 'users', '' );
-		if ( isset( $_GET['user_id'] ) ) {
-			$user_id = esc_attr( $_GET['user_id'] );
-		} else {
-			$user_id = get_current_user_id();
-		}
-
-		$can_access = false;
-		if ( class_exists( 'User_Account_Management' ) ) {
-			$account_management = User_Account_Management::get_instance();
-			$can_access         = $account_management->check_user_permissions( $user_id );
-		} else {
-			return;
-		}
-		// if we are on the current user, or if this user can edit users
-		if ( false === $can_access ) {
-			return __( 'You do not have permission to access this page.', 'minnpost-form-processor-mailchimp' );
-		}
-
-		// this functionality is mostly from https://pippinsplugins.com/change-password-form-short-code/
-		// we should use it for this page as well, unless and until it becomes insufficient
-
-		$attributes['current_url'] = get_current_url();
-		$attributes['redirect']    = $attributes['current_url'];
-
-		if ( ! is_user_logged_in() ) {
-			return __( 'You are not signed in.', 'minnpost-form-processor-mailchimp' );
-		} else {
-			//$attributes['login'] = rawurldecode( $_REQUEST['login'] );
-
-			// translators: instructions on top of the form
-			$attributes['instructions'] = sprintf( '<p class="a-form-instructions">' . esc_html__( 'If you have set up reading or email preferences, you can update them below.', 'minnpost-form-processor-mailchimp' ) . '</p>' );
-
-			// Error messages
-			$errors = array();
-			if ( isset( $_REQUEST['errors'] ) ) {
-				$error_codes = explode( ',', $_REQUEST['errors'] );
-
-				foreach ( $error_codes as $code ) {
-					$errors[] = $account_management->get_error_message( $code );
-				}
-			}
-			$attributes['errors'] = $errors;
-			if ( isset( $user_id ) && '' !== $user_id ) {
-				$attributes['user'] = get_userdata( $user_id );
-			} else {
-				$attributes['user'] = wp_get_current_user();
-			}
-			$attributes['user_meta'] = get_user_meta( $attributes['user']->ID );
-
-			// todo: this should probably be in the database somewhere
-			$attributes['reading_topics'] = array(
-				'Arts & Culture'         => __( 'Arts & Culture', 'minnpost-form-processor-mailchimp' ),
-				'Economy'                => __( 'Economy', 'minnpost-form-processor-mailchimp' ),
-				'Education'              => __( 'Education', 'minnpost-form-processor-mailchimp' ),
-				'Environment'            => __( 'Environment', 'minnpost-form-processor-mailchimp' ),
-				'Greater Minnesota news' => __( 'Greater Minnesota news', 'minnpost-form-processor-mailchimp' ),
-				'Health'                 => __( 'Health', 'minnpost-form-processor-mailchimp' ),
-				'MinnPost announcements' => __( 'MinnPost announcements', 'minnpost-form-processor-mailchimp' ),
-				'Opinion/Commentary'     => __( 'Opinion/Commentary', 'minnpost-form-processor-mailchimp' ),
-				'Politics & Policy'      => __( 'Politics & Policy', 'minnpost-form-processor-mailchimp' ),
-				'Sports'                 => __( 'Sports', 'minnpost-form-processor-mailchimp' ),
-			);
-
-			$attributes['user_reading_topics'] = array();
-			if ( isset( $attributes['user_meta']['_reading_topics'] ) ) {
-				if ( is_array( maybe_unserialize( $attributes['user_meta']['_reading_topics'][0] ) ) ) {
-					$topics = maybe_unserialize( $attributes['user_meta']['_reading_topics'][0] );
-					foreach ( $topics as $topic ) {
-						$attributes['user_reading_topics'][] = $topic;
-					}
-				}
-			}
-
-			return $account_management->get_form_html( 'account-preferences-form', 'front-end', $attributes );
-
 		}
 	}
 
