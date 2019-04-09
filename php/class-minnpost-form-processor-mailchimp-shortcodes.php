@@ -98,7 +98,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		$form = shortcode_atts(
 			array(
 				'placement'        => '', // where this is used. fullpage, instory, or sidebar
-				'groups_available' => '', // mailchimp groups allowed. default (plugin settings), all, or array of group names
+				'groups_available' => '', // mailchimp groups to include for the user. default (plugin settings), all, or array of group names. this should be whatever the form is making available to the user. if there are groups the user is not choosing in this instance, they should be left out.
 				'show_elements'    => '', // title, description. default is based on placement
 				'hide_elements'    => '', // title, description. default is based on placement
 				'content_above'    => '', // used above form. default is empty.
@@ -114,10 +114,9 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		$form['user']   = wp_get_current_user();
 		$form['action'] = $shortcode;
 
-		$resource_items = array();
+		$shortcode_resource_items = array();
 		// the shortcode has group names in it
 		if ( '' !== $form['groups_available'] ) {
-
 			$form['groups_available'] = array_map( 'trim', explode( ',', $form['groups_available'] ) );
 
 			$group_ids         = array();
@@ -128,26 +127,22 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 					$group_ids[ $option ] = $value['id'];
 				}
 			}
-
-
-
 			foreach ( $form['groups_available'] as $group_name ) {
-				
-				if ( in_array( $group_name, array_keys( $group_ids ) ) ) {
-					error_log( 'the ' . $group_name . ' item is available' );
+				$key = array_search( $group_name, array_keys( $group_ids ), true );
+				if ( false !== $key ) {
+					$shortcode_resource_items[] = $group_ids[ $group_name ];
 				}
 			}
-
-			//
-
-			/*foreach ( $form['groups_available'] as $group_name ) {
-				error_log( 'group name is ' . $group_name );
-			}*/
 		} else {
 			// the shortcode does not have group names in it. use the defaults.
-			$form['groups_available'] = get_option( $this->option_prefix . $shortcode . '_form_default_mc_resource_items', array() );
+			$shortcode_resource_items = get_option( $this->option_prefix . $shortcode . '_default_mc_resource_items', array() );
 		}
 
+		if ( ! empty( $shortcode_resource_items ) ) {
+			$form['groups_available'] = $shortcode_resource_items;
+		}
+
+		$message = '';
 		if ( isset( $_GET['subscribe-message'] ) ) {
 			if ( '' === $args['confirm_message'] ) {
 				switch ( $_GET['subscribe-message'] ) {
@@ -169,11 +164,16 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 			}
 			$message = '<div class="m-form-message m-form-message-info">' . $message . '</div>';
 		} else {
-			$confirm_message = $form['confirm_message'];
+			$message = $form['confirm_message'];
+		}
+		set_query_var( 'message', $message );
+
+		if ( '' !== $form['content_above'] ) {
+			set_query_var( 'content_above', wp_kses_post( wpautop( $form['content_above'] ) ) );
 		}
 
-		if ( '' !== $form['content'] ) {
-			set_query_var( 'content', wp_kses_post( wpautop( $form['content'] ) ) );
+		if ( '' !== $form['content_below'] ) {
+			set_query_var( 'content_below', wp_kses_post( wpautop( $form['content_below'] ) ) );
 		}
 
 		// Generate a custom nonce value for the WordPress form submission
