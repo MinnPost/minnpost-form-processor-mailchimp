@@ -5,19 +5,26 @@
  */
 ?>
 <form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" class="m-form m-form-instory">
-	<input type="hidden" name="mp_newsletter_form_nonce" value="<?php echo $form['newsletter_nonce']; ?>">
+	<input type="hidden" name="minnpost_form_processor_mailchimp_nonce" value="<?php echo $form['newsletter_nonce']; ?>">
 	<?php if ( 0 !== $form['user'] ) : ?>
 		<input type="hidden" name="user_id" value="<?php echo $form['user']->ID; ?>">
 		<input type="hidden" name="first_name" value="<?php echo $form['user']->first_name; ?>">
 		<input type="hidden" name="last_name" value="<?php echo $form['user']->last_name; ?>">
 	<?php endif; ?>
-	<input type="hidden" name="action" value="newsletter_shortcode">
+	<?php if ( '' !== $form['action'] ) : ?>
+		<input type="hidden" name="action" value="<?php echo esc_attr( $form['action'] ); ?>">
+	<?php endif; ?>
 	<?php if ( '' !== $form['redirect_url'] ) : ?>
 		<input type="hidden" name="redirect_url" value="<?php echo esc_url( $form['redirect_url'] ); ?>">
 	<?php endif; ?>
-	<?php if ( ! empty( $form['lists'] ) ) : ?>
-		<input type="hidden" name="newsletters_available[]" value="d89249e207">
-		<input type="hidden" name="_newsletters[]" value="d89249e207">
+	<?php if ( ! empty( $form['groups_available'] ) ) : ?>
+		<?php if ( is_array( $form['groups_available'] ) ) : ?>
+				<?php foreach ( $form['groups_available'] as $group ) : ?>
+					<input type="hidden" name="groups_available[]" value="<?php echo esc_attr( $group ); ?>">
+				<?php endforeach; ?>
+		<?php else : ?>
+			<input type="hidden" name="groups_available" value="<?php echo esc_attr( $form['groups_available'] ); ?>">
+		<?php endif; ?>
 	<?php endif; ?>
 	<?php echo wpautop( $content ); ?>
 	<?php echo $message; ?>
