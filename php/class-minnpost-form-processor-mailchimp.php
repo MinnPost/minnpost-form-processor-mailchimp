@@ -72,6 +72,12 @@ class MinnPost_Form_Processor_MailChimp {
 
 	/**
 	* @var object
+	* Methods to handle post data
+	*/
+	public $post_data;
+
+	/**
+	* @var object
 	* Administrative interface
 	*/
 	public $admin;
@@ -110,6 +116,9 @@ class MinnPost_Form_Processor_MailChimp {
 
 		// Shortcodes
 		$this->shortcodes = new MinnPost_Form_Processor_MailChimp_Shortcodes();
+
+		// Handle post data
+		$this->post_data = new MinnPost_Form_Processor_MailChimp_Post_Data();
 
 		// REST API
 		$this->rest = new MinnPost_Form_Processor_MailChimp_Rest();
