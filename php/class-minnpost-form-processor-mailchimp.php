@@ -53,6 +53,12 @@ class MinnPost_Form_Processor_MailChimp {
 	public $slug;
 
 	/**
+	 * User subresource type
+	 * @var string
+	 */
+	public $user_subresource_type;
+
+	/**
 	* @var object
 	* Load the MailChimp API wrapper from the parent
 	*/
@@ -82,10 +88,6 @@ class MinnPost_Form_Processor_MailChimp {
 	*/
 	public $admin;
 
-
-	private $resource_type;
-	private $resource_id;
-	private $user_subresource_type;
 	private $list_subresource_type;
 
 	/**
@@ -100,9 +102,10 @@ class MinnPost_Form_Processor_MailChimp {
 		$this->file          = $file;
 		$this->option_prefix = 'minnpost_form_processor_mailchimp_';
 		// parent plugin
-		$this->parent               = $this->load_parent();
-		$this->parent_option_prefix = $this->parent->option_prefix;
-		$this->slug                 = 'minnpost-form-processor-mailchimp';
+		$this->parent                = $this->load_parent();
+		$this->parent_option_prefix  = $this->parent->option_prefix;
+		$this->slug                  = 'minnpost-form-processor-mailchimp';
+		$this->user_subresource_type = 'members';
 
 	}
 
