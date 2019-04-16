@@ -39,7 +39,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 
 		$this->tabs = $this->get_admin_tabs();
 
-		$this->list_member_statuses = array( 'subscribed', 'unsubscribed', 'cleaned', 'pending' );
+		$this->list_user_statuses = array( 'subscribed', 'unsubscribed', 'cleaned', 'pending' );
 
 		$this->add_actions();
 
@@ -297,8 +297,20 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 
 				if ( 'lists' === $resource_type ) {
 					//list_member_statuses
-					$settings[ $section . '_default_member_status' ] = array(
-						'title'    => __( 'Default member status', 'minnpost-form-processor-mailchimp' ),
+					$settings[ $section . '_subresource_type' ] = array(
+						'title'    => __( 'MailChimp object for users', 'minnpost-form-processor-mailchimp' ),
+						'callback' => $callbacks['select'],
+						'page'     => $page,
+						'section'  => $section,
+						'args'     => array(
+							'desc'     => __( 'When subscribing users to this list, the plugin will use this object.', 'minnpost-form-processor-mailchimp' ),
+							'constant' => '',
+							'type'     => 'select',
+							'items'    => $this->get_subresource_types( $resource_type ),
+						),
+					);
+					$settings[ $section . '_default_user_status' ] = array(
+						'title'    => __( 'Default status for new users', 'minnpost-form-processor-mailchimp' ),
 						'callback' => $callbacks['select'],
 						'page'     => $page,
 						'section'  => $section,
@@ -306,12 +318,25 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 							'desc'     => __( 'When subscribing users to this list, unless otherwise specified they will be added with this status.', 'minnpost-form-processor-mailchimp' ),
 							'constant' => '',
 							'type'     => 'select',
-							'items'    => $this->get_member_statuses(),
+							'items'    => $this->get_user_statuses(),
 						),
 					);
 				} // End if().
 
 				$mc_resource_items = $this->get_mc_resource_items( $resource_type, $resource_id );
+
+				$settings[ $section . '_mc_resource_item_type' ] = array(
+					'title'    => __( 'Default MailChimp item type', 'minnpost-form-processor-mailchimp' ),
+					'callback' => $callbacks['select'],
+					'page'     => $page,
+					'section'  => $section,
+					'args'     => array(
+						'desc'     => __( 'This is the field are assigning to users in MailChimp.', 'minnpost-form-processor-mailchimp' ),
+						'constant' => '',
+						'type'     => 'select',
+						'items'    => $this->default_item_types( $mc_resource_items ),
+					),
+				);
 
 				$settings[ $section . '_default_mc_resource_items' ] = array(
 					'title'    => __( 'Default MailChimp items', 'minnpost-form-processor-mailchimp' ),
@@ -511,17 +536,41 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 	}
 
 	/**
-	* Generate an array of member status fields
+	* Generate an array of subresource types
 	*
 	* @return array $options
 	*
 	*/
-	private function get_member_statuses() {
+	private function get_subresource_types( $resource_type ) {
 		$options = array();
 		if ( ! isset( $_GET['page'] ) || $this->slug !== $_GET['page'] ) {
 			return $options;
 		}
-		$statuses = $this->list_member_statuses;
+		$subresource_types = $this->get_data->get_mc_subresource_types( $resource_type );
+		foreach ( $subresource_types as $type ) {
+			$options[ $type ] = array(
+				'text'    => $type,
+				'id'      => $type,
+				'value'   => $type,
+				'desc'    => '',
+				'default' => '',
+			);
+		}
+		return $options;
+	}
+
+	/**
+	* Generate an array of user status fields
+	*
+	* @return array $options
+	*
+	*/
+	private function get_user_statuses() {
+		$options = array();
+		if ( ! isset( $_GET['page'] ) || $this->slug !== $_GET['page'] ) {
+			return $options;
+		}
+		$statuses = $this->list_user_statuses;
 		foreach ( $statuses as $status ) {
 			$options[ $status ] = array(
 				'text'    => $status,
@@ -577,6 +626,39 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 				'desc'    => '',
 				'default' => '',
 			);
+		}
+		return $options;
+	}
+
+	/**
+	* Generate an array of choices for the default item types associated with this shortcode.
+	*
+	* @param array $mc_resource_items
+	* @return array $options
+	*
+	*/
+	private function default_item_types( $mc_resource_items ) {
+		$options = array();
+		if ( ! isset( $_GET['page'] ) || $this->slug !== $_GET['page'] ) {
+			return $options;
+		}
+		if ( ! empty( $mc_resource_items ) ) {
+			foreach ( $mc_resource_items as $key => $item ) {
+				$levels = explode( '_', $key );
+				if ( in_array( $item['id'], array_values( $levels ), true ) ) {
+					end( $levels );
+					$type = prev( $levels );
+				} else {
+					continue;
+				}
+				$options[ $type ] = array(
+					'text'    => $type,
+					'id'      => $type,
+					'value'   => $type,
+					'desc'    => '',
+					'default' => '',
+				);
+			}
 		}
 		return $options;
 	}
