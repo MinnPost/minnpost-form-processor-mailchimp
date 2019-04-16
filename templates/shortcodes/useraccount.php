@@ -29,7 +29,13 @@
 			<?php if ( isset( $category['contains'] ) ) : ?>
 				<div class="checkboxes">
 					<?php foreach ( $category[ $category['contains'] ] as $item ) : ?>
-						<?php $checked = isset( $item['default'] ) ? ' checked' : ''; ?>
+						<?php
+						if ( true === $item['default'] ) {
+							$checked = ' checked';
+						} else {
+							$checked = '';
+						}
+						?>
 						<label><input name="groups_submitted[]" type="checkbox" value="<?php echo $item['id']; ?>"<?php echo $checked; ?>><?php echo $item['name']; ?></label>
 					<?php endforeach; ?>
 				</div>
