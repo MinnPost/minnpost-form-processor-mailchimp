@@ -155,6 +155,218 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	}
 
 	/**
+	* Get available groups based on the shortcode settings
+	*
+	* @param string $shortcode
+	* @param string $resource_type
+	* @param string $resource_id
+	* @param array $groups_available
+	* @param string $placement
+	* @return array $groups_available
+	*/
+	public function get_shortcode_groups( $shortcode, $resource_type, $resource_id, $groups_available, $placement = '', $user = 0 ) {
+		$shortcode_resource_items = array();
+		$default_resource_items   = get_option( $this->option_prefix . $shortcode . '_default_mc_resource_items', array() );
+		// the shortcode has group names in it, in a csv format
+		if ( ! empty( $groups_available ) && is_array( $groups_available ) ) {
+			$groups_available = array_map( 'trim', explode( ',', $groups_available ) );
+
+			$group_ids         = array();
+			$mc_resource_items = $this->get_mc_resource_items( $resource_type, $resource_id );
+			foreach ( $mc_resource_items as $key => $value ) {
+				// check for the name of this group to see if it is specified in the shortcoee
+				$option = get_option( $this->option_prefix . $shortcode . '_' . $key . '_name_in_shortcode', '' );
+				if ( '' !== $option ) {
+					$group_ids[ $option ] = $value['id'];
+				}
+			}
+			foreach ( $groups_available as $group_name ) {
+				$key = array_search( $group_name, array_keys( $group_ids ), true );
+				if ( false !== $key ) {
+					$shortcode_resource_items[] = $group_ids[ $group_name ];
+				}
+			}
+		} elseif ( 'all' === $groups_available ) {
+			// shortcode specifies it wants all available groups
+			$group_ids         = array();
+			$mc_resource_items = $this->get_mc_resource_items( $resource_type, $resource_id );
+			foreach ( $mc_resource_items as $key => $value ) {
+				$shortcode_resource_items[] = $value['id'];
+			}
+		} else {
+			// the shortcode does not have group names in it, or it specifies to use the defaults. use the defaults.
+			$shortcode_resource_items = $default_resource_items;
+		}
+
+		if ( ! empty( $shortcode_resource_items ) ) {
+			$shortcode_groups = array();
+			foreach ( $shortcode_resource_items as $id ) {
+				$shortcode_groups[ $id ] = array(
+					'id'      => $id,
+					'default' => false,
+				);
+				if ( in_array( $id, $default_resource_items, true ) ) {
+					$shortcode_groups[ $id ]['default'] = true;
+				}
+			}
+			$groups_available = $shortcode_groups;
+		}
+
+		// groups available based on where the shortcode is being placed. this includes user information. need to remember to set the default checked ones somewhere, too.
+		$groups_available = $this->get_placement_groups( $shortcode, $resource_type, $resource_id, $groups_available, $placement, $user );
+
+		return $groups_available;
+
+	}
+
+	/**
+	* Get available groups based on the placement and user settings
+	*
+	* @param string $shortcode
+	* @param string $resource_type
+	* @param string $resource_id
+	* @param array $groups_available
+	* @param string $placement
+	* @param object $user
+	* @return array $groups_available
+	*/
+	public function get_placement_groups( $shortcode, $resource_type, $resource_id, $groups_available, $placement = '', $user = 0 ) {
+
+		// get group info into a useful array
+		$groups_available = $this->setup_group_categorization( $shortcode, $resource_type, $resource_id, $groups_available );
+
+		// todo: figure out how to account for this stuff in the plugin options
+
+		// set the defaults based on user groups
+		if ( ! empty( $user->groups ) ) {
+			$user_groups = array_keys( $user->groups, true, true );
+			foreach ( $groups_available as $key => $group ) {
+				if ( in_array( $group['id'], $user_groups, true ) ) {
+					$groups_available[ $key ]['default'] = true;
+				} else {
+					error_log( 'not default' );
+				}
+			}
+		}
+
+		// placement locations that depend on user's existing settings:
+		if ( 'usersummary' === $placement || 'instory' === $placement ) {
+			if ( ! empty( $user_groups ) ) {
+				$group_keys = array_intersect( $user_groups, array_column( $groups_available, 'id' ) );
+				if ( 'instory' === $placement ) {
+					$groups_available = $group_keys;
+				} else {
+					$formatted_groups_available = array();
+					foreach ( $groups_available as $key => $item ) {
+						if ( in_array( $item['id'], $group_keys, true ) ) {
+							$formatted_groups_available[ $key ] = $item;
+						}
+					}
+					$groups_available = $formatted_groups_available;
+				}
+			}
+		}
+
+		// placement locations that need mailchimp categorization info:
+		if ( 'usersummary' === $placement || 'useraccount' === $placement || 'fullpage' === $placement ) {
+			// set group layout attributes
+			$groups_available = $this->setup_group_layout_attributes( $shortcode, $resource_type, $resource_id, $groups_available );
+		}
+
+		return $groups_available;
+
+	}
+
+	/**
+	* Setup MailChimp categorization attributes for each group to be in a form
+	*
+	* @param string $shortcode
+	* @param string $resource_type
+	* @param string $resource_id
+	* @param array $groups_available
+	* @return array $group_data
+	*/
+	public function setup_group_categorization( $shortcode, $resource_type, $resource_id, $groups_available ) {
+
+		$group_data        = array();
+		$mc_resource_items = $this->get_mc_resource_items( $resource_type, $resource_id );
+		foreach ( $groups_available as $key => $group ) {
+			$group_id          = $group['id'];
+			$resource_item_key = array_search(
+				$group_id,
+				array_combine(
+					array_keys( $mc_resource_items ),
+					array_column( $mc_resource_items, 'id' )
+				),
+				true
+			);
+			if ( false !== $resource_item_key ) {
+				$mc_resource_attributes = explode( '_', $resource_item_key );
+				$subresources           = get_option( $this->parent_option_prefix . 'subresources_' . $resource_id . '_' . $mc_resource_attributes[0], array() );
+				if ( ! empty( $subresources ) && isset( $subresources[ $resource_type ] ) && isset( $subresources[ $resource_type ][ $resource_id ] ) ) {
+					$subresources_info = $subresources[ $resource_type ][ $resource_id ];
+				}
+			}
+
+			$group_type   = get_option( $this->option_prefix . $shortcode . '_mc_resource_item_type', '' );
+			$subresources = array();
+			foreach ( $subresources_info as $type => $ids ) {
+				foreach ( $ids as $id ) {
+					$groups = get_option( $this->parent_option_prefix . 'items_' . $resource_id . '_' . $type . '_' . $id . '_' . $group_type, array() );
+					if ( ! empty( $groups ) ) {
+						$groups = $groups[ $resource_type ][ $resource_id ][ $type ];
+						if ( in_array( $group_id, $groups, true ) ) {
+							$subresources[] = array(
+								'type' => $type,
+								'id'   => $id,
+							);
+						}
+					}
+				}
+			}
+
+			$group_data[ $key ] = array(
+				'type'         => $group_type,
+				'id'           => $group_id,
+				'default'      => $group['default'],
+				'subresources' => $subresources,
+			);
+		}
+
+		return $group_data;
+
+	}
+
+	/**
+	* Get layout related attributes for the available groups
+	*
+	* @param string $shortcode
+	* @param string $resource_type
+	* @param string $resource_id
+	* @param array $groups
+	* @return array $grouped_groups
+	*/
+	private function setup_group_layout_attributes( $shortcode, $resource_type, $resource_id, $groups ) {
+		$grouped_groups = array();
+		// setup user groups
+		foreach ( $groups as $key => $item ) {
+			foreach ( $item['subresources'] as $subresource ) {
+				$grouped_groups[ $subresource['id'] ]['type']     = $subresource['type'];
+				$grouped_groups[ $subresource['id'] ]['id']       = $subresource['id'];
+				$grouped_groups[ $subresource['id'] ]['contains'] = $item['type'];
+				$grouped_groups[ $subresource['id'] ]['name']     = $this->parent->mailchimp->get_name( $resource_type, $resource_id, $subresource['type'], $subresource['id'] );
+				//unset( $item['subresources'] );
+				$grouped_groups[ $subresource['id'] ][ $item['type'] ][] = array(
+					'id'      => $item['id'],
+					'name'    => get_option( $this->option_prefix . $shortcode . '_' . $subresource['type'] . '_' . $subresource['id'] . '_' . $item['type'] . '_' . $item['id'] . '_title', '' ),
+					'default' => $item['default'],
+				);
+			}
+		}
+		return $grouped_groups;
+	}
+
+	/**
 	 * Get available values for user's MailChimp settings from MailChimp
 	 *
 	 * @param  string   $wp_field     What field in WordPress is going to hold the options
