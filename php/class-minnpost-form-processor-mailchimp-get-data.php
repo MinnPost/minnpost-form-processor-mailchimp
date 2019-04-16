@@ -215,4 +215,28 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 		return $interest_options;
 	}
 
+	/**
+	* Get the resource type for a shortcode
+	*
+	* @param string $shortcode
+	* @return string $resource_type
+	*
+	*/
+	public function get_resource_type( $shortcode = '' ) {
+		$resource_type = get_option( $this->option_prefix . $shortcode . '_resource_type', '' );
+		return $resource_type;
+	}
+
+	/**
+	* Get the resource ID for a shortcode
+	*
+	* @param string $shortcode
+	* @return string $resource_id
+	*
+	*/
+	public function get_resource_id( $shortcode = '' ) {
+		$resource_id = get_option( $this->option_prefix . $shortcode . '_resource_id', '' );
+		return $resource_id;
+	}
+
 }

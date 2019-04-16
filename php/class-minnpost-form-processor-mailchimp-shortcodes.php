@@ -44,30 +44,6 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 	}
 
 	/**
-	* Get the resource type for a shortcode
-	*
-	* @param string $shortcode
-	* @return string $resource_type
-	*
-	*/
-	private function get_resource_type( $shortcode = '' ) {
-		$resource_type = get_option( $this->option_prefix . $shortcode . '_resource_type', '' );
-		return $resource_type;
-	}
-
-	/**
-	* Get the resource ID for a shortcode
-	*
-	* @param string $shortcode
-	* @return string $resource_id
-	*
-	*/
-	private function get_resource_id( $shortcode = '' ) {
-		$resource_id = get_option( $this->option_prefix . $shortcode . '_resource_id', '' );
-		return $resource_id;
-	}
-
-	/**
 	* Add newsletter embed shortcode
 	* This manages the display settings for the newsletter form
 	*
@@ -81,12 +57,12 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 
 		$shortcode = 'newsletter_form';
 
-		$resource_type = $this->get_resource_type( $shortcode );
+		$resource_type = $this->get_data->get_resource_type( $shortcode );
 		if ( '' === $resource_type ) {
 			return $html;
 		}
 
-		$resource_id = $this->get_resource_id( $shortcode );
+		$resource_id = $this->get_data->get_resource_id( $shortcode );
 		if ( '' === $resource_id ) {
 			return $html;
 		}

@@ -57,6 +57,9 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 		$action = isset( $_POST['action'] ) ? esc_attr( $_POST['action'] ) : '';
 		if ( isset( $_POST['minnpost_form_processor_mailchimp_nonce'] ) && wp_verify_nonce( $_POST['minnpost_form_processor_mailchimp_nonce'], 'minnpost_form_processor_mailchimp_nonce' ) ) {
 
+			// todo: error handling for this?
+			$resource_type = $this->get_data->get_resource_type( $action );
+			$resource_id   = $this->get_data->get_resource_id( $action );
 			// required form data
 			$user_id = isset( $_POST['user_id'] ) ? esc_attr( $_POST['user_id'] ) : '';
 			$status  = isset( $_POST['user_status'] ) ? esc_attr( $_POST['user_status'] ) : get_option( $this->option_prefix . $action . '_default_member_status' );
