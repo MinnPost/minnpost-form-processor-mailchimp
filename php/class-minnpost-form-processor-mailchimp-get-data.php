@@ -32,7 +32,22 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 		$this->slug                  = minnpost_form_processor_mailchimp()->slug;
 		$this->parent                = minnpost_form_processor_mailchimp()->parent;
 		$this->user_subresource_type = minnpost_form_processor_mailchimp()->user_subresource_type;
+	}
 
+	/**
+	* Generate an array of valid MailChimp subresources for this given resource type.
+	*
+	* @param string $resource_type
+	* @return array $subresource_types
+	*
+	*/
+	public function get_mc_subresource_types( $resource_type ) {
+		$subresource_types = get_option( $this->parent_option_prefix . 'subresource_types_' . $resource_type, array() );
+		if ( empty( $subresource_types ) || ! isset( $subresource_types[ $resource_type ] ) ) {
+			return $subresource_types;
+		}
+		$subresource_types = $subresource_types[ $resource_type ];
+		return $subresource_types;
 	}
 
 	/**
@@ -45,11 +60,10 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	*/
 	public function get_mc_resource_items( $resource_type, $resource_id ) {
 		$mc_resource_items = array();
-		$subresource_types = get_option( $this->parent_option_prefix . 'subresource_types_' . $resource_type, array() );
-		if ( empty( $subresource_types ) || ! isset( $subresource_types[ $resource_type ] ) ) {
+		$subresource_types = $this->get_mc_subresource_types( $resource_type );
+		if ( empty( $subresource_types ) ) {
 			return $mc_resource_items;
 		}
-		$subresource_types = $subresource_types[ $resource_type ];
 		foreach ( $subresource_types as $subresource_type ) {
 			$items = get_option( $this->parent_option_prefix . 'subresources_' . $resource_id . '_' . $subresource_type, array() );
 			if ( empty( $items ) || ! isset( $items[ $resource_type ][ $resource_id ][ $subresource_type ] ) ) {
@@ -121,7 +135,7 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	* @param bool $reset
 	* @return array $user
 	*/
-	public function get_user_info( $resource_id, $email, $reset = false ) {
+	public function get_user_info( $resource_type, $resource_id, $email, $reset = false ) {
 		// email needs to be lowercase before being hashed
 		// see: https://developer.mailchimp.com/documentation/mailchimp/guides/manage-subscribers-with-the-mailchimp-api/
 		/*
@@ -130,7 +144,7 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 		if ( is_email( $email ) ) {
 			$email = md5( strtolower( $email ) );
 		}
-		$user = $this->mailchimp->load( $this->resource_type . '/' . $resource_id . '/' . $this->user_subresource_type . '/' . $email, array(), $reset );
+		$user = $this->parent->mailchimp->load( $resource_type . '/' . $resource_id . '/' . $this->user_subresource_type . '/' . $email, array(), $reset );
 
 		if ( isset( $user['status'] ) && 404 !== $user['status'] ) {
 			return $user;
