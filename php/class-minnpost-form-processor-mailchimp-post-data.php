@@ -60,20 +60,28 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 			// todo: error handling for this?
 			$resource_type = $this->get_data->get_resource_type( $action );
 			$resource_id   = $this->get_data->get_resource_id( $action );
+
+			// placement of this form
+			$placement = isset( $_POST['placement'] ) ? esc_attr( $_POST['placement'] ) : '';
+
 			// required form data
 			$user_id = isset( $_POST['user_id'] ) ? esc_attr( $_POST['user_id'] ) : '';
 			$status  = isset( $_POST['user_status'] ) ? esc_attr( $_POST['user_status'] ) : get_option( $this->option_prefix . $action . '_default_member_status' );
 			$email   = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
 
-			// this is the array of available mailchimp groups
-			$groups_available = isset( $_POST['groups_available'] ) ? (array) array_map( 'esc_attr', $_POST['groups_available'] ) : get_option( $this->option_prefix . $action . '_default_mc_resource_items', array() );
+			// this is the mailchimp group settings field. it gets sanitized later.
+			$groups_available = isset( $_POST['groups_available'] ) ? $_POST['groups_available'] : 'default';
+
+			// this checks for allowed groups based on the settings
+			$groups_available = $this->get_data->get_shortcode_groups( $action, $resource_type, $resource_id, $groups_available );
 
 			// this is the array of groups submitted by the user, if applicable
 			$groups_submitted = isset( $_POST['groups_submitted'] ) ? (array) array_map( 'esc_attr', $_POST['groups_submitted'] ) : array();
 
 			// if the user submitted groups, assign them the ones that are available to this form.
+			// note: submitted needs to be an array of keys. whatever else available contains (ids, default, etc.) it needs to also have the id as the a column of the array.
 			if ( ! empty( $groups_submitted ) ) {
-				$groups = array_intersect( $groups_submitted, $groups_available );
+				$groups = array_intersect( $groups_submitted, array_column( $groups_available, 'id' ) );
 			} else {
 				// otherwise, assign them whatever is available.
 				$groups = $groups_available;
@@ -92,13 +100,6 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 			);
 
 			// set default mailchimp group settings based on the shortcode attributes and the plugin settings
-			if ( '' !== $form['groups'] ) {
-				if ( is_array( $form['groups'] ) ) {
-					$groups = array_map( 'esc_attr', $form['groups'] );
-				} else {
-					$groups = esc_attr( $form['groups'] );
-				}
-			}
 			if ( ! empty( $groups ) ) {
 				$user_data['groups'] = $groups;
 			}
@@ -111,7 +112,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 				$user_data['last_name'] = $last_name;
 			}
 
-			error_log( 'user data is ' . print_r( $user_data, true ) );
+			error_log( 'send to mailchimp: ' . print_r( $user_data, true ) );
 
 			// mailchimp fields
 			/*$result = minnpost_form_processor_mailchimp()->save_user_mailchimp_list_settings( $user_data );
