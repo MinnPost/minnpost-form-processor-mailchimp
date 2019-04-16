@@ -95,8 +95,12 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 			$user_mailchimp_groups        = get_option( $this->option_prefix . $shortcode . '_mc_resource_item_type', '' );
 			$user_email                   = $form['user']->user_email;
 			$form['user']->mailchimp_info = $this->get_data->get_user_info( $resource_type, $resource_id, $user_email );
-			// todo: sometimes this is a WP_Error object instead of an array?
-			$form['user']->groups         = $form['user']->mailchimp_info[ $user_mailchimp_groups ];
+			if ( ! is_error( $form['user']->mailchimp_info ) ) {
+				$form['user']->groups = $form['user']->mailchimp_info[ $user_mailchimp_groups ];
+			} else {
+				// if the user returns no status or a 404 from mailchimp, we need to log it to see what is happening
+				error_log( 'error: user from mailchimp is ' . print_r( $form['user']->mailchimp_info, true ) );
+			}
 		}
 
 		// groups fields for this shortcode
