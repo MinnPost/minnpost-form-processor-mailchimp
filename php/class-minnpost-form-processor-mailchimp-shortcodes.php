@@ -18,6 +18,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 	public $parent_option_prefix;
 	public $version;
 	public $slug;
+	public $parent;
 	public $get_data;
 
 	/**
@@ -29,6 +30,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		$this->parent_option_prefix = minnpost_form_processor_mailchimp()->parent_option_prefix;
 		$this->version              = minnpost_form_processor_mailchimp()->version;
 		$this->slug                 = minnpost_form_processor_mailchimp()->slug;
+		$this->parent               = minnpost_form_processor_mailchimp()->parent;
 		$this->get_data             = minnpost_form_processor_mailchimp()->get_data;
 
 		add_action( 'plugins_loaded', array( $this, 'add_actions' ) );
@@ -73,7 +75,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		$form = shortcode_atts(
 			array(
 				'placement'        => '', // where this is used. fullpage, instory, or sidebar
-				'groups_available' => '', // mailchimp groups to include for the user. default (plugin settings), all, or array of group names. this should be whatever the form is making available to the user. if there are groups the user is not choosing in this instance, they should be left out.
+				'groups_available' => '', // mailchimp groups to make available for the user. default (plugin settings), all, or csv of group names. this should be whatever the form is making available to the user. if there are groups the user is not able to choose in this instance, they should be left out.
 				'show_elements'    => '', // title, description. default is based on placement
 				'hide_elements'    => '', // title, description. default is based on placement
 				'content_above'    => '', // used above form. default is empty.
@@ -89,33 +91,16 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		$form['user']   = wp_get_current_user();
 		$form['action'] = $shortcode;
 
-		$shortcode_resource_items = array();
-		// the shortcode has group names in it
-		if ( '' !== $form['groups_available'] ) {
-			$form['groups_available'] = array_map( 'trim', explode( ',', $form['groups_available'] ) );
-
-			$group_ids         = array();
-			$mc_resource_items = $this->get_data->get_mc_resource_items( $resource_type, $resource_id );
-			foreach ( $mc_resource_items as $key => $value ) {
-				$option = get_option( $this->option_prefix . $shortcode . '_' . $key . '_name_in_shortcode', '' );
-				if ( '' !== $option ) {
-					$group_ids[ $option ] = $value['id'];
-				}
-			}
-			foreach ( $form['groups_available'] as $group_name ) {
-				$key = array_search( $group_name, array_keys( $group_ids ), true );
-				if ( false !== $key ) {
-					$shortcode_resource_items[] = $group_ids[ $group_name ];
-				}
-			}
-		} else {
-			// the shortcode does not have group names in it. use the defaults.
-			$shortcode_resource_items = get_option( $this->option_prefix . $shortcode . '_default_mc_resource_items', array() );
+		if ( 0 !== $form['user'] ) {
+			$user_mailchimp_groups        = get_option( $this->option_prefix . $shortcode . '_mc_resource_item_type', '' );
+			$user_email                   = $form['user']->user_email;
+			$form['user']->mailchimp_info = $this->get_data->get_user_info( $resource_type, $resource_id, $user_email );
+			// todo: sometimes this is a WP_Error object instead of an array?
+			$form['user']->groups         = $form['user']->mailchimp_info[ $user_mailchimp_groups ];
 		}
 
-		if ( ! empty( $shortcode_resource_items ) ) {
-			$form['groups_available'] = $shortcode_resource_items;
-		}
+		// groups fields for this shortcode
+		$form['group_fields'] = $this->get_data->get_shortcode_groups( $shortcode, $resource_type, $resource_id, $form['groups_available'], $form['placement'], $form['user'] );
 
 		$message = '';
 		if ( isset( $_GET['subscribe-message'] ) ) {
@@ -159,59 +144,6 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		}
 		return $html;
 
-		if ( '' !== $form['newsletter'] ) {
-			if ( 'dc' === $args['newsletter'] ) {
-				set_query_var( 'newsletter', 'dc' );
-				set_query_var( 'redirect_url', $form['redirect_url'] . '#form-newsletter-shortcode-' . $args['newsletter'] );
-				set_query_var( 'message', $message );
-				ob_start();
-				$file = get_template_part( 'inc/forms/newsletter', 'shortcode-dc' );
-				$html = ob_get_contents();
-				ob_end_clean();
-				return $html;
-			} elseif ( 'default' === $args['newsletter'] ) {
-				set_query_var( 'newsletter', 'default' );
-				set_query_var( 'newsletter_nonce', $newsletter_nonce );
-				set_query_var( 'redirect_url', $form['redirect_url'] );
-				set_query_var( 'message', $message );
-				ob_start();
-				$file = get_template_part( 'inc/forms/newsletter', 'shortcode' );
-				$html = ob_get_contents();
-				ob_end_clean();
-				return $html;
-			} elseif ( 'full' === $args['newsletter'] ) {
-				set_query_var( 'newsletter', 'full' );
-				set_query_var( 'newsletter_nonce', $newsletter_nonce );
-				set_query_var( 'redirect_url', $form['redirect_url'] );
-				set_query_var( 'message', $message );
-				ob_start();
-				$file = get_template_part( 'inc/forms/newsletter', 'full' );
-				$html = ob_get_contents();
-				ob_end_clean();
-				return $html;
-			} elseif ( 'full-dc' === $args['newsletter'] ) {
-				set_query_var( 'newsletter', 'full-dc' );
-				set_query_var( 'newsletter_nonce', $newsletter_nonce );
-				set_query_var( 'redirect_url', $form['redirect_url'] );
-				set_query_var( 'message', $message );
-				ob_start();
-				$file = get_template_part( 'inc/forms/newsletter', 'full-dc' );
-				$html = ob_get_contents();
-				ob_end_clean();
-				return $html;
-			}
-		} else {
-			set_query_var( 'newsletter', 'email' );
-			set_query_var( 'newsletter_nonce', $newsletter_nonce );
-			set_query_var( 'redirect_url', $form['redirect_url'] );
-			set_query_var( 'message', $message );
-			set_query_var( 'confirm_message', $confirm_message );
-			ob_start();
-			$file = get_template_part( 'inc/forms/newsletter', 'shortcode-email' );
-			$html = ob_get_contents();
-			ob_end_clean();
-			return $html;
-		}
 	}
 
 	/**
