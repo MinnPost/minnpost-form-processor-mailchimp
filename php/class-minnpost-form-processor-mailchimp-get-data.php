@@ -243,8 +243,6 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 			foreach ( $groups_available as $key => $group ) {
 				if ( in_array( $group['id'], $user_groups, true ) ) {
 					$groups_available[ $key ]['default'] = true;
-				} else {
-					error_log( 'not default' );
 				}
 			}
 		}
