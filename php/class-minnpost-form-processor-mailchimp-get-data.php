@@ -232,7 +232,7 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	*/
 	public function get_placement_groups( $shortcode, $resource_type, $resource_id, $groups_available, $placement = '', $user = 0 ) {
 
-		// placement names/groups
+		// placement names/groups. todo: it'd probably be nice to put this into the plugin settings
 		$placements_user_groups_available = array(
 			'usersummary',
 			'instory',
