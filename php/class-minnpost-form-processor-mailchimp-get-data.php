@@ -317,6 +317,7 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 							$subresources[] = array(
 								'type' => $type,
 								'id'   => $id,
+								'name' => get_option( $this->option_prefix . $shortcode . '_' . $id . '_title', '' ),
 							);
 						}
 					}
@@ -329,7 +330,7 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 				'default'      => $group['default'],
 				'subresources' => $subresources,
 			);
-		}
+		} // end foreach
 
 		return $group_data;
 
@@ -352,8 +353,12 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 				$grouped_groups[ $subresource['id'] ]['type']     = $subresource['type'];
 				$grouped_groups[ $subresource['id'] ]['id']       = $subresource['id'];
 				$grouped_groups[ $subresource['id'] ]['contains'] = $item['type'];
-				$grouped_groups[ $subresource['id'] ]['name']     = $this->parent->mailchimp->get_name( $resource_type, $resource_id, $subresource['type'], $subresource['id'] );
-				//unset( $item['subresources'] );
+				if ( '' === $subresource['name'] ) {
+					$grouped_groups[ $subresource['id'] ]['name'] = $this->parent->mailchimp->get_name( $resource_type, $resource_id, $subresource['type'], $subresource['id'] );
+				} else {
+					$grouped_groups[ $subresource['id'] ]['name'] = $subresource['name'];
+				}
+				unset( $item['subresources'] );
 				$grouped_groups[ $subresource['id'] ][ $item['type'] ][] = array(
 					'id'      => $item['id'],
 					'name'    => get_option( $this->option_prefix . $shortcode . '_' . $subresource['type'] . '_' . $subresource['id'] . '_' . $item['type'] . '_' . $item['id'] . '_title', '' ),
