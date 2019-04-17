@@ -351,6 +351,24 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 					),
 				);
 
+				$mc_subresource_items = $this->get_mc_subresource_items( $resource_type, $resource_id );
+				if ( ! empty( $mc_subresource_items ) ) {
+					foreach ( $mc_subresource_items as $key => $subresource_item ) {
+						$settings[ $section . '_' . $key . '_title' ] = array(
+							'title'    => __( 'Title', 'minnpost-form-processor-mailchimp' ),
+							'callback' => $callbacks['text'],
+							'page'     => $page,
+							'section'  => $section,
+							'class'    => 'minnpost-form-processor-mailchimp-group minnpost-form-processor-mailchimp-group-' . sanitize_title( $subresource_item['text'] ),
+							'args'     => array(
+								'desc'     => __( 'When a form shortcode displays information about this item, it will use this value for the title.', 'minnpost-form-processor-mailchimp' ),
+								'constant' => '',
+								'type'     => 'text',
+							),
+						);
+					}
+				}
+
 				if ( ! empty( $mc_resource_items ) ) {
 					foreach ( $mc_resource_items as $key => $mc_resource_item ) {
 						$settings[ $section . '_' . $key . '_title' ]             = array(
@@ -557,6 +575,38 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 			);
 		}
 		return $options;
+	}
+
+	/**
+	* Generate an array of subresource items
+	*
+	* @return array $options
+	*
+	*/
+	private function get_mc_subresource_items( $resource_type, $resource_id ) {
+		$mc_subresource_items = array();
+		global $pagenow;
+		if ( ( 'options.php' !== $pagenow ) && ( ! isset( $_GET['page'] ) || $this->slug !== $_GET['page'] ) ) {
+			return $mc_subresource_items;
+		}
+		$subresource_types = $this->get_data->get_mc_subresource_types( $resource_type );
+		foreach ( $subresource_types as $subresource_type ) {
+			$items = get_option( $this->parent_option_prefix . 'subresources_' . $resource_id . '_' . $subresource_type, array() );
+			if ( ! empty( $items ) ) {
+				$items = $items[ $resource_type ][ $resource_id ][ $subresource_type ];
+				foreach ( $items as $item ) {
+					$mc_item                       = $this->parent->mailchimp->load( $resource_type . '/' . $resource_id . '/' . $subresource_type . '/' . $item );
+					$mc_subresource_items[ $item ] = array(
+						'text'    => $mc_item['title'],
+						'id'      => $item,
+						'value'   => $item,
+						'desc'    => '',
+						'default' => '',
+					);
+				}
+			}
+		}
+		return $mc_subresource_items;
 	}
 
 	/**
