@@ -232,6 +232,23 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	*/
 	public function get_placement_groups( $shortcode, $resource_type, $resource_id, $groups_available, $placement = '', $user = 0 ) {
 
+		// placement names/groups
+		$placements_user_groups_available = array(
+			'usersummary',
+			'instory',
+		);
+
+		$placements_uncategorized = array(
+			'instory',
+			'widget',
+		);
+
+		$placements_categorized = array(
+			'usersummary',
+			'useraccount',
+			'fullpage',
+		);
+
 		// get group info into a useful array
 		$groups_available = $this->setup_group_categorization( $shortcode, $resource_type, $resource_id, $groups_available );
 
@@ -247,11 +264,11 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 			}
 		}
 
-		// placement locations that depend on user's existing settings:
-		if ( 'usersummary' === $placement || 'instory' === $placement ) {
+		// placement locations that depend on user's existing settings for the available groups:
+		if ( in_array( $placement, $placements_user_groups_available, true ) ) {
 			if ( ! empty( $user_groups ) ) {
 				$group_keys = array_intersect( $user_groups, array_column( $groups_available, 'id' ) );
-				if ( 'instory' === $placement ) {
+				if ( in_array( $placement, $placements_uncategorized, true ) ) {
 					$groups_available = $group_keys;
 				} else {
 					$formatted_groups_available = array();
@@ -266,10 +283,10 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 		}
 
 		// placement locations that need mailchimp categorization info:
-		if ( 'usersummary' === $placement || 'useraccount' === $placement || 'fullpage' === $placement ) {
+		if ( in_array( $placement, $placements_categorized, true ) ) {
 			// set group layout attributes
 			$groups_available = $this->setup_categorized_layout_attributes( $shortcode, $resource_type, $resource_id, $groups_available );
-		} elseif ( 'instory' === $placement || 'widget' === $placement ) {
+		} elseif ( in_array( $placement, $placements_uncategorized, true ) ) {
 			$groups_available = array_column( $groups_available, 'id' );
 		}
 
