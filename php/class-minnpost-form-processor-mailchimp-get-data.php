@@ -268,7 +268,9 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 		// placement locations that need mailchimp categorization info:
 		if ( 'usersummary' === $placement || 'useraccount' === $placement || 'fullpage' === $placement ) {
 			// set group layout attributes
-			$groups_available = $this->setup_group_layout_attributes( $shortcode, $resource_type, $resource_id, $groups_available );
+			$groups_available = $this->setup_categorized_layout_attributes( $shortcode, $resource_type, $resource_id, $groups_available );
+		} elseif ( 'instory' === $placement || 'widget' === $placement ) {
+			$groups_available = array_column( $groups_available, 'id' );
 		}
 
 		return $groups_available;
@@ -337,7 +339,7 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	}
 
 	/**
-	* Get layout related attributes for the available groups
+	* Get layout related attributes for the groups when they are categorized
 	*
 	* @param string $shortcode
 	* @param string $resource_type
@@ -345,7 +347,7 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	* @param array $groups
 	* @return array $grouped_groups
 	*/
-	private function setup_group_layout_attributes( $shortcode, $resource_type, $resource_id, $groups ) {
+	private function setup_categorized_layout_attributes( $shortcode, $resource_type, $resource_id, $groups ) {
 		$grouped_groups = array();
 		// setup user groups
 		foreach ( $groups as $key => $item ) {

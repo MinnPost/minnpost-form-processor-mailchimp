@@ -83,8 +83,8 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 			if ( ! empty( $groups_submitted ) ) {
 				$groups = array_intersect( $groups_submitted, array_column( $groups_available, 'id' ) );
 			} else {
-				// otherwise, assign them whatever is available.
-				$groups = $groups_available;
+				// otherwise, assign them whatever is available based on settings. we only need the ids.
+				$groups = array_column( $groups_available, 'id' );
 			}
 
 			// optional form data
