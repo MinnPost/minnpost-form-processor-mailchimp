@@ -167,8 +167,12 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	public function get_shortcode_groups( $shortcode, $resource_type, $resource_id, $groups_available, $placement = '', $user = 0 ) {
 		$shortcode_resource_items = array();
 		$default_resource_items   = get_option( $this->option_prefix . $shortcode . '_default_mc_resource_items', array() );
+		$reserved_group_values    = array(
+			'all',
+			'default',
+		);
 		// the shortcode has group names in it, in a csv format
-		if ( ! empty( $groups_available ) && is_array( $groups_available ) ) {
+		if ( ! empty( $groups_available ) && ! in_array( $groups_available, $reserved_group_values, true ) ) {
 			$groups_available = array_map( 'trim', explode( ',', $groups_available ) );
 
 			$group_ids         = array();
