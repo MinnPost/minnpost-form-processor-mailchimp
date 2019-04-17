@@ -10,6 +10,7 @@
 		<input type="hidden" name="user_id" value="<?php echo $form['user']->ID; ?>">
 		<input type="hidden" name="first_name" value="<?php echo $form['user']->first_name; ?>">
 		<input type="hidden" name="last_name" value="<?php echo $form['user']->last_name; ?>">
+		<input type="hidden" name="email" value="<?php echo $form['user']->user_email; ?>">
 	<?php endif; ?>
 	<?php if ( '' !== $form['action'] ) : ?>
 		<input type="hidden" name="action" value="<?php echo esc_attr( $form['action'] ); ?>">

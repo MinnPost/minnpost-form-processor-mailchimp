@@ -101,6 +101,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 				// if the user returns no status or a 404 from mailchimp, we need to log it to see what is happening
 				error_log( 'error: user from mailchimp is ' . print_r( $form['user']->mailchimp_info, true ) );
 			}
+			// todo: one thing that would be good is to support multiple email addresses based on a querystring or something, but only if the logged in user was associated with the email address in the querystring
 		}
 
 		// groups fields for this shortcode
