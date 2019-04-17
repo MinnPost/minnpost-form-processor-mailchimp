@@ -4,7 +4,7 @@
  *
  */
 ?>
-<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" class="m-form m-form-standalone">
+<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" class="m-form m-form-standalone m-form-minnpost-form-processor-mailchimp">
 	<input type="hidden" name="minnpost_form_processor_mailchimp_nonce" value="<?php echo $form['newsletter_nonce']; ?>">
 	<?php if ( 0 !== $form['user'] ) : ?>
 		<input type="hidden" name="user_id" value="<?php echo $form['user']->ID; ?>">
