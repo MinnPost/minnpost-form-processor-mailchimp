@@ -21,7 +21,7 @@
 	<?php if ( '' !== $form['groups_available'] ) : ?>
 		<input type="hidden" name="groups_available" value="<?php echo esc_html( $form['groups_available'] ); ?>">
 	<?php endif; ?>
-	<?php echo wpautop( $content ); ?>
+	<?php echo $form['content_before']; ?>
 	<?php echo $message; ?>
 
 	<?php foreach ( $form['group_fields'] as $category ) : ?>
@@ -44,4 +44,5 @@
 		</fieldset>
 	<?php endforeach; ?>
 	<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"><?php echo __( 'Save Email Preferences', 'minnpost-mailchimp-form-processor' ); ?></button>
+	<?php echo $form['content_after']; ?>
 </form>

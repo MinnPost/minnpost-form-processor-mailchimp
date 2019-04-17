@@ -26,12 +26,15 @@
 			<input type="hidden" name="groups_available" value="<?php echo esc_attr( $form['groups_available'] ); ?>">
 		<?php endif; ?>
 	<?php endif; ?>
-	<?php echo wpautop( $content ); ?>
+	<?php echo $form['content_before']; ?>
 	<?php echo $message; ?>
 	<fieldset>
 		<div class="m-field-group m-form-item m-form-item-signup">
-			<input type="email" name="email" value="<?php echo isset( $form['user']->user_email ) ? $form['user']->user_email : ''; ?>" placeholder="Your email address">
-			<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"><?php echo __( 'Subscribe', 'minnpost-mailchimp-form-processor' ); ?></button>
+			<label><?php echo __( 'Email Address', 'minnpost-mailchimp-form-processor' ); ?>:
+				<input type="email" name="email" value="<?php echo isset( $form['user']->user_email ) ? $form['user']->user_email : ''; ?>" placeholder="Your email address" required>
+			</label>
 		</div>
+		<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"><?php echo __( 'Subscribe', 'minnpost-mailchimp-form-processor' ); ?></button>
 	</fieldset>
+	<?php echo $form['content_after']; ?>
 </form>

@@ -78,8 +78,8 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 				'groups_available' => '', // mailchimp groups to make available for the user. default (plugin settings), all, or csv of group names. this should be whatever the form is making available to the user. if there are groups the user is not able to choose in this instance, they should be left out.
 				'show_elements'    => '', // title, description. default is based on placement
 				'hide_elements'    => '', // title, description. default is based on placement
-				'content_above'    => '', // used above form. default is empty.
-				'content_below'    => '', // used below form. default is empty.
+				'content_before'   => '', // used before form. default is empty.
+				'content_after'    => '', // used after form. default is empty.
 				'categories'       => '', // categories corresponding to groups. default is empty.
 				'confirm_message'  => '', // after submission. default should be in the plugin settings, but it can be customized for specific usage
 				'redirect_url'     => $this->get_current_url(), // if not ajax, form will go to this url.
@@ -133,12 +133,12 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		}
 		set_query_var( 'message', $message );
 
-		if ( '' !== $form['content_above'] ) {
-			set_query_var( 'content_above', wp_kses_post( wpautop( $form['content_above'] ) ) );
+		if ( '' !== $form['content_before'] ) {
+			$form['content_before'] = wp_kses_post( wpautop( $form['content_before'] ) );
 		}
 
-		if ( '' !== $form['content_below'] ) {
-			set_query_var( 'content_below', wp_kses_post( wpautop( $form['content_below'] ) ) );
+		if ( '' !== $form['content_after'] ) {
+			$form['content_after'] = wp_kses_post( wpautop( $form['content_after'] ) );
 		}
 
 		// Generate a custom nonce value for the WordPress form submission
