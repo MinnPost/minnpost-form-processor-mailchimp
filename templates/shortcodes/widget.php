@@ -10,6 +10,9 @@
 		<input type="hidden" name="user_id" value="<?php echo $form['user']->ID; ?>">
 		<input type="hidden" name="first_name" value="<?php echo $form['user']->first_name; ?>">
 		<input type="hidden" name="last_name" value="<?php echo $form['user']->last_name; ?>">
+		<?php if ( isset( $form['user']->mailchimp_status ) ) : ?>
+			<input type="hidden" name="mailchimp_status" value="<?php echo $form['user']->mailchimp_status; ?>">
+		<?php endif; ?>
 	<?php endif; ?>
 	<?php if ( '' !== $form['action'] ) : ?>
 		<input type="hidden" name="action" value="<?php echo esc_attr( $form['action'] ); ?>">
