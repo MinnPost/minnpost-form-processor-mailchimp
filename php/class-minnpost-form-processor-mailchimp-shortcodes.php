@@ -78,10 +78,13 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 				'groups_available' => '', // mailchimp groups to make available for the user. default (plugin settings), all, or csv of group names. this should be whatever the form is making available to the user. if there are groups the user is not able to choose in this instance, they should be left out.
 				'show_elements'    => '', // title, description. default is based on placement
 				'hide_elements'    => '', // title, description. default is based on placement
+				'image_url'        => '', // if a local image url is specified, it will be added before the content_before value
+				'image_alt'        => '', // if adding an image, alt text should also be added
 				'content_before'   => '', // used before form. default is empty.
 				'content_after'    => '', // used after form. default is empty.
 				'categories'       => '', // categories corresponding to groups. default is empty.
 				'confirm_message'  => '', // after submission. default should be in the plugin settings, but it can be customized for specific usage
+				'classes'          => '', // classes for css/js to target, if applicable. if there are values here, they will be added to the <form> (or other first markup element) in the template
 				'redirect_url'     => $this->get_current_url(), // if not ajax, form will go to this url.
 			),
 			$attributes
@@ -133,12 +136,22 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		}
 		set_query_var( 'message', $message );
 
+		if ( '' !== $form['image_url'] ) {
+			$form['image'] = '<figure class="a-shortcode-image"><img src="' . esc_url( $form['image_url'] ) . '"' . $form['image_alt'] . '></figure>';
+		} else {
+			$form['image'] = '';
+		}
+
 		if ( '' !== $form['content_before'] ) {
 			$form['content_before'] = wp_kses_post( wpautop( $form['content_before'] ) );
 		}
 
 		if ( '' !== $form['content_after'] ) {
 			$form['content_after'] = wp_kses_post( wpautop( $form['content_after'] ) );
+		}
+
+		if ( '' !== $form['classes'] ) {
+			$form['classes'] = ' ' . minnpost_form_processor_mailchimp()->sanitize_html_classes( $form['classes'] );
 		}
 
 		// Generate a custom nonce value for the WordPress form submission

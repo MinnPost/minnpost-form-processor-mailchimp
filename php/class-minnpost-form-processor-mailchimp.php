@@ -180,6 +180,23 @@ class MinnPost_Form_Processor_MailChimp {
 	}
 
 	/**
+	 * Sanitize a string of HTML classes
+	 *
+	 */
+	public function sanitize_html_classes( $classes, $sep = ' ' ) {
+		$return = '';
+		if ( ! is_array( $classes ) ) {
+			$classes = explode( $sep, $classes );
+		}
+		if ( ! empty( $classes ) ) {
+			foreach ( $classes as $class ) {
+				$return .= sanitize_html_class( $class ) . ' ';
+			}
+		}
+		return $return;
+	}
+
+	/**
 	 * Adds form data for MailChimp settings to user data so it can be processed for MailChimp API
 	 *
 	 * @param  array   $user_data  The info we currently have on the user

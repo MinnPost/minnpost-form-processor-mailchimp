@@ -780,7 +780,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 				esc_attr( $value ),
 				esc_attr( $name ),
 				esc_attr( $id ),
-				$this->sanitize_html_classes( $class, esc_html( ' code' ) ),
+				minnpost_form_processor_mailchimp()->sanitize_html_classes( $class, esc_html( ' code' ) ),
 				esc_html( $checked )
 			);
 			if ( '' !== $desc ) {
@@ -817,7 +817,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 			echo sprintf( '<textarea name="%1$s" id="%2$s" class="%3$s" rows="10">%4$s</textarea>',
 				esc_attr( $name ),
 				esc_attr( $id ),
-				$this->sanitize_html_classes( $class . esc_html( ' code' ) ),
+				minnpost_form_processor_mailchimp()->sanitize_html_classes( $class . esc_html( ' code' ) ),
 				esc_attr( $value )
 			);
 			if ( '' !== $desc ) {
@@ -1014,19 +1014,6 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 			);
 		}
 
-	}
-
-	private function sanitize_html_classes( $classes, $sep = ' ' ) {
-		$return = '';
-		if ( ! is_array( $classes ) ) {
-			$classes = explode( $sep, $classes );
-		}
-		if ( ! empty( $classes ) ) {
-			foreach ( $classes as $class ) {
-				$return .= sanitize_html_class( $class ) . ' ';
-			}
-		}
-		return $return;
 	}
 
 }
