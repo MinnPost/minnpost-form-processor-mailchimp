@@ -4,7 +4,7 @@
  *
  */
 ?>
-<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" class="m-form m-form-instory m-form-minnpost-form-processor-mailchimp">
+<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" class="m-form m-form-instory m-form-minnpost-form-processor-mailchimp<?php echo $form['classes']; ?>">
 	<input type="hidden" name="minnpost_form_processor_mailchimp_nonce" value="<?php echo $form['newsletter_nonce']; ?>">
 	<?php if ( 0 !== $form['user'] ) : ?>
 		<input type="hidden" name="user_id" value="<?php echo $form['user']->ID; ?>">
@@ -26,13 +26,16 @@
 			<input type="hidden" name="groups_available" value="<?php echo esc_attr( $form['groups_available'] ); ?>">
 		<?php endif; ?>
 	<?php endif; ?>
-	<?php echo $form['content_before']; ?>
-	<?php echo $message; ?>
-	<fieldset>
-		<div class="m-field-group m-form-item m-form-item-signup">
-			<input type="email" name="email" value="<?php echo isset( $form['user']->user_email ) ? $form['user']->user_email : ''; ?>" placeholder="Your email address" required>
-			<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"><?php echo __( 'Subscribe', 'minnpost-mailchimp-form-processor' ); ?></button>
-		</div>
-	</fieldset>
-	<?php echo $form['content_after']; ?>
+	<div class="m-form-container">
+		<?php echo $form['image']; ?>
+		<?php echo $form['content_before']; ?>
+		<?php echo $message; ?>
+		<fieldset>
+			<div class="a-input-with-button a-button-sentence">
+				<input type="email" name="email" value="<?php echo isset( $form['user']->user_email ) ? $form['user']->user_email : ''; ?>" placeholder="Your email address" required>
+				<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"><?php echo __( 'Subscribe', 'minnpost-mailchimp-form-processor' ); ?></button>
+			</div>
+		</fieldset>
+		<?php echo $form['content_after']; ?>
+	</div>
 </form>

@@ -4,7 +4,7 @@
  *
  */
 ?>
-<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" class="m-form m-form-widget m-form-minnpost-form-processor-mailchimp">
+<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" class="m-form m-form-widget m-form-minnpost-form-processor-mailchimp<?php echo $form['classes']; ?>">
 	<input type="hidden" name="minnpost_form_processor_mailchimp_nonce" value="<?php echo $form['newsletter_nonce']; ?>">
 	<?php if ( 0 !== $form['user'] ) : ?>
 		<input type="hidden" name="user_id" value="<?php echo $form['user']->ID; ?>">
@@ -27,6 +27,7 @@
 		<?php endif; ?>
 	<?php endif; ?>
 	<div class="m-form-container">
+		<?php echo $form['image']; ?>
 		<?php echo $form['content_before']; ?>
 		<?php echo $message; ?>
 		<fieldset>
