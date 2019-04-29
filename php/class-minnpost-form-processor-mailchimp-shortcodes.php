@@ -43,6 +43,17 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 	*/
 	public function add_actions() {
 		add_shortcode( 'newsletter_form', array( $this, 'newsletter_form' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'front_end_scripts_and_styles' ) );
+	}
+
+	/**
+	* Front end styles. Load the CSS and/or JavaScript for the plugin's settings
+	*
+	* @return void
+	*/
+	public function front_end_scripts_and_styles() {
+		//wp_enqueue_script( $this->slug . '-front-end', plugins_url( 'assets/js/admin.min.js', dirname( __FILE__ ) ), array( 'jquery' ), $this->version, true );
+		wp_enqueue_style( $this->slug . '-front-end', plugins_url( 'assets/css/front-end.min.css', dirname( __FILE__ ) ), array(), $this->version, 'all' );
 	}
 
 	/**
