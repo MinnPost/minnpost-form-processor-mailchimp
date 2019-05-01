@@ -35,7 +35,7 @@ $form-width: 292px;
 			margin-top: $vertical-space;
 			flex-wrap: wrap;
 			article {
-				border: 1px solid $border-color-lighter;
+				border: 1px solid $border-color-darker;
 				padding: $vertical-space;
 			}
 			.m-subscribe-items {
@@ -68,7 +68,9 @@ $form-width: 292px;
 			.m-subscribe {
 				margin-left: $vertical-space;
 				padding: $vertical-space;
-				flex: 0 0 $form-width; // does this need to change so it can get bigger but have a max?
+				flex: 0 0 $form-width;
+				position: sticky;
+				top: 0.25em;
 				button {
 					width: 100%;
 				}
@@ -140,5 +142,12 @@ $form-width: 292px;
 				margin-right: 0.5em;
 			}
 		}
+	}
+}
+
+// sticky needs a style for when the admin bar is active
+body.admin-bar {
+	.m-form-minnpost-form-processor-mailchimp.m-form-fullpage .m-subscribe-grouping .m-subscribe {
+		top: 2.25em;
 	}
 }
