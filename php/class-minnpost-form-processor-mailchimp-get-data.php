@@ -338,9 +338,10 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 						$groups = $groups[ $resource_type ][ $resource_id ][ $type ];
 						if ( in_array( $group_id, $groups, true ) ) {
 							$subresources[] = array(
-								'type' => $type,
-								'id'   => $id,
-								'name' => get_option( $this->option_prefix . $shortcode . '_' . $id . '_title', '' ),
+								'type'        => $type,
+								'id'          => $id,
+								'name'        => get_option( $this->option_prefix . $shortcode . '_' . $id . '_title', '' ),
+								'description' => get_option( $this->option_prefix . $shortcode . '_' . $id . '_description', '' ),
 							);
 						}
 					}
@@ -383,9 +384,10 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 				}
 				unset( $item['subresources'] );
 				$grouped_groups[ $subresource['id'] ][ $item['type'] ][] = array(
-					'id'      => $item['id'],
-					'name'    => get_option( $this->option_prefix . $shortcode . '_' . $subresource['type'] . '_' . $subresource['id'] . '_' . $item['type'] . '_' . $item['id'] . '_title', '' ),
-					'default' => $item['default'],
+					'id'          => $item['id'],
+					'name'        => get_option( $this->option_prefix . $shortcode . '_' . $subresource['type'] . '_' . $subresource['id'] . '_' . $item['type'] . '_' . $item['id'] . '_title', '' ),
+					'default'     => $item['default'],
+					'description' => get_option( $this->option_prefix . $shortcode . '_' . $subresource['type'] . '_' . $subresource['id'] . '_' . $item['type'] . '_' . $item['id'] . '_description', '' ),
 				);
 			}
 		}
