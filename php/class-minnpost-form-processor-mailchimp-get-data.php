@@ -144,6 +144,7 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 		if ( is_email( $email ) ) {
 			$email = md5( strtolower( $email ) );
 		}
+		// the parent plugin will cache the result as long as reset is false
 		$user = $this->parent->mailchimp->load( $resource_type . '/' . $resource_id . '/' . $this->user_subresource_type . '/' . $email, array(), $reset );
 
 		if ( isset( $user['status'] ) && 404 !== $user['status'] ) {
