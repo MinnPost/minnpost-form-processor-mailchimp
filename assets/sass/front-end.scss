@@ -6,6 +6,9 @@ $min-newsletter-width: 325px;
 $form-width: 292px;
 
 .m-form-minnpost-form-processor-mailchimp {
+	input[type="email"] {
+		padding: 0.25em;
+	}
 	// full page forms
 	&.m-form-fullpage {
 		h2 {
@@ -25,7 +28,6 @@ $form-width: 292px;
 		}
 		input {
 			width: 100%;
-			padding: 0.25em;
 		}
 		.m-subscribe-grouping {
 			display: flex;
@@ -103,7 +105,7 @@ $form-width: 292px;
 		}
 	}
 	// instory forms
-	.m-form-instory {
+	&.m-form-instory {
 		border: 1px solid $border-color-lighter;
 		padding: 0.5em 0 1.5em 0;
 		.m-form-container {
@@ -128,6 +130,14 @@ $form-width: 292px;
 			padding: 0;
 			input {
 				width: 100%;
+			}
+		}
+	}
+	// standalone forms that aren't full pages
+	&.m-form-standalone {
+		.checkboxes {
+			input[type="checkbox"], input[type="radio"] {
+				margin-right: 0.5em;
 			}
 		}
 	}
