@@ -47,6 +47,6 @@
 			<?php endif; ?>
 		</fieldset>
 	<?php endforeach; ?>
-	<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"><?php echo __( 'Save Email Preferences', 'minnpost-mailchimp-form-processor' ); ?></button>
+	<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"><?php echo $form['button_text']; ?></button>
 	<?php echo $form['content_after']; ?>
 </form>

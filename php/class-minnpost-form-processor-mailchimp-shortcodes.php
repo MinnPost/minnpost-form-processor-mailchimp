@@ -89,6 +89,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 				'groups_available' => '', // mailchimp groups to make available for the user. default (plugin settings), all, or csv of group names. this should be whatever the form is making available to the user. if there are groups the user is not able to choose in this instance, they should be left out.
 				'show_elements'    => '', // title, description. default is based on placement
 				'hide_elements'    => '', // title, description. default is based on placement
+				'button_text'      => '', // button text for the form. default is Subscribe
 				'image_url'        => '', // if a local image url is specified, it will be added before the content_before value
 				'image_alt'        => '', // if adding an image, alt text should also be added
 				'content_before'   => '', // used before form. default is empty.
@@ -117,6 +118,37 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 				error_log( 'error: user from mailchimp is ' . print_r( $form['user']->mailchimp_info, true ) );
 			}
 			// todo: one thing that would be good is to support multiple email addresses based on a querystring or something, but only if the logged in user was associated with the email address in the querystring
+		}
+
+		// default button text is Subscribe. Templates can override this as needed, or with an attribute value the individual forms can override it.
+		if ( '' === $form['button_text'] ) {
+			$form['button_text'] = __( 'Subscribe', 'minnpost-form-processor-mailchimp' );
+		}
+
+		// allow title and description to be hidden by shortcode attributes
+		$form['hide_description'] = false;
+		$form['hide_title']       = false;
+		if ( '' !== $form['hide_elements'] ) {
+			$hide_elements = explode( ',', $form['hide_elements'] );
+			if ( in_array( 'description', $hide_elements ) ) {
+				$form['hide_description'] = true;
+			}
+			if ( in_array( 'title', $hide_elements ) ) {
+				$form['hide_title'] = true;
+			}
+		}
+
+		// allow title and description to be shown by shortcode attributes
+		$form['show_description'] = false;
+		$form['show_title']       = false;
+		if ( '' !== $form['show_elements'] ) {
+			$show_elements = explode( ',', $form['show_elements'] );
+			if ( in_array( 'description', $hide_elements ) ) {
+				$form['show_description'] = true;
+			}
+			if ( in_array( 'title', $hide_elements ) ) {
+				$form['show_title'] = true;
+			}
 		}
 
 		// groups fields for this shortcode

@@ -44,10 +44,10 @@
 										<label>
 											<p class="a-newsletter-group"><?php echo $category['name']; ?></p>
 											<input name="groups_submitted[]" type="checkbox" value="<?php echo $item['id']; ?>"<?php echo $checked; ?>>
-											<?php if ( false === $form['hide_title'] ) : ?>
+											<?php if ( false === $form['hide_title'] || true === $form['show_title'] ) : ?>
 												<h3 class="a-newsletter-title"><?php echo $item['name']; ?></h3>
 											<?php endif; ?>
-											<?php if ( false === $form['hide_description'] ) : ?>
+											<?php if ( false === $form['hide_description'] || true === $form['show_description'] ) : ?>
 												<?php echo wpautop( $item['description'] ); ?>
 											<?php endif; ?>
 										</label>
@@ -73,7 +73,7 @@
 					<label for="full_page_email"><?php echo __( 'Email address:', 'minnpost-mailchimp-form-processor' ); ?></label>
 					<div class="a-input-with-button a-button-sentence">
 						<input type="email" name="email" id="full_page_email" value="<?php echo isset( $form['user']->user_email ) ? $form['user']->user_email : ''; ?>" required>
-						<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"><?php echo __( 'Subscribe', 'minnpost-mailchimp-form-processor' ); ?></button>
+						<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"><?php echo $form['button_text']; ?></button>
 					</div>
 				</fieldset>
 			<?php endif; ?>
