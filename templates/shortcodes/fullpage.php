@@ -20,30 +20,63 @@
 	<?php if ( '' !== $form['redirect_url'] ) : ?>
 		<input type="hidden" name="redirect_url" value="<?php echo esc_url( $form['redirect_url'] ); ?>">
 	<?php endif; ?>
-	<?php if ( ! empty( $form['groups_available'] ) ) : ?>
-		<?php if ( ! is_array( $form['groups_available'] ) ) : ?>
-			<input type="hidden" name="groups_available" value="<?php echo esc_attr( $form['groups_available'] ); ?>">
-		<?php endif; ?>
+	<?php if ( '' !== $form['groups_available'] ) : ?>
+		<input type="hidden" name="groups_available" value="<?php echo esc_html( $form['groups_available'] ); ?>">
 	<?php endif; ?>
 	<div class="m-form-container">
 		<?php echo $form['image']; ?>
 		<?php echo $form['content_before']; ?>
 		<?php echo $message; ?>
-		<fieldset>
-
-			<?php if ( ! empty( $form['groups_available'] ) ) : ?>
-				<?php if ( is_array( $form['groups_available'] ) ) : ?>
-					<?php foreach ( $form['groups_available'] as $group ) : ?>
-						<input type="checkbox" name="groups_available[]" value="<?php echo esc_attr( $group ); ?>">
-					<?php endforeach; ?>
-				<?php endif; ?>
+			<?php if ( count( $form['group_fields'] ) > 1 ) : ?>
+				<div class="m-subscribe-grouping">
+					<section class="m-subscribe-items">
+						<?php foreach ( $form['group_fields'] as $category ) : ?>
+							<?php if ( isset( $category['contains'] ) ) : ?>
+								<?php foreach ( $category[ $category['contains'] ] as $item ) : ?>
+									<?php
+									if ( true === $item['default'] ) {
+										$checked = ' checked';
+									} else {
+										$checked = '';
+									}
+									?>
+									<article>
+										<label>
+											<small><?php echo $category['name']; ?></small>
+											<input name="groups_submitted[]" type="checkbox" value="<?php echo $item['id']; ?>"<?php echo $checked; ?>>
+											<?php if ( false === $form['hide_title'] ) : ?>
+												<?php echo $item['name']; ?>
+											<?php endif; ?>
+											<?php if ( false === $form['hide_description'] ) : ?>
+												<?php echo $item['description']; ?>
+											<?php endif; ?>
+										</label>
+									</article>
+								<?php endforeach; ?>
+							<?php endif; ?>
+						<?php endforeach; ?>
+					</section>
+					<article class="m-subscribe">
+						<div class="m-form-item">
+							<label><?php echo __( 'Please enter your email address:', 'minnpost-mailchimp-form-processor' ); ?>
+								<input type="email" name="email" value="<?php echo isset( $form['user']->user_email ) ? $form['user']->user_email : ''; ?>" required>
+							</label>
+							<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"><?php echo __( 'Subscribe', 'minnpost-mailchimp-form-processor' ); ?></button>
+						</div>
+						<aside class="m-form-after">
+							<?php echo $form['content_after']; ?>
+						</aside>
+					</article>
+				</div>
+			<?php else : ?>
+				<fieldset>
+					<label for="full_page_email"><?php echo __( 'Email address:', 'minnpost-mailchimp-form-processor' ); ?></label>
+					<div class="a-input-with-button a-button-sentence">
+						<input type="email" name="email" id="full_page_email" value="<?php echo isset( $form['user']->user_email ) ? $form['user']->user_email : ''; ?>" required>
+						<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"><?php echo __( 'Subscribe', 'minnpost-mailchimp-form-processor' ); ?></button>
+					</div>
+				</fieldset>
 			<?php endif; ?>
-
-			<div class="a-input-with-button a-button-sentence">
-				<input type="email" name="email" value="<?php echo isset( $form['user']->user_email ) ? $form['user']->user_email : ''; ?>" placeholder="Your email address" required>
-				<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"><?php echo __( 'Subscribe', 'minnpost-mailchimp-form-processor' ); ?></button>
-			</div>
 		</fieldset>
-		<?php echo $form['content_after']; ?>
 	</div>
 </form>

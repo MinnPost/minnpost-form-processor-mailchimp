@@ -4,25 +4,55 @@ $border-color-darker: #cdcdd0;
 $vertical-space: 1em;
 
 .m-form-minnpost-form-processor-mailchimp {
+	// full page forms
 	&.m-form-fullpage {
 		h2 {
 			margin-bottom: 0.5em;
 		}
 		.m-form-container {
 			padding: 0;
+			position: relative;
 		}
 		fieldset {
 			border: 0;
 			margin: 0;
 			padding: 0;
+			label {
+				margin-bottom: 0.5em;
+			}
 		}
-		section {
-
+		input {
+			width: 100%;
+			padding: 0.25em;
 		}
-		article {
-
+		.m-subscribe-grouping {
+			display: flex;
+			align-items: flex-start;
+			article {
+				border: 1px solid $border-color-lighter;
+				padding: 1em;
+			}
+			.m-subscribe-items {
+				article {
+				}
+			}
+			.m-subscribe {
+				padding: 1em;
+				flex: 0 0 292px; // does this need to change so it can get bigger but have a max?
+				button {
+					width: 100%;
+				}
+				input {
+					margin: 0.5em 0 0.75em 0;
+				}
+				aside {
+					font-size: 0.75em;
+					line-height: 1.65em;
+				}
+			}
 		}
 	}
+	// widget forms
 	&.m-widget {
 		font-size: 95%;
 		margin: 1em auto 20px auto;
@@ -44,38 +74,33 @@ $vertical-space: 1em;
 			margin-bottom: 0.5em;
 		}
 	}
-}
-
-.o-content-sidebar .m-widget.m-form-minnpost-form-processor-mailchimp {
-	padding: 0;
-}
-
-// mailchimp form in stories
-.m-form-instory.m-form-minnpost-form-processor-mailchimp {
-	border: 1px solid $border-color-lighter;
-	padding: 0.5em 0 1.5em 0;
-	.m-form-container {
-		padding: 0 0.5em;
-		h3, p, fieldset {
+	// instory forms
+	.m-form-instory {
+		border: 1px solid $border-color-lighter;
+		padding: 0.5em 0 1.5em 0;
+		.m-form-container {
 			padding: 0 0.5em;
-			margin-bottom: 1em;
-			&:last-child {
-				margin-bottom: 0;
+			h3, p, fieldset {
+				padding: 0 0.5em;
+				margin-bottom: 1em;
+				&:last-child {
+					margin-bottom: 0;
+				}
+			}
+			h3 {
+				padding: 0 0.5em;
+			    margin-top: 0.5em;
+			    font-size: 138.5%;
+			    line-height: 1.15em;
 			}
 		}
-		h3 {
-			padding: 0 0.5em;
-		    margin-top: 0.5em;
-		    font-size: 138.5%;
-		    line-height: 1.15em;
-		}
-	}
-	fieldset {
-		border: 0;
-		margin: 0;
-		padding: 0;
-		input {
-			width: 100%;
+		fieldset {
+			border: 0;
+			margin: 0;
+			padding: 0;
+			input {
+				width: 100%;
+			}
 		}
 	}
 }
