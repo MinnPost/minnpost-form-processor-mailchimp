@@ -42,13 +42,13 @@
 									?>
 									<article>
 										<label>
-											<small><?php echo $category['name']; ?></small>
+											<p class="a-newsletter-group"><?php echo $category['name']; ?></p>
 											<input name="groups_submitted[]" type="checkbox" value="<?php echo $item['id']; ?>"<?php echo $checked; ?>>
 											<?php if ( false === $form['hide_title'] ) : ?>
-												<?php echo $item['name']; ?>
+												<h3 class="a-newsletter-title"><?php echo $item['name']; ?></h3>
 											<?php endif; ?>
 											<?php if ( false === $form['hide_description'] ) : ?>
-												<?php echo $item['description']; ?>
+												<?php echo wpautop( $item['description'] ); ?>
 											<?php endif; ?>
 										</label>
 									</article>
