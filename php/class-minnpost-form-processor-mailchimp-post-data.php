@@ -19,7 +19,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 	public $version;
 	public $slug;
 	public $get_data;
-	//public $parent;
+	public $parent;
 
 	/**
 	* Constructor which sets up post data processing
@@ -30,7 +30,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 		$this->version              = minnpost_form_processor_mailchimp()->version;
 		$this->slug                 = minnpost_form_processor_mailchimp()->slug;
 		$this->get_data             = minnpost_form_processor_mailchimp()->get_data;
-		//$this->parent               = minnpost_form_processor_mailchimp()->parent;
+		$this->parent               = minnpost_form_processor_mailchimp()->parent;
 
 		$this->add_actions();
 	}
@@ -58,16 +58,17 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 		if ( isset( $_POST['minnpost_form_processor_mailchimp_nonce'] ) && wp_verify_nonce( $_POST['minnpost_form_processor_mailchimp_nonce'], 'minnpost_form_processor_mailchimp_nonce' ) ) {
 
 			// todo: error handling for this?
-			$resource_type = $this->get_data->get_resource_type( $action );
-			$resource_id   = $this->get_data->get_resource_id( $action );
+			$resource_type    = $this->get_data->get_resource_type( $action );
+			$resource_id      = $this->get_data->get_resource_id( $action );
+			$subresource_type = $this->get_data->get_subresource_type( $action );
 
 			// placement of this form
 			$placement = isset( $_POST['placement'] ) ? esc_attr( $_POST['placement'] ) : '';
 
 			// required form data
-			$user_id = isset( $_POST['user_id'] ) ? esc_attr( $_POST['user_id'] ) : '';
-			$status  = isset( $_POST['mailchimp_status'] ) ? esc_attr( $_POST['mailchimp_status'] ) : get_option( $this->option_prefix . $action . '_default_member_status' );
-			$email   = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
+			$mailchimp_user_id = isset( $_POST['mailchimp_user_id'] ) ? esc_attr( $_POST['mailchimp_user_id'] ) : '';
+			$status            = isset( $_POST['mailchimp_status'] ) ? esc_attr( $_POST['mailchimp_status'] ) : get_option( $this->option_prefix . $action . '_default_member_status' );
+			$email             = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
 
 			// this is the mailchimp group settings field. it gets sanitized later.
 			$groups_available = isset( $_POST['groups_available'] ) ? $_POST['groups_available'] : 'default';
@@ -94,10 +95,15 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 
 			// setup the mailchimp user array and add the required items to it
 			$user_data = array(
-				'user_id'     => $user_id,
-				'user_email'  => $email,
-				'user_status' => $status,
+				'mailchimp_user_id' => $mailchimp_user_id,
+				'user_email'        => $email,
+				'user_status'       => $status,
 			);
+
+			// show all the available groups so we can set them as false, if need be
+			if ( ! empty( $groups_available ) ) {
+				$user_data['groups_available'] = array_keys( $groups_available );
+			}
 
 			// set default mailchimp group settings based on the shortcode attributes and the plugin settings
 			if ( ! empty( $groups ) ) {
@@ -112,11 +118,11 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 				$user_data['last_name'] = $last_name;
 			}
 
-			error_log( 'send to mailchimp: ' . print_r( $user_data, true ) );
-
 			// mailchimp fields
-			/*$result = minnpost_form_processor_mailchimp()->save_user_mailchimp_list_settings( $user_data );
+			$result = $this->save_to_mailchimp( $action, $resource_type, $resource_id, $subresource_type, $user_data );
 
+			error_log( 'result is ' . print_r( $result, true ) );
+			
 			if ( isset( $result['id'] ) ) {
 				if ( 'PUT' === $result['method'] ) {
 					$user_status = 'existing';
@@ -142,13 +148,12 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 					} else {
 						$redirect_url = site_url();
 					}
-					$redirect_url = add_query_arg( 'subscribe-message', 'success-' . $user_status, $redirect_url );
+					$redirect_url = add_query_arg( 'message', 'success-' . $user_status, $redirect_url );
 
 					wp_redirect( $redirect_url );
 					exit;
 				}
-			}*/
-
+			}
 		} else {
 			if ( isset( $_GET['redirect_url'] ) && '' !== $_GET['redirect_url'] ) {
 				$redirect_url = wp_validate_redirect( $_GET['redirect_url'] );
@@ -170,6 +175,76 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 				);
 			}
 		}
+	}
+
+	/**
+	 * Send data to MailChimp
+	 *
+	 * @param  string  $shortcode
+	 * @param  string  $resource_type
+	 * @param  string  $resource_id
+	 * @param  string  $subresource_type
+	 * @param  array   $user_data
+	 *
+	 * @return  array   $user_data
+	 */
+	private function save_to_mailchimp( $shortcode, $resource_type, $resource_id, $subresource_type, $user_data ) {
+		// send user data to mailchimp and create/update their info
+		$id                = isset( $user_data['mailchimp_user_id'] ) ? $user_data['mailchimp_user_id'] : '';
+		$status            = isset( $user_data['user_status'] ) ? $user_data['user_status'] : '';
+		$email             = isset( $user_data['user_email'] ) ? $user_data['user_email'] : '';
+		$first_name        = isset( $user_data['first_name'] ) ? $user_data['first_name'] : '';
+		$last_name         = isset( $user_data['last_name'] ) ? $user_data['last_name'] : '';
+		$groups            = isset( $user_data['groups'] ) ? $user_data['groups'] : array();
+		$groups_available  = isset( $user_data['groups_available'] ) ? $user_data['groups_available'] : array();
+
+		// don't send any data to mailchimp if there are no settings, and there is no user id
+		// otherwise we need to, in case user wants to empty their preferences
+		if ( empty( $groups ) && '' === $id && empty( $groups_available ) ) {
+			return;
+		}
+
+		$params['email_address'] = $email;
+		$params['status']        = $status;
+		$params['merge_fields']  = array(
+			'FNAME' => $first_name,
+			'LNAME' => $last_name,
+		);
+
+		$group_key = get_option( $this->option_prefix . $shortcode . '_mc_resource_item_type', '' );
+
+		// default is false if a group is not allowed in the submitted form
+		// that is the only way we can remove a subscription option if a user chooses to uncheck it
+		foreach ( $groups_available as $group ) {
+			if ( ! isset( $user_data['groups'] ) || ( isset( $user_data['groups'] ) && ! in_array( $group, $user_data['groups'] ) ) ) {
+				$params[ $group_key ][ $group ] = 'false';
+			}
+		}
+
+		// add the groups the user actually wants
+		if ( ! empty( $groups ) ) {
+			foreach ( $groups as $key => $value ) {
+				$params[ $group_key ][ $value ] = 'true';
+			}
+		}
+
+		if ( '' !== $id ) {
+			$http_method = 'PUT';
+		} else {
+			$http_method = 'POST';
+		}
+
+		// start mailchimp api call
+		$result = $this->parent->mailchimp->send( $resource_type . '/' . $resource_id . '/' . $subresource_type, $http_method, $params );
+
+		// if a user has been unsubscribed and they filled out this form, set them to pending so they can confirm
+		if ( 'unsubscribed' === $result['status'] ) {
+			$params['status'] = 'pending';
+			$http_method      = 'PUT';
+			$result = $this->parent->mailchimp->send( $resource_type . '/' . $resource_id . '/' . $subresource_type, $http_method, $params );
+		}
+
+		return $result;
 	}
 
 }

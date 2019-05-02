@@ -65,6 +65,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 	*
 	*/
 	public function newsletter_form( $attributes, $content = null ) {
+		error_log( 'what' );
 		$html    = '';
 		$message = '';
 
@@ -160,9 +161,9 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		$form['group_fields'] = $this->get_data->get_shortcode_groups( $shortcode, $resource_type, $resource_id, $form['groups_available'], $form['placement'], $form['user'] );
 
 		$message = '';
-		if ( isset( $_GET['subscribe-message'] ) ) {
+		if ( isset( $_GET['message'] ) ) {
 			if ( '' === $args['confirm_message'] ) {
-				switch ( $_GET['subscribe-message'] ) {
+				switch ( $_GET['message'] ) {
 					case 'success-existing':
 						$message = __( 'Thanks for updating your email preferences. They will go into effect immediately.', 'minnpost-largo' );
 						break;
