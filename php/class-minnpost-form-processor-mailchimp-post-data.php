@@ -121,6 +121,8 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 
 			// mailchimp fields
 			$result = $this->save_to_mailchimp( $action, $resource_type, $resource_id, $subresource_type, $user_data );
+
+			//error_log( 'result is ' . print_r( $result, true ) );
 			
 			if ( isset( $result['id'] ) ) {
 				if ( 'PUT' === $result['method'] ) {
