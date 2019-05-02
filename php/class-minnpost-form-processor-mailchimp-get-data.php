@@ -277,17 +277,19 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 
 		// set the defaults based on user groups
 		if ( ! empty( $user->groups ) ) {
+			// a group a user belongs to should always be checked
 			$user_groups = array_keys( $user->groups, true, true );
 			foreach ( $groups_available as $key => $group ) {
 				if ( in_array( $group['id'], $user_groups, true ) ) {
 					$groups_available[ $key ]['default'] = true;
 				}
 			}
-		} else {
-			// if user has no groups, nothing should be checked by default.
+			// if we only want the user's groups, uncheck everything else
 			if ( in_array( $placement, $placements_user_groups_default, true ) ) {
 				foreach ( $groups_available as $key => $group ) {
-					$groups_available[ $key ]['default'] = false;
+					if ( ! in_array( $group['id'], $user_groups, true ) ) {
+						$groups_available[ $key ]['default'] = false;
+					}
 				}
 			}
 		}
