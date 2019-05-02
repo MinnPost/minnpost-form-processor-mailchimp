@@ -65,7 +65,6 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 	*
 	*/
 	public function newsletter_form( $attributes, $content = null ) {
-		error_log( 'what' );
 		$html    = '';
 		$message = '';
 
@@ -160,31 +159,30 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		// groups fields for this shortcode
 		$form['group_fields'] = $this->get_data->get_shortcode_groups( $shortcode, $resource_type, $resource_id, $form['groups_available'], $form['placement'], $form['user'] );
 
-		$message = '';
-		if ( isset( $_GET['message'] ) ) {
-			if ( '' === $args['confirm_message'] ) {
-				switch ( $_GET['message'] ) {
+		$message_code = get_query_var( 'newsletter_message_code' );
+		if ( '' !== $message_code ) {
+			if ( '' === $form['confirm_message'] ) {
+				switch ( $message_code ) {
 					case 'success-existing':
-						$message = __( 'Thanks for updating your email preferences. They will go into effect immediately.', 'minnpost-largo' );
+						$message = __( 'Thanks for updating your email preferences. They will go into effect immediately.', 'minnpost-form-processor-mailchimp' );
 						break;
 					case 'success-new':
-						$message = __( 'We have added you to the MinnPost mailing list.', 'minnpost-largo' );
+						$message = __( 'We have added you to the MinnPost mailing list.', 'minnpost-form-processor-mailchimp' );
 						break;
 					case 'success-pending':
-						$message = __( 'We have added you to the MinnPost mailing list. You will need to click the confirmation link in the email we sent to begin receiving messages.', 'minnpost-largo' );
+						$message = __( 'We have added you to the MinnPost mailing list. You will need to click the confirmation link in the email we sent to begin receiving messages.', 'minnpost-form-processor-mailchimp' );
 						break;
 					default:
-						$message = $args['confirm_message'];
+						$message = $form['confirm_message'];
 						break;
 				}
 			} else {
-				$message = $args['confirm_message'];
+				$form['message'] = $form['confirm_message'];
 			}
-			$message = '<div class="m-form-message m-form-message-info">' . $message . '</div>';
+			$form['message'] = '<div class="m-form-message m-form-message-info">' . wp_kses_post( wpautop( $message ) ) . '</div>';
 		} else {
-			$message = $form['confirm_message'];
+			$form['message'] = $form['confirm_message'];
 		}
-		set_query_var( 'message', $message );
 
 		if ( '' !== $form['image_url'] ) {
 			$form['image'] = '<figure class="a-shortcode-image"><img src="' . esc_url( $form['image_url'] ) . '"' . $form['image_alt'] . '></figure>';

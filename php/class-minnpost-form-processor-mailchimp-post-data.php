@@ -47,6 +47,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 		add_action( 'admin_post_newsletter_form', array( $this, 'process_form_data' ) );
 		add_action( 'wp_ajax_nopriv_newsletter_form', array( $this, 'process_form_data' ) );
 		add_action( 'wp_ajax_newsletter_form', array( $this, 'process_form_data' ) );
+		add_filter('query_vars', array( $this, 'add_query_vars' ) );
 	}
 
 	/**
@@ -148,7 +149,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 					} else {
 						$redirect_url = site_url();
 					}
-					$redirect_url = add_query_arg( 'message', 'success-' . $user_status, $redirect_url );
+					$redirect_url = add_query_arg( 'newsletter_message_code', 'success-' . $user_status, $redirect_url );
 
 					wp_redirect( $redirect_url );
 					exit;
@@ -175,6 +176,17 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 				);
 			}
 		}
+	}
+
+	/**
+	 * Setup query var for message code after response from MailChimp
+	 *
+	 * @param  array   $query_vars
+	 * @return  array   $query_vars
+	 */
+	public function add_query_vars( $query_vars ) {
+		$query_vars[] = 'newsletter_message_code';
+		return $query_vars;
 	}
 
 	/**

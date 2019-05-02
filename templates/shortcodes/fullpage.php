@@ -27,7 +27,7 @@
 	<div class="m-form-container">
 		<?php echo $form['image']; ?>
 		<?php echo $form['content_before']; ?>
-		<?php echo $message; ?>
+		<?php echo $form['message']; ?>
 			<?php if ( count( $form['group_fields'] ) > 1 ) : ?>
 				<div class="m-subscribe-grouping">
 					<section class="m-subscribe-items">

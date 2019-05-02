@@ -33,7 +33,7 @@
 	<div class="m-form-container">
 		<?php echo $form['image']; ?>
 		<?php echo $form['content_before']; ?>
-		<?php echo $message; ?>
+		<?php echo $form['message']; ?>
 		<fieldset>
 			<div class="a-input-with-button a-button-sentence">
 				<input type="email" name="email" value="<?php echo isset( $form['user']->user_email ) ? $form['user']->user_email : ''; ?>" placeholder="Your email address" required>

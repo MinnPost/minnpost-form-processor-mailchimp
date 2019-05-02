@@ -33,7 +33,7 @@
 	<div class="m-form-container">
 		<?php echo $form['image']; ?>
 		<?php echo $form['content_before']; ?>
-		<?php echo $message; ?>
+		<?php echo $form['message']; ?>
 		<fieldset>
 			<div class="m-field-group m-form-item m-form-item-signup">
 				<label><?php echo __( 'Email Address', 'minnpost-mailchimp-form-processor' ); ?>:

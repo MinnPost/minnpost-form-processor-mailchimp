@@ -27,7 +27,7 @@
 	<?php endif; ?>
 	<?php echo $form['image']; ?>
 	<?php echo $form['content_before']; ?>
-	<?php echo $message; ?>
+	<?php echo $form['message']; ?>
 
 	<?php foreach ( $form['group_fields'] as $category ) : ?>
 		<fieldset class="m-form-item m-form-item-<?php echo $category['type']; ?>">
