@@ -115,8 +115,9 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 			$form['user']->user_email     = $user_email;
 			$form['user']->mailchimp_info = $this->get_data->get_user_info( $shortcode, $resource_type, $resource_id, $user_email );
 			if ( ! is_wp_error( $form['user']->mailchimp_info ) ) {
-				$form['user']->groups           = $form['user']->mailchimp_info[ $user_mailchimp_groups ];
-				$form['user']->mailchimp_status = $form['user']->mailchimp_info['status'];
+				$form['user']->mailchimp_user_id = $form['user']->mailchimp_info['id'];
+				$form['user']->groups            = $form['user']->mailchimp_info[ $user_mailchimp_groups ];
+				$form['user']->mailchimp_status  = $form['user']->mailchimp_info['status'];
 			} else {
 				// if the user returns no status or a 404 from mailchimp, we need to log it to see what is happening
 				error_log( 'error: user from mailchimp is ' . print_r( $form['user']->mailchimp_info, true ) );

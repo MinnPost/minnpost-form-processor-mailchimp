@@ -8,6 +8,7 @@
 	<input type="hidden" name="minnpost_form_processor_mailchimp_nonce" value="<?php echo $form['newsletter_nonce']; ?>">
 	<?php if ( 0 !== $form['user'] ) : ?>
 		<input type="hidden" name="user_id" value="<?php echo $form['user']->ID; ?>">
+		<input type="hidden" name="mailchimp_user_id" value="<?php echo $form['user']->mailchimp_user_id; ?>">
 		<input type="hidden" name="first_name" value="<?php echo $form['user']->first_name; ?>">
 		<input type="hidden" name="last_name" value="<?php echo $form['user']->last_name; ?>">
 		<input type="hidden" name="email" value="<?php echo $form['user']->user_email; ?>">
