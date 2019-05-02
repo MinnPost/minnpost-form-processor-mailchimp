@@ -240,20 +240,34 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	public function get_placement_groups( $shortcode, $resource_type, $resource_id, $groups_available, $placement = '', $user = 0 ) {
 
 		// placement names/groups. todo: it'd probably be nice to put this into the plugin settings
+
+		// this placement makes user groups available, regardless of what else it has
 		$placements_user_groups_available = array(
 			'usersummary',
 			'instory',
 		);
 
+		// this placement does not categorize groups
 		$placements_uncategorized = array(
 			'instory',
 			'widget',
 		);
 
+		// this placement does categorize groups
 		$placements_categorized = array(
 			'usersummary',
 			'useraccount',
 			'fullpage',
+		);
+
+		// this placement does not give any defaults other than what the user's current settings are
+		$placements_user_groups_default = array(
+			'useraccount',
+		);
+
+		// this placement does not give any options other than what the user's current settings are
+		$placements_user_groups_only = array(
+			'usersummary',
 		);
 
 		// get group info into a useful array
@@ -267,6 +281,13 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 			foreach ( $groups_available as $key => $group ) {
 				if ( in_array( $group['id'], $user_groups, true ) ) {
 					$groups_available[ $key ]['default'] = true;
+				}
+			}
+		} else {
+			// if user has no groups, nothing should be checked by default.
+			if ( in_array( $placement, $placements_user_groups_default, true ) ) {
+				foreach ( $groups_available as $key => $group ) {
+					$groups_available[ $key ]['default'] = false;
 				}
 			}
 		}
@@ -285,6 +306,15 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 						}
 					}
 					$groups_available = $formatted_groups_available;
+				}
+			}
+		}
+
+		// if we only get the user's groups, remove other groups
+		if ( in_array( $placement, $placements_user_groups_only, true ) ) {
+			foreach ( $groups_available as $key => $group ) {
+				if ( ! is_array( $user->groups ) || ! in_array( $group['id'], array_keys( $user->groups ), true ) ) {
+					unset( $groups_available[ $key ] );
 				}
 			}
 		}
