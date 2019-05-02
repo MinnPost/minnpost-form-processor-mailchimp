@@ -29,10 +29,12 @@ $form-width: 292px;
 		input {
 			width: 100%;
 		}
+		.m-form-message, .m-subscribe-grouping {
+			margin-top: $vertical-space;
+		}
 		.m-subscribe-grouping {
 			display: flex;
 			align-items: flex-start;
-			margin-top: $vertical-space;
 			flex-wrap: wrap;
 			article {
 				border: 1px solid $border-color-darker;
