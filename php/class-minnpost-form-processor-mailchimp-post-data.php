@@ -148,6 +148,35 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 						$redirect_url = site_url();
 					}
 					$redirect_url = add_query_arg( 'newsletter_message_code', 'success-' . $user_status, $redirect_url );
+					$redirect_url = add_query_arg( 'email', rawurlencode( $email ), $redirect_url );
+
+					wp_redirect( $redirect_url );
+					exit;
+				}
+			} else {
+				// error handling
+				$user_status = 'error';
+				if ( 400 === $result['status'] ) {
+					$confirm_message = $result['detail'];
+				}
+				if ( isset( $_POST['ajaxrequest'] ) && 'true' === $_POST['ajaxrequest'] ) {
+					wp_send_json_error(
+						array(
+							'id'              => $result['id'],
+							'user_status'     => $user_status,
+							'confirm_message' => $confirm_message,
+						)
+					);
+				} else {
+					if ( isset( $_GET['redirect_url'] ) && '' !== $_GET['redirect_url'] ) {
+						$redirect_url = wp_validate_redirect( $_GET['redirect_url'] );
+					} elseif ( isset( $_POST['redirect_url'] ) && '' !== $_POST['redirect_url'] ) {
+						$redirect_url = wp_validate_redirect( $_POST['redirect_url'] );
+					} else {
+						$redirect_url = site_url();
+					}
+					$redirect_url = add_query_arg( 'newsletter_error', rawurlencode( $confirm_message ), $redirect_url );
+					$redirect_url = add_query_arg( 'email', rawurlencode( $email ), $redirect_url );
 
 					wp_redirect( $redirect_url );
 					exit;
@@ -184,6 +213,8 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 	 */
 	public function add_query_vars( $query_vars ) {
 		$query_vars[] = 'newsletter_message_code';
+		$query_vars[] = 'newsletter_error';
+		$query_vars[] = 'email';
 		return $query_vars;
 	}
 

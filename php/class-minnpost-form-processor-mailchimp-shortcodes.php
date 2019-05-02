@@ -110,7 +110,15 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		if ( 0 !== $form['user'] ) {
 			$user_mailchimp_groups        = get_option( $this->option_prefix . $shortcode . '_mc_resource_item_type', '' );
 			$user_email                   = $form['user']->user_email;
+
+			// filter for changing email
 			$user_email = apply_filters( $this->option_prefix . 'set_form_user_email', $user_email, $form['user']->ID );
+
+			// query var for changing email
+			$url_email = get_query_var( 'email' );
+			if ( '' !== $url_email ) {
+				$user_email = $url_email;
+			}
 
 			$form['user']->user_email     = $user_email;
 
@@ -184,11 +192,21 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 						break;
 				}
 			} else {
-				$form['message'] = $form['confirm_message'];
+				$message = $form['confirm_message'];
 			}
 			$form['message'] = '<div class="m-form-message m-form-message-info">' . wp_kses_post( wpautop( $message ) ) . '</div>';
 		} else {
 			$form['message'] = $form['confirm_message'];
+		}
+
+		$newsletter_error = get_query_var( 'newsletter_error' );
+		if ( '' !== $newsletter_error ) {
+			if ( ! isset( $form['error_message'] ) || '' === $form['error_message'] ) {
+				$message = rawurldecode( stripslashes( $newsletter_error ) );
+			} else {
+				$message = $form['error_message'];
+			}
+			$form['message'] = '<div class="m-form-message m-form-message-error">' . wp_kses_post( wpautop( $message ) ) . '</div>';
 		}
 
 		if ( '' !== $form['image_url'] ) {
