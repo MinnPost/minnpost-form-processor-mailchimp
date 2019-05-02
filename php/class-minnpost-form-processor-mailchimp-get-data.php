@@ -263,6 +263,7 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 		// this placement does not give any defaults other than what the user's current settings are
 		$placements_user_groups_default = array(
 			'useraccount',
+			'fullpage',
 		);
 
 		// this placement does not give any options other than what the user's current settings are
