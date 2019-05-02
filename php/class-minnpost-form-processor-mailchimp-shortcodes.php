@@ -113,7 +113,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 			$user_email = apply_filters( $this->option_prefix . 'set_form_user_email', $user_email, $form['user']->ID );
 
 			$form['user']->user_email     = $user_email;
-			$form['user']->mailchimp_info = $this->get_data->get_user_info( $resource_type, $resource_id, $user_email );
+			$form['user']->mailchimp_info = $this->get_data->get_user_info( $shortcode, $resource_type, $resource_id, $user_email );
 			if ( ! is_wp_error( $form['user']->mailchimp_info ) ) {
 				$form['user']->groups           = $form['user']->mailchimp_info[ $user_mailchimp_groups ];
 				$form['user']->mailchimp_status = $form['user']->mailchimp_info['status'];

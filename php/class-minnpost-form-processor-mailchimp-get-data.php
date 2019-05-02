@@ -19,7 +19,6 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	public $version;
 	public $slug;
 	public $parent;
-	public $user_subresource_type;
 
 	/**
 	* Constructor which gets data and makes it available
@@ -31,7 +30,6 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 		$this->version               = minnpost_form_processor_mailchimp()->version;
 		$this->slug                  = minnpost_form_processor_mailchimp()->slug;
 		$this->parent                = minnpost_form_processor_mailchimp()->parent;
-		$this->user_subresource_type = minnpost_form_processor_mailchimp()->user_subresource_type;
 	}
 
 	/**
@@ -130,12 +128,13 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	/**
 	* Get a user's information from MailChimp
 	*
+	* @param string $shortcode
 	* @param string $resource_id
 	* @param string $email
 	* @param bool $reset
 	* @return array $user
 	*/
-	public function get_user_info( $resource_type, $resource_id, $email, $reset = false ) {
+	public function get_user_info( $shortcode, $resource_type, $resource_id, $email, $reset = false ) {
 		// email needs to be lowercase before being hashed
 		// see: https://developer.mailchimp.com/documentation/mailchimp/guides/manage-subscribers-with-the-mailchimp-api/
 		/*
@@ -144,8 +143,11 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 		if ( is_email( $email ) ) {
 			$email = md5( strtolower( $email ) );
 		}
+
+		$user_subresource_type = $this->get_subresource_type( $shortcode );
+
 		// the parent plugin will cache the result as long as reset is false
-		$user = $this->parent->mailchimp->load( $resource_type . '/' . $resource_id . '/' . $this->user_subresource_type . '/' . $email, array(), $reset );
+		$user = $this->parent->mailchimp->load( $resource_type . '/' . $resource_id . '/' . $user_subresource_type . '/' . $email, array(), $reset );
 
 		if ( isset( $user['status'] ) && 404 !== $user['status'] ) {
 			return $user;
@@ -494,6 +496,18 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	public function get_resource_id( $shortcode = '' ) {
 		$resource_id = get_option( $this->option_prefix . $shortcode . '_resource_id', '' );
 		return $resource_id;
+	}
+
+	/**
+	* Get the default subresource type
+	*
+	* @param string $shortcode
+	* @return string $subresource_type
+	*
+	*/
+	public function get_subresource_type( $shortcode = '' ) {
+		$subresource_type = get_option( $this->option_prefix . $shortcode . '_subresource_type', '' );
+		return $subresource_type;
 	}
 
 }
