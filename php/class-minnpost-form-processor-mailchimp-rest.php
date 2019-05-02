@@ -32,7 +32,7 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 		$this->get_data             = minnpost_form_processor_mailchimp()->get_data;
 
 		$this->rest_namespace = 'minnpost-api/v';
-		$this->rest_version   = '1';
+		$this->rest_version   = '2';
 
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 
@@ -72,29 +72,24 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 
 		switch ( $http_method ) {
 			case 'GET':
-				$newsletters = $this->get_data->get_mailchimp_field_options( '_newsletters', $this->newsletters_id );
-				$interests   = $this->get_data->get_mailchimp_field_options( '_occasional_emails', $this->occasional_emails_id );
-				$options     = array_merge( $newsletters, $interests );
+				$user_email            = $request->get_param( 'email' );
+				$shortcode             = 'newsletter_form';
+				$resource_type         = $this->get_data->get_resource_type( $shortcode );
+				$resource_id           = $this->get_data->get_resource_id( $shortcode );
+				$user_mailchimp_groups = get_option( $this->option_prefix . $shortcode . '_mc_resource_item_type', '' );
+				$reset_user_info       = true;
 
-				$email  = $request->get_param( 'email' );
-				$result = $this->get_data->get_user_info( $this->resource_id, md5( strtolower( $email ) ), true );
-				if ( is_object( $result ) && array_key_exists( 404, $result->errors ) ) {
-					return '';
-				}
-				if ( is_wp_error( $result ) ) {
+				$result = $this->get_data->get_user_info( $shortcode, $resource_type, $resource_id, $user_email, $reset_user_info );
+
+				$user = array();
+				if ( ! is_wp_error( $result ) ) {
+					$user['mailchimp_user_id'] = $result['id'];
+					$user['groups']            = $result[ $user_mailchimp_groups ];
+					$user['mailchimp_status']  = $result['status'];
+				} else {
 					return $result;
 				}
-				$user = array(
-					'status' => $result['status'],
-				);
-				if ( ! is_object( $result ) && 'subscribed' === $result['status'] ) {
-					$user['mailchimp_id'] = $result['id'];
-					$user['interests']    = array_intersect_key( $result['interests'], $options );
-				} else {
-					foreach ( $options as $key => $value ) {
-						$user['interests'][ $key ] = false;
-					}
-				}
+
 				return $user;
 				break;
 			case 'POST':
