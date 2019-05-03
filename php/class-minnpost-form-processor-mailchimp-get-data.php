@@ -543,4 +543,71 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 		return $subresource_type;
 	}
 
+	/**
+	* Get the success message
+	*
+	* @param string $message_code
+	* @param string $confirm_message
+	* @param bool $is_ajax
+	* @return string $message
+	*
+	*/
+	public function get_success_message( $message_code = '', $confirm_message = '', $is_ajax = false ) {
+		$message = '';
+		if ( '' !== $message_code ) {
+			if ( '' === $confirm_message ) {
+				switch ( $message_code ) {
+					case 'success-existing':
+						$message = __( 'Thanks for updating your email preferences. They will go into effect immediately.', 'minnpost-form-processor-mailchimp' );
+						break;
+					case 'success-new':
+						$message = __( 'We have added you to the MinnPost mailing list.', 'minnpost-form-processor-mailchimp' );
+						break;
+					case 'success-pending':
+						$message = __( 'We have added you to the MinnPost mailing list. You will need to click the confirmation link in the email we sent to begin receiving messages.', 'minnpost-form-processor-mailchimp' );
+						break;
+					default:
+						$message = $confirm_message;
+						break;
+				}
+			} else {
+				$message = $confirm_message;
+			}
+			if ( false === $is_ajax ) {
+				$message = '<div class="m-form-message m-form-message-info">' . wp_kses_post( wpautop( $message ) ) . '</div>';
+			} else {
+				$message = wp_kses_post( wpautop( $message ) );
+			}
+		} else {
+			$message = $confirm_message;
+		}
+		return $message;
+	}
+
+	/**
+	* Get the error message
+	*
+	* @param string $newsletter_error
+	* @param string $error_message
+	* @param bool $is_ajax
+	* @return string $message
+	*
+	*/
+	public function get_error_message( $newsletter_error = '', $error_message = '', $is_ajax = false ) {
+		$message = '';
+		if ( ! isset( $error_message ) || '' === $error_message ) {
+			$message = rawurldecode( stripslashes( $newsletter_error ) );
+		} else {
+			$message = $error_message;
+		}
+		if ( '' !== $message ) {
+			if ( false === $is_ajax ) {
+				$message = '<div class="m-form-message m-form-message-error">' . wp_kses_post( wpautop( $message ) ) . '</div>';
+			} else {
+				$message = wp_kses_post( wpautop( $message ) );
+			}
+		}
+		return $message;
+	}
+
 }

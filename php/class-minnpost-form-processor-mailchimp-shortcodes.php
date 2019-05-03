@@ -96,6 +96,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 				'content_after'    => '', // used after form. default is empty.
 				'categories'       => '', // categories corresponding to groups. default is empty.
 				'confirm_message'  => '', // after submission. default should be in the plugin settings, but it can be customized for specific usage
+				'error_message'    => '', // after submission. default should be in the plugin settings, but it can be customized for specific usage
 				'classes'          => '', // classes for css/js to target, if applicable. if there are values here, they will be added to the <form> (or other first markup element) in the template
 				'redirect_url'     => $this->get_current_url(), // if not ajax, form will go to this url.
 			),
@@ -174,39 +175,23 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		// groups fields for this shortcode
 		$form['group_fields'] = $this->get_data->get_shortcode_groups( $shortcode, $resource_type, $resource_id, $form['groups_available'], $form['placement'], $form['user'] );
 
-		$message_code = get_query_var( 'newsletter_message_code' );
-		if ( '' !== $message_code ) {
-			if ( '' === $form['confirm_message'] ) {
-				switch ( $message_code ) {
-					case 'success-existing':
-						$message = __( 'Thanks for updating your email preferences. They will go into effect immediately.', 'minnpost-form-processor-mailchimp' );
-						break;
-					case 'success-new':
-						$message = __( 'We have added you to the MinnPost mailing list.', 'minnpost-form-processor-mailchimp' );
-						break;
-					case 'success-pending':
-						$message = __( 'We have added you to the MinnPost mailing list. You will need to click the confirmation link in the email we sent to begin receiving messages.', 'minnpost-form-processor-mailchimp' );
-						break;
-					default:
-						$message = $form['confirm_message'];
-						break;
-				}
-			} else {
-				$message = $form['confirm_message'];
-			}
-			$form['message'] = '<div class="m-form-message m-form-message-info">' . wp_kses_post( wpautop( $message ) ) . '</div>';
-		} else {
-			$form['message'] = $form['confirm_message'];
+		// default message is empty
+		$form['message'] = '';
+
+		// set message for success
+		$message_code    = get_query_var( 'newsletter_message_code' );
+		$success_message = $this->get_data->get_success_message( $message_code, $form['confirm_message'] );
+
+		// set message for error
+		$newsletter_error = get_query_var( 'newsletter_error' );
+		$error_message    = $this->get_data->get_error_message( $newsletter_error, $form['error_message'] );
+
+		if ( '' !== $success_message ) {
+			$form['message'] = $success_message;
 		}
 
-		$newsletter_error = get_query_var( 'newsletter_error' );
-		if ( '' !== $newsletter_error ) {
-			if ( ! isset( $form['error_message'] ) || '' === $form['error_message'] ) {
-				$message = rawurldecode( stripslashes( $newsletter_error ) );
-			} else {
-				$message = $form['error_message'];
-			}
-			$form['message'] = '<div class="m-form-message m-form-message-error">' . wp_kses_post( wpautop( $message ) ) . '</div>';
+		if ( '' !== $error_message ) {
+			$form['message'] = $error_message;
 		}
 
 		if ( '' !== $form['image_url'] ) {

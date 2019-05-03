@@ -138,7 +138,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 						array(
 							'id'              => $result['id'],
 							'user_status'     => $user_status,
-							'confirm_message' => $confirm_message,
+							'confirm_message' => $this->get_data->get_success_message( 'success-' . $user_status, $confirm_message, true ),
 						)
 					);
 				} else {
