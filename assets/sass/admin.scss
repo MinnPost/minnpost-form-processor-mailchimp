@@ -1,0 +1,25 @@
+.minnpost-mailchimp-fields-wrap {
+	h4 {
+		cursor: pointer;
+	}
+	table {
+		display: none;
+	}
+	.minnpost-mailchimp-group-settings-visible {
+		background: #fff;
+		h4.minnpost-mailchimp-group-settings {
+			span {
+				transform: rotate(90deg);
+			}
+		}
+		table {
+			display: block;
+		}
+	}
+}
+
+.minnpost-form-processor-mailchimp-categories td .checkboxes {
+	max-width: 350px;
+	max-height: 150px;
+	overflow: scroll;
+}
