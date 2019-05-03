@@ -32,11 +32,9 @@
 					data: ajax_form_data
 				} )
 				.done( function( response ) { // response from the PHP action
-
-					var message = '';
+					var message       = '';
+					var message_class = 'info';
 					if ( true === response.success ) {
-						//$( 'fieldset', that ).hide(); // we do need some way of doing this?
-
 						button.text( 'Thanks' );
 						var analytics_action = 'Signup';
 						switch ( response.data.user_status ) {
@@ -56,6 +54,7 @@
 						if ( '' !== response.data.confirm_message ) {
 							message = response.data.confirm_message;
 						}
+
 						if ( 'function' === typeof wp_analytics_tracking_event ) {
 							wp_analytics_tracking_event( 'event', 'Newsletter', analytics_action, location.pathname );
 							gtag_report_conversion( location.pathname );
@@ -66,9 +65,13 @@
 						if ( 'function' === typeof wp_analytics_tracking_event ) {
 							wp_analytics_tracking_event( 'event', 'Newsletter', 'Fail', location.pathname );
 						}
+						if ( '' !== response.data.confirm_message ) {
+							message = response.data.confirm_message;
+						}
+						message_class = 'error';
 					}
 					$( '.m-form-message-ajax' ).html( message );
-					$( '.m-form-message-ajax' ).addClass( 'm-form-message-info' ).removeClass( 'm-form-message-ajax-placeholder' );
+					$( '.m-form-message-ajax' ).addClass( 'm-form-message-' + message_class ).removeClass( 'm-form-message-ajax-placeholder' );
 				} )
 				.fail( function( response ) {
 					$( '.m-form-message-ajax' ).html( '<p>An error has occured. Please try again.</p>' );
@@ -78,9 +81,6 @@
 					if ( 'function' === typeof wp_analytics_tracking_event ) {
 						wp_analytics_tracking_event( 'event', 'Newsletter', 'Fail', location.pathname );
 					}
-				} )
-				.always( function() {
-					event.target.reset();
 				} );
 			});
 		}
