@@ -601,6 +601,9 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 			$message = $error_message;
 		}
 		if ( '' !== $message ) {
+			$message = sprintf( '<strong>We received the following error message from our newsletter system:</strong> %1$s',
+				$message
+			);
 			if ( false === $is_ajax ) {
 				$message = '<div class="m-form-message m-form-message-error">' . wp_kses_post( wpautop( $message ) ) . '</div>';
 			} else {
