@@ -52,7 +52,13 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 	* @return void
 	*/
 	public function front_end_scripts_and_styles() {
-		//wp_enqueue_script( $this->slug . '-front-end', plugins_url( 'assets/js/admin.min.js', dirname( __FILE__ ) ), array( 'jquery' ), $this->version, true );
+		wp_enqueue_script( $this->slug . '-front-end', plugins_url( 'assets/js/front-end.min.js', dirname( __FILE__ ) ), array( 'jquery' ), $this->version, true );
+		// localize
+		$params = array(
+			'ajaxurl' => admin_url( 'admin-ajax.php' ),
+			'gtag_sendto' => 'AW-976620175/jqCyCL7atXkQj5XY0QM',
+		);
+		wp_localize_script( $this->slug . '-front-end', 'params', $params );
 		wp_enqueue_style( $this->slug . '-front-end', plugins_url( 'assets/css/front-end.min.css', dirname( __FILE__ ) ), array(), $this->version, 'all' );
 	}
 
@@ -194,6 +200,10 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 			$form['message'] = $error_message;
 		}
 
+		// set message for ajax
+		if ( '' === $form['message'] ) {
+			$form['message'] = '<div class="m-form-message m-form-message-ajax m-form-message-ajax-placeholder"></div>';
+		}
 		if ( '' !== $form['image_url'] ) {
 			$form['image'] = '<figure class="a-shortcode-image"><img src="' . esc_url( $form['image_url'] ) . '"' . $form['image_alt'] . '></figure>';
 		} else {
