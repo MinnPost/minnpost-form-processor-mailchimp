@@ -136,7 +136,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 				if ( isset( $_POST['ajaxrequest'] ) && 'true' === $_POST['ajaxrequest'] ) {
 					wp_send_json_success(
 						array(
-							'id'              => $result['id'],
+							'id'              => isset( $result['id'] ) ? $result['id'] : '',
 							'user_status'     => $user_status,
 							'confirm_message' => $this->get_data->get_success_message( 'success-' . $user_status, $confirm_message, true ),
 						)
@@ -164,9 +164,9 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 				if ( isset( $_POST['ajaxrequest'] ) && 'true' === $_POST['ajaxrequest'] ) {
 					wp_send_json_error(
 						array(
-							'id'              => $result['id'],
+							'id'              => isset( $result['id'] ) ? $result['id'] : '',
 							'user_status'     => $user_status,
-							'confirm_message' => $confirm_message,
+							'confirm_message' => $this->get_data->get_error_message( $confirm_message, '', true ),
 						)
 					);
 				} else {
