@@ -32,6 +32,9 @@ $form-width: 292px;
 		.m-form-message, .m-subscribe-grouping {
 			margin-top: $vertical-space;
 		}
+		.m-form-message.m-form-message-ajax-placeholder {
+			display: none;
+		}
 		.m-subscribe-grouping {
 			display: flex;
 			align-items: flex-start;
