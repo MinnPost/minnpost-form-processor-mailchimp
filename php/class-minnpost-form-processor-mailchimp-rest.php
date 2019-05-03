@@ -19,6 +19,7 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 	public $version;
 	public $slug;
 	public $get_data;
+	public $post_data;
 
 	/**
 	* Constructor which sets up rest api
@@ -30,6 +31,7 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 		$this->version              = minnpost_form_processor_mailchimp()->version;
 		$this->slug                 = minnpost_form_processor_mailchimp()->slug;
 		$this->get_data             = minnpost_form_processor_mailchimp()->get_data;
+		$this->post_data            = minnpost_form_processor_mailchimp()->post_data;
 
 		$this->rest_namespace = 'minnpost-api/v';
 		$this->rest_version   = '2';
@@ -68,15 +70,16 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 	* @return $result
 	*/
 	public function process_rest( WP_REST_Request $request ) {
-		$http_method = $request->get_method();
+		$http_method           = $request->get_method();
+		$shortcode             = 'newsletter_form'; // todo: we could make this configurable somehow?
+		$resource_type         = $this->get_data->get_resource_type( $shortcode );
+		$resource_id           = $this->get_data->get_resource_id( $shortcode );
+		$subresource_type      = $this->get_data->get_subresource_type( $shortcode );
+		$user_mailchimp_groups = get_option( $this->option_prefix . $shortcode . '_mc_resource_item_type', '' );
 
 		switch ( $http_method ) {
 			case 'GET':
 				$user_email            = $request->get_param( 'email' );
-				$shortcode             = 'newsletter_form';
-				$resource_type         = $this->get_data->get_resource_type( $shortcode );
-				$resource_id           = $this->get_data->get_resource_id( $shortcode );
-				$user_mailchimp_groups = get_option( $this->option_prefix . $shortcode . '_mc_resource_item_type', '' );
 				$reset_user_info       = true;
 
 				$result = $this->get_data->get_user_info( $shortcode, $resource_type, $resource_id, $user_email, $reset_user_info );
@@ -93,46 +96,62 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 				return $user;
 				break;
 			case 'POST':
-				$id         = $request->get_param( 'mailchimp_user_id' );
-				$status     = $request->get_param( 'mailchimp_user_status' );
-				$email      = $request->get_param( 'email' );
-				$first_name = $request->get_param( 'first_name' );
-				$last_name  = $request->get_param( 'last_name' );
 
-				$newsletters       = $request->get_param( 'newsletters' );
-				$occasional_emails = $request->get_param( 'occasional_emails' );
+				// required form data
+				$mailchimp_user_id = $request->get_param( 'mailchimp_user_id' );
+				$status            = $request->get_param( 'mailchimp_status' );
+				$email             = $request->get_param( 'email' );
 
-				$newsletters_available       = $request->get_param( 'newsletters_available' );
-				$occasional_emails_available = $request->get_param( 'occasional_emails_available' );
+				// this is the mailchimp group settings field. it gets sanitized later.
+				$groups_available = $request->get_param( 'groups_available' );
 
+				// this checks for allowed groups based on the settings
+				$groups_available = $this->get_data->get_shortcode_groups( $action, $resource_type, $resource_id, $groups_available );
+
+				// this is the array of groups submitted by the user, if applicable
+				$groups_submitted = $request->get_param( 'groups_submitted' );
+
+				// if the user submitted groups, assign them the ones that are available to this form.
+				// note: submitted needs to be an array of keys. whatever else available contains (ids, default, etc.) it needs to also have the id as the a column of the array.
+				if ( ! empty( $groups_submitted ) ) {
+					$groups = array_intersect( $groups_submitted, array_column( $groups_available, 'id' ) );
+				} else {
+					// otherwise, assign them whatever is available based on settings. we only need the ids.
+					$groups = array_column( $groups_available, 'id' );
+				}
+
+				// optional form data
+				$first_name      = $request->get_param( 'first_name' );
+				$last_name       = $request->get_param( 'last_name' );
+				$confirm_message = $request->get_param( 'confirm_message' );
+
+				// setup the mailchimp user array and add the required items to it
 				$user_data = array(
-					'user_email' => $email,
-					'first_name' => $first_name,
-					'last_name'  => $last_name,
+					'mailchimp_user_id' => $mailchimp_user_id,
+					'user_email'        => $email,
+					'user_status'       => $status,
 				);
 
-				if ( null !== $id ) {
-					$user_data['_mailchimp_user_id'] = $id;
-				}
-				if ( null !== $status ) {
-					$user_data['_mailchimp_user_status'] = $status;
+				// show all the available groups so we can set them as false, if need be
+				if ( ! empty( $groups_available ) ) {
+					$user_data['groups_available'] = array_keys( $groups_available );
 				}
 
-				if ( ! empty( $newsletters_available ) ) {
-					$user_data['newsletters_available'] = $newsletters_available;
-				}
-				if ( ! empty( $occasional_emails_available ) ) {
-					$user_data['occasional_emails_available'] = $occasional_emails_available;
+				// set default mailchimp group settings based on the shortcode attributes and the plugin settings
+				if ( ! empty( $groups ) ) {
+					$user_data['groups'] = $groups;
 				}
 
-				if ( ! empty( $newsletters ) ) {
-					$user_data['_newsletters'] = $newsletters;
+				// name fields are optional, but we can use them if they exist
+				if ( ! empty( $first_name ) ) {
+					$user_data['first_name'] = $first_name;
 				}
-				if ( ! empty( $newsletters ) ) {
-					$user_data['_occasional_emails'] = $occasional_emails;
+				if ( ! empty( $last_name ) ) {
+					$user_data['last_name'] = $last_name;
 				}
 
-				$result = $this->save_user_mailchimp_list_settings( $user_data );
+				// send data to plugin
+				$result = $this->post_data->save_to_mailchimp( $shortcode, $resource_type, $resource_id, $subresource_type, $user_data );
 				if ( is_wp_error( $result ) ) {
 					return $result;
 				}
