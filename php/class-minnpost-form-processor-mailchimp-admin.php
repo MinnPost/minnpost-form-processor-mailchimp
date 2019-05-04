@@ -179,6 +179,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 
 		$input_callback_default    = array( $this, 'display_input_field' );
 		$textarea_callback_default = array( $this, 'display_textarea' );
+		$editor_callback_default   = array( $this, 'display_editor' );
 		$input_checkboxes_default  = array( $this, 'display_checkboxes' );
 		$input_radio_default       = array( $this, 'display_radio' );
 		$input_select_default      = array( $this, 'display_select' );
@@ -187,6 +188,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 		$all_field_callbacks = array(
 			'text'       => $input_callback_default,
 			'textarea'   => $textarea_callback_default,
+			'editor'     => $editor_callback_default,
 			'checkboxes' => $input_checkboxes_default,
 			'radio'      => $input_radio_default,
 			'select'     => $input_select_default,
@@ -224,7 +226,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 				'section'  => $section,
 				'args'     => array(
 					'type' => 'text',
-					'desc' => __( 'Enter shortcodes, one on each line, that are managed by this plugin. Ex: newsletter_form corresponds to [newsletter_form].', 'minnpost-form-processor-mailchimp' ),
+					'desc' => __( 'Enter shortcodes, one on each line, that are managed by this plugin. Ex: newsletter_form will display as [newsletter_form].', 'minnpost-form-processor-mailchimp' ),
 				),
 			),
 		);
@@ -396,7 +398,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 							),
 						);
 						$settings[ $section . '_' . $key . '_name_in_shortcode' ] = array(
-							'title'    => __( 'Shortcode name', 'minnpost-form-processor-mailchimp' ),
+							'title'    => __( 'Name in shortcode', 'minnpost-form-processor-mailchimp' ),
 							'callback' => $callbacks['text'],
 							'page'     => $page,
 							'section'  => $section,
@@ -820,6 +822,82 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 				minnpost_form_processor_mailchimp()->sanitize_html_classes( $class . esc_html( ' code' ) ),
 				esc_attr( $value )
 			);
+			if ( '' !== $desc ) {
+				echo sprintf( '<p class="description">%1$s</p>',
+					esc_html( $desc )
+				);
+			}
+		} else {
+			echo sprintf( '<p><code>%1$s</code></p>',
+				esc_html__( 'Defined in wp-config.php', 'minnpost-form-processor-mailchimp' )
+			);
+		}
+	}
+
+	/**
+	* Display for a wysiwyg editir
+	*
+	* @param array $args
+	*/
+	public function display_editor( $args ) {
+		$id      = $args['label_for'];
+		$name    = $args['name'];
+		$desc    = $args['desc'];
+		$checked = '';
+
+		$class = 'regular-text';
+
+		if ( ! isset( $args['constant'] ) || ! defined( $args['constant'] ) ) {
+			$value = wp_kses_post( get_option( $id, '' ) );
+			if ( '' === $value && isset( $args['default'] ) && '' !== $args['default'] ) {
+				$value = $args['default'];
+			}
+
+			$settings = array();
+			if ( isset( $args['wpautop'] ) ) {
+				$settings['wpautop'] = $args['wpautop'];
+			}
+			if ( isset( $args['media_buttons'] ) ) {
+				$settings['media_buttons'] = $args['media_buttons'];
+			}
+			if ( isset( $args['default_editor'] ) ) {
+				$settings['default_editor'] = $args['default_editor'];
+			}
+			if ( isset( $args['drag_drop_upload'] ) ) {
+				$settings['drag_drop_upload'] = $args['drag_drop_upload'];
+			}
+			if ( isset( $args['name'] ) ) {
+				$settings['textarea_name'] = $args['name'];
+			}
+			if ( isset( $args['rows'] ) ) {
+				$settings['textarea_rows'] = $args['rows']; // default is 20
+			}
+			if ( isset( $args['tabindex'] ) ) {
+				$settings['tabindex'] = $args['tabindex'];
+			}
+			if ( isset( $args['tabfocus_elements'] ) ) {
+				$settings['tabfocus_elements'] = $args['tabfocus_elements'];
+			}
+			if ( isset( $args['editor_css'] ) ) {
+				$settings['editor_css'] = $args['editor_css'];
+			}
+			if ( isset( $args['editor_class'] ) ) {
+				$settings['editor_class'] = $args['editor_class'];
+			}
+			if ( isset( $args['teeny'] ) ) {
+				$settings['teeny'] = $args['teeny'];
+			}
+			if ( isset( $args['dfw'] ) ) {
+				$settings['dfw'] = $args['dfw'];
+			}
+			if ( isset( $args['tinymce'] ) ) {
+				$settings['tinymce'] = $args['tinymce'];
+			}
+			if ( isset( $args['quicktags'] ) ) {
+				$settings['quicktags'] = $args['quicktags'];
+			}
+
+			wp_editor( $value, $id, $settings );
 			if ( '' !== $desc ) {
 				echo sprintf( '<p class="description">%1$s</p>',
 					esc_html( $desc )
