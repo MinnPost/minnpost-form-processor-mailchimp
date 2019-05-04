@@ -131,6 +131,14 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 						$user_status = 'pending';
 					}
 				}
+
+				// clear the cache now
+				//$cache_call   = $resource_type . '/' . $resource_id . '/' . $subresource_type . '/' . $email;
+				//$delete_cache = $this->parent->wordpress->cache_delete( $call );
+
+				// reset the user info. it would be nice to just clear the cache instead but that does not appear to work.
+				$user_info = $this->get_data->get_user_info( $action, $resource_type, $resource_id, $email, true );
+
 				if ( isset( $_POST['ajaxrequest'] ) && 'true' === $_POST['ajaxrequest'] ) {
 					wp_send_json_success(
 						array(

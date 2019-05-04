@@ -263,6 +263,11 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 		// this placement does not give any defaults other than what the user's current settings are
 		$placements_user_groups_default = array(
 			'useraccount',
+		);
+
+		// this placement overrides other defaults with the user's defaults
+		$placements_user_groups_override_defaults = array(
+			'useraccount',
 			'fullpage',
 		);
 
@@ -284,13 +289,18 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 				if ( in_array( $group['id'], $user_groups, true ) ) {
 					$groups_available[ $key ]['default'] = true;
 				}
-			}
-			// if we only want the user's groups, uncheck everything else
-			if ( in_array( $placement, $placements_user_groups_default, true ) ) {
-				foreach ( $groups_available as $key => $group ) {
+				// if the user groups can override other defaults, do it
+				if ( in_array( $placement, $placements_user_groups_override_defaults, true ) ) {
 					if ( ! in_array( $group['id'], $user_groups, true ) ) {
 						$groups_available[ $key ]['default'] = false;
 					}
+				}
+			}
+		} else {
+			// if we only want the user's groups, uncheck everything else
+			if ( in_array( $placement, $placements_user_groups_default, true ) ) {
+				foreach ( $groups_available as $key => $group ) {
+					$groups_available[ $key ]['default'] = false;
 				}
 			}
 		}
@@ -313,7 +323,7 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 			}
 		}
 
-		// if we only get the user's groups, remove other groups
+		// if we only get the user's groups, remove other groups from the form
 		if ( in_array( $placement, $placements_user_groups_only, true ) ) {
 			foreach ( $groups_available as $key => $group ) {
 				if ( ! is_array( $user->groups ) || ! in_array( $group['id'], array_keys( $user->groups ), true ) ) {
