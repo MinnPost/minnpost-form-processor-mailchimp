@@ -43,7 +43,11 @@
 									?>
 									<article>
 										<label>
-											<p class="a-newsletter-group"><?php echo $category['name']; ?></p>
+											<?php if ( '' !== $item['grouping'] ) : ?>
+												<p class="a-newsletter-group"><?php echo $item['grouping']; ?></p>
+											<?php else : ?>
+												<p class="a-newsletter-group"><?php echo $category['name']; ?></p>
+											<?php endif; ?>
 											<input name="groups_submitted[]" type="checkbox" value="<?php echo $item['id']; ?>"<?php echo $checked; ?>>
 											<?php if ( false === $form['hide_title'] || true === $form['show_title'] ) : ?>
 												<h3 class="a-newsletter-title"><?php echo $item['name']; ?></h3>

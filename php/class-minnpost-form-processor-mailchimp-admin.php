@@ -373,6 +373,18 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 
 				if ( ! empty( $mc_resource_items ) ) {
 					foreach ( $mc_resource_items as $key => $mc_resource_item ) {
+						$settings[ $section . '_' . $key . '_grouping' ]          = array(
+							'title'    => __( 'Grouping text', 'minnpost-form-processor-mailchimp' ),
+							'callback' => $callbacks['text'],
+							'page'     => $page,
+							'section'  => $section,
+							'class'    => 'minnpost-form-processor-mailchimp-group minnpost-form-processor-mailchimp-group-' . sanitize_title( $mc_resource_item['text'] ),
+							'args'     => array(
+								'desc'     => __( 'This text is sometimes displayed above the title of the newsletter. Frequency is a good thing to put here.', 'minnpost-form-processor-mailchimp' ),
+								'constant' => '',
+								'type'     => 'text',
+							),
+						);
 						$settings[ $section . '_' . $key . '_title' ]             = array(
 							'title'    => __( 'Title', 'minnpost-form-processor-mailchimp' ),
 							'callback' => $callbacks['text'],
