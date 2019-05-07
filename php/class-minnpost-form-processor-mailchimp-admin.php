@@ -387,14 +387,16 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 						);
 						$settings[ $section . '_' . $key . '_description' ]       = array(
 							'title'    => __( 'Description', 'minnpost-form-processor-mailchimp' ),
-							'callback' => $callbacks['textarea'],
+							'callback' => $callbacks['editor'],
 							'page'     => $page,
 							'section'  => $section,
 							'class'    => 'minnpost-form-processor-mailchimp-group minnpost-form-processor-mailchimp-group-' . sanitize_title( $mc_resource_item['text'] ),
 							'args'     => array(
-								'desc'     => __( 'When a form shortcode displays information about this item, it will use this value for the description.', 'minnpost-form-processor-mailchimp' ),
-								'constant' => '',
-								'type'     => 'text',
+								'desc'          => __( 'When a form shortcode displays information about this item, it will use this value for the description.', 'minnpost-form-processor-mailchimp' ),
+								'constant'      => '',
+								'type'          => 'text',
+								'rows'          => '5',
+								'media_buttons' => false,
 							),
 						);
 						$settings[ $section . '_' . $key . '_name_in_shortcode' ] = array(
