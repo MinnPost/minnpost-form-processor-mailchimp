@@ -26,6 +26,11 @@
 	<?php endif; ?>
 	<div class="m-form-container">
 		<?php echo $form['image']; ?>
+		<?php if ( isset( $form['user']->groups ) && ! empty( $form['user']->groups ) ) : ?>
+			<p class="a-instructions"><?php echo __( 'Your email address currently receives the checked MinnPost newsletters. You can change them here.', 'minnpost-mailchimp-form-processor' ); ?></p>
+		<?php else : ?>
+			<p class="a-instructions"><?php echo __( 'Pick the newsletters you’d like to receive from us. We have checked a few options to start.', 'minnpost-mailchimp-form-processor' ); ?></p>
+		<?php endif; ?>
 		<?php echo $form['content_before']; ?>
 		<?php echo $form['message']; ?>
 			<?php if ( count( $form['group_fields'] ) > 1 ) : ?>
