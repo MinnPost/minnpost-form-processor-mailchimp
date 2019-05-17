@@ -95,7 +95,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 				'groups_available' => '', // mailchimp groups to make available for the user. default (plugin settings), all, or csv of group names. this should be whatever the form is making available to the user. if there are groups the user is not able to choose in this instance, they should be left out.
 				'show_elements'    => '', // title, description. default is based on placement
 				'hide_elements'    => '', // title, description. default is based on placement
-				'button_text'      => '', // button text for the form. default is Subscribe
+				'button_text'      => '', // button text for the form. default is 1) whatever is in the plugin settings, 2) if that is blank, Subscribe
 				'image_url'        => '', // if a local image url is specified, it will be added before the content_before value
 				'image_alt'        => '', // if adding an image, alt text should also be added
 				'content_before'   => '', // used before form. default is empty.
@@ -115,8 +115,8 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 
 		// there is a logged in user. we should check if they're a mailchimp user.
 		if ( 0 !== $form['user'] ) {
-			$user_mailchimp_groups        = get_option( $this->option_prefix . $shortcode . '_mc_resource_item_type', '' );
-			$user_email                   = $form['user']->user_email;
+			$user_mailchimp_groups = get_option( $this->option_prefix . $shortcode . '_mc_resource_item_type', '' );
+			$user_email            = $form['user']->user_email;
 
 			// filter for changing email
 			$user_email = apply_filters( $this->option_prefix . 'set_form_user_email', $user_email, $form['user']->ID );
@@ -127,7 +127,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 				$user_email = $url_email;
 			}
 
-			$form['user']->user_email     = $user_email;
+			$form['user']->user_email = $user_email;
 
 			// if the user has already filled out the form, we should reset the cached data
 			$reset_user_info = false;
@@ -147,9 +147,9 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 			}
 		}
 
-		// default button text is Subscribe. Templates can override this as needed, or with an attribute value the individual forms can override it.
+		// default button text is Subscribe if the form option has no value. Templates can override this as needed, or with an attribute value the individual forms can override it.
 		if ( '' === $form['button_text'] ) {
-			$form['button_text'] = __( 'Subscribe', 'minnpost-form-processor-mailchimp' );
+			$form['button_text'] = get_option( $this->option_prefix . $shortcode . '_button_text', __( 'Subscribe', 'minnpost-form-processor-mailchimp' ) );
 		}
 
 		// allow title and description to be hidden by shortcode attributes

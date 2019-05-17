@@ -266,7 +266,17 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 
 				$page = $section;
 				add_settings_section( $section, $title, null, $page );
-
+				$settings[ $section . '_button_text' ]   = array(
+					'title'    => __( 'Button text', 'minnpost-form-processor-mailchimp' ),
+					'callback' => $callbacks['text'],
+					'page'     => $page,
+					'section'  => $section,
+					'args'     => array(
+						'desc'     => __( 'This value will be the default text on submit buttons in this form. If there is a button_text attribute on the shortcode, that will overidde this setting for that instance of the shortcode.', 'minnpost-form-processor-mailchimp' ),
+						'constant' => '',
+						'type'     => 'text',
+					),
+				);
 				$settings[ $section . '_resource_type' ] = array(
 					'title'    => __( 'Resource type', 'minnpost-form-processor-mailchimp' ),
 					'callback' => $callbacks['select'],

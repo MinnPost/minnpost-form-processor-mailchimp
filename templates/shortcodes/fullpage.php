@@ -71,7 +71,7 @@
 							<label><?php echo __( 'Please enter your email address:', 'minnpost-mailchimp-form-processor' ); ?>
 								<input type="email" name="email" value="<?php echo isset( $form['user']->user_email ) ? $form['user']->user_email : ''; ?>" required>
 							</label>
-							<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"><?php echo __( 'Subscribe', 'minnpost-mailchimp-form-processor' ); ?></button>
+							<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"><?php echo $form['button_text']; ?></button>
 						</div>
 						<aside class="m-form-after">
 							<?php echo $form['content_after']; ?>
