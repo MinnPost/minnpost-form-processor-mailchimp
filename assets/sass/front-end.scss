@@ -13,6 +13,9 @@ $form-width: 292px;
 	.m-form-message.m-form-message-ajax-placeholder {
 		display: none;
 	}
+	button[type="submit"] {
+		white-space: nowrap;
+	}
 	// full page forms
 	&.m-form-fullpage {
 		h2 {
