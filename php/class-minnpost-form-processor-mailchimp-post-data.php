@@ -121,7 +121,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 
 			// mailchimp fields
 			$result = $this->save_to_mailchimp( $action, $resource_type, $resource_id, $subresource_type, $user_data );
-			
+
 			if ( isset( $result['id'] ) ) {
 				if ( 'PUT' === $result['method'] ) {
 					$user_status = 'existing';
@@ -239,13 +239,13 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 	 */
 	public function save_to_mailchimp( $shortcode, $resource_type, $resource_id, $subresource_type, $user_data ) {
 		// send user data to mailchimp and create/update their info
-		$id                = isset( $user_data['mailchimp_user_id'] ) ? $user_data['mailchimp_user_id'] : '';
-		$status            = isset( $user_data['user_status'] ) ? $user_data['user_status'] : '';
-		$email             = isset( $user_data['user_email'] ) ? $user_data['user_email'] : '';
-		$first_name        = isset( $user_data['first_name'] ) ? $user_data['first_name'] : '';
-		$last_name         = isset( $user_data['last_name'] ) ? $user_data['last_name'] : '';
-		$groups            = isset( $user_data['groups'] ) ? $user_data['groups'] : array();
-		$groups_available  = isset( $user_data['groups_available'] ) ? $user_data['groups_available'] : array();
+		$id               = isset( $user_data['mailchimp_user_id'] ) ? $user_data['mailchimp_user_id'] : '';
+		$status           = isset( $user_data['user_status'] ) ? $user_data['user_status'] : '';
+		$email            = isset( $user_data['user_email'] ) ? $user_data['user_email'] : '';
+		$first_name       = isset( $user_data['first_name'] ) ? $user_data['first_name'] : '';
+		$last_name        = isset( $user_data['last_name'] ) ? $user_data['last_name'] : '';
+		$groups           = isset( $user_data['groups'] ) ? $user_data['groups'] : array();
+		$groups_available = isset( $user_data['groups_available'] ) ? $user_data['groups_available'] : array();
 
 		// don't send any data to mailchimp if there are no settings, and there is no user id
 		// otherwise we need to, in case user wants to empty their preferences
