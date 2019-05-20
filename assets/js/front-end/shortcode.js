@@ -16,16 +16,18 @@
 	function shortcodeForm() {
 		if ( $( '.m-form-minnpost-form-processor-mailchimp' ).length > 0 ) {
 			$( '.m-form-minnpost-form-processor-mailchimp' ).submit( function( event ) {
+				event.preventDefault(); // Prevent the default form submit.
+				event.stopImmediatePropagation();
 				var that = this;
 				var button = $( 'button', this );
 				var previous_button_text = button.text();
 				var ajax_form_data = $( this ).serialize(); // serialize the form data
 				button.prop( 'disabled', true );
 				button.text( 'Processing' );
-				event.preventDefault(); // Prevent the default form submit.				
 				//add our own ajax check as X-Requested-With is not always reliable
 				ajax_form_data = ajax_form_data + '&ajaxrequest=true&subscribe';
 				$.ajax({
+					cache: false,
 					url: params.ajaxurl, // domain/wp-admin/admin-ajax.php
 					type: 'post',
 					dataType : 'json',
