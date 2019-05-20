@@ -68,7 +68,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 
 			// required form data
 			$mailchimp_user_id = isset( $_POST['mailchimp_user_id'] ) ? esc_attr( $_POST['mailchimp_user_id'] ) : '';
-			$status            = isset( $_POST['mailchimp_status'] ) ? esc_attr( $_POST['mailchimp_status'] ) : get_option( $this->option_prefix . $action . '_default_member_status' );
+			$status            = isset( $_POST['mailchimp_status'] ) ? esc_attr( $_POST['mailchimp_status'] ) : get_option( $this->option_prefix . $action . '_default_user_status' );
 			$email             = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
 
 			// this is the mailchimp group settings field. it gets sanitized later.
