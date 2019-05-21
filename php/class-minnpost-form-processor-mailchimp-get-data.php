@@ -25,11 +25,11 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	*/
 	public function __construct() {
 
-		$this->option_prefix         = minnpost_form_processor_mailchimp()->option_prefix;
-		$this->parent_option_prefix  = minnpost_form_processor_mailchimp()->parent_option_prefix;
-		$this->version               = minnpost_form_processor_mailchimp()->version;
-		$this->slug                  = minnpost_form_processor_mailchimp()->slug;
-		$this->parent                = minnpost_form_processor_mailchimp()->parent;
+		$this->option_prefix        = minnpost_form_processor_mailchimp()->option_prefix;
+		$this->parent_option_prefix = minnpost_form_processor_mailchimp()->parent_option_prefix;
+		$this->version              = minnpost_form_processor_mailchimp()->version;
+		$this->slug                 = minnpost_form_processor_mailchimp()->slug;
+		$this->parent               = minnpost_form_processor_mailchimp()->parent;
 	}
 
 	/**
@@ -388,7 +388,7 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 								'id'          => $id,
 								'name'        => get_option( $this->option_prefix . $shortcode . '_' . $id . '_title', '' ),
 								'description' => get_option( $this->option_prefix . $shortcode . '_' . $id . '_description', '' ),
-								'grouping' => get_option( $this->option_prefix . $shortcode . '_' . $id . '_grouping', '' ),
+								'grouping'    => get_option( $this->option_prefix . $shortcode . '_' . $id . '_grouping', '' ),
 							);
 						}
 					}
@@ -435,7 +435,7 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 					'name'        => get_option( $this->option_prefix . $shortcode . '_' . $subresource['type'] . '_' . $subresource['id'] . '_' . $item['type'] . '_' . $item['id'] . '_title', '' ),
 					'default'     => $item['default'],
 					'description' => get_option( $this->option_prefix . $shortcode . '_' . $subresource['type'] . '_' . $subresource['id'] . '_' . $item['type'] . '_' . $item['id'] . '_description', '' ),
-					'grouping' => get_option( $this->option_prefix . $shortcode . '_' . $subresource['type'] . '_' . $subresource['id'] . '_' . $item['type'] . '_' . $item['id'] . '_grouping', '' ),
+					'grouping'    => get_option( $this->option_prefix . $shortcode . '_' . $subresource['type'] . '_' . $subresource['id'] . '_' . $item['type'] . '_' . $item['id'] . '_grouping', '' ),
 				);
 			}
 		}
@@ -602,10 +602,11 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	* @param string $newsletter_error
 	* @param string $error_message
 	* @param bool $is_ajax
+	* @param bool $local_error
 	* @return string $message
 	*
 	*/
-	public function get_error_message( $newsletter_error = '', $error_message = '', $is_ajax = false ) {
+	public function get_error_message( $newsletter_error = '', $error_message = '', $is_ajax = false, $local_error = false ) {
 		$message = '';
 		if ( ! isset( $error_message ) || '' === $error_message ) {
 			$message = rawurldecode( stripslashes( $newsletter_error ) );
@@ -613,9 +614,13 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 			$message = $error_message;
 		}
 		if ( '' !== $message ) {
-			$message = sprintf( '<strong>We received the following error message from our newsletter system:</strong> %1$s',
-				$message
-			);
+			if ( false === $local_error ) {
+				$message = sprintf(
+					// translators: 1 is the error message from mailchimp
+					'<strong>We received the following error message from our newsletter system:</strong> %1$s',
+					$message
+				);
+			}
 			if ( false === $is_ajax ) {
 				$message = '<div class="m-form-message m-form-message-error">' . wp_kses_post( wpautop( $message ) ) . '</div>';
 			} else {

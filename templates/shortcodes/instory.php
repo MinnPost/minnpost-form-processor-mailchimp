@@ -30,6 +30,9 @@
 			<input type="hidden" name="groups_available" value="<?php echo esc_attr( $form['groups_available'] ); ?>">
 		<?php endif; ?>
 	<?php endif; ?>
+
+	<?php include_once( plugin_dir_path( __FILE__ ) . '../template-parts/honeypots.php' ); ?>
+	
 	<div class="m-form-container">
 		<?php echo $form['image']; ?>
 		<?php echo $form['content_before']; ?>
