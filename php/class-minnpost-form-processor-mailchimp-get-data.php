@@ -25,11 +25,11 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	*/
 	public function __construct() {
 
-		$this->option_prefix         = minnpost_form_processor_mailchimp()->option_prefix;
-		$this->parent_option_prefix  = minnpost_form_processor_mailchimp()->parent_option_prefix;
-		$this->version               = minnpost_form_processor_mailchimp()->version;
-		$this->slug                  = minnpost_form_processor_mailchimp()->slug;
-		$this->parent                = minnpost_form_processor_mailchimp()->parent;
+		$this->option_prefix        = minnpost_form_processor_mailchimp()->option_prefix;
+		$this->parent_option_prefix = minnpost_form_processor_mailchimp()->parent_option_prefix;
+		$this->version              = minnpost_form_processor_mailchimp()->version;
+		$this->slug                 = minnpost_form_processor_mailchimp()->slug;
+		$this->parent               = minnpost_form_processor_mailchimp()->parent;
 	}
 
 	/**
@@ -388,7 +388,7 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 								'id'          => $id,
 								'name'        => get_option( $this->option_prefix . $shortcode . '_' . $id . '_title', '' ),
 								'description' => get_option( $this->option_prefix . $shortcode . '_' . $id . '_description', '' ),
-								'grouping' => get_option( $this->option_prefix . $shortcode . '_' . $id . '_grouping', '' ),
+								'grouping'    => get_option( $this->option_prefix . $shortcode . '_' . $id . '_grouping', '' ),
 							);
 						}
 					}
@@ -435,7 +435,7 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 					'name'        => get_option( $this->option_prefix . $shortcode . '_' . $subresource['type'] . '_' . $subresource['id'] . '_' . $item['type'] . '_' . $item['id'] . '_title', '' ),
 					'default'     => $item['default'],
 					'description' => get_option( $this->option_prefix . $shortcode . '_' . $subresource['type'] . '_' . $subresource['id'] . '_' . $item['type'] . '_' . $item['id'] . '_description', '' ),
-					'grouping' => get_option( $this->option_prefix . $shortcode . '_' . $subresource['type'] . '_' . $subresource['id'] . '_' . $item['type'] . '_' . $item['id'] . '_grouping', '' ),
+					'grouping'    => get_option( $this->option_prefix . $shortcode . '_' . $subresource['type'] . '_' . $subresource['id'] . '_' . $item['type'] . '_' . $item['id'] . '_grouping', '' ),
 				);
 			}
 		}
