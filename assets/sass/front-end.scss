@@ -16,6 +16,10 @@ $form-width: 292px;
 	button[type="submit"] {
 		white-space: nowrap;
 	}
+	.m-subscribe-field-shift {
+	    left: -9999px; position: absolute;
+	}
+
 	// full page forms
 	&.m-form-fullpage {
 		h2 {
@@ -155,6 +159,12 @@ $form-width: 292px;
 			}
 		}
 	}
+}
+
+// if html is rtl, switch the honeypots
+html[dir="rtl"] .m-form-minnpost-form-processor-mailchimp .m-subscribe-field-shift {
+    right: -9999px;
+    left: auto;
 }
 
 // sticky needs a style for when the admin bar is active
