@@ -602,10 +602,11 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	* @param string $newsletter_error
 	* @param string $error_message
 	* @param bool $is_ajax
+	* @param bool $local_error
 	* @return string $message
 	*
 	*/
-	public function get_error_message( $newsletter_error = '', $error_message = '', $is_ajax = false ) {
+	public function get_error_message( $newsletter_error = '', $error_message = '', $is_ajax = false, $local_error = false ) {
 		$message = '';
 		if ( ! isset( $error_message ) || '' === $error_message ) {
 			$message = rawurldecode( stripslashes( $newsletter_error ) );
@@ -613,9 +614,13 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 			$message = $error_message;
 		}
 		if ( '' !== $message ) {
-			$message = sprintf( '<strong>We received the following error message from our newsletter system:</strong> %1$s',
-				$message
-			);
+			if ( false === $local_error ) {
+				$message = sprintf(
+					// translators: 1 is the error message from mailchimp
+					'<strong>We received the following error message from our newsletter system:</strong> %1$s',
+					$message
+				);
+			}
 			if ( false === $is_ajax ) {
 				$message = '<div class="m-form-message m-form-message-error">' . wp_kses_post( wpautop( $message ) ) . '</div>';
 			} else {
