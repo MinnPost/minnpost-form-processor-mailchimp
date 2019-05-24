@@ -105,6 +105,9 @@ class MinnPost_Form_Processor_MailChimp {
 		// mailchimp api
 		$this->mailchimp = $this->parent->mailchimp;
 
+		// WordPress user data
+		$this->wp_user_data = new MinnPost_Form_Processor_MailChimp_WP_User_Data();
+
 		// Get data and make it available
 		$this->get_data = new MinnPost_Form_Processor_MailChimp_Get_Data();
 

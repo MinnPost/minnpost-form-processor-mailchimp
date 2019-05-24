@@ -152,8 +152,8 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 					$user_data['last_name'] = $last_name;
 				}
 
-				// send data to plugin
-				$result = $this->post_data->save_to_mailchimp( $shortcode, $resource_type, $resource_id, $subresource_type, $user_data );
+				// send user's data to be saved
+				$result = $this->post_data->save_user_data( $shortcode, $resource_type, $resource_id, $subresource_type, $user_data );
 				if ( is_wp_error( $result ) ) {
 					return $result;
 				}

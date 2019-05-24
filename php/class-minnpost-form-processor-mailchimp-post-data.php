@@ -18,6 +18,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 	public $parent_option_prefix;
 	public $version;
 	public $slug;
+	public $wp_user_data;
 	public $get_data;
 	public $parent;
 
@@ -29,6 +30,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 		$this->parent_option_prefix = minnpost_form_processor_mailchimp()->parent_option_prefix;
 		$this->version              = minnpost_form_processor_mailchimp()->version;
 		$this->slug                 = minnpost_form_processor_mailchimp()->slug;
+		$this->wp_user_data         = minnpost_form_processor_mailchimp()->wp_user_data;
 		$this->get_data             = minnpost_form_processor_mailchimp()->get_data;
 		$this->parent               = minnpost_form_processor_mailchimp()->parent;
 
@@ -157,10 +159,11 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 				$this->parent->logging->setup( $log_entry );
 
 			} else {
-				// save to mailchimp
-				$result = $this->save_to_mailchimp( $action, $resource_type, $resource_id, $subresource_type, $user_data );
+				// send user's data to be saved
+				$result = $this->save_user_data( $action, $resource_type, $resource_id, $subresource_type, $user_data );
 			}
 
+			// if save was successful, do the success activities
 			if ( isset( $result['id'] ) ) {
 				if ( 'PUT' === $result['method'] ) {
 					$user_status = 'existing';
@@ -267,7 +270,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 	}
 
 	/**
-	 * Send data to MailChimp. This is public because the REST API also uses it.
+	 * Save the user's MailChimp data. This is public because the REST API also uses it.
 	 *
 	 * @param  string  $shortcode
 	 * @param  string  $resource_type
@@ -277,7 +280,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 	 *
 	 * @return  array   $user_data
 	 */
-	public function save_to_mailchimp( $shortcode, $resource_type, $resource_id, $subresource_type, $user_data ) {
+	public function save_user_data( $shortcode, $resource_type, $resource_id, $subresource_type, $user_data ) {
 		// send user data to mailchimp and create/update their info
 		$id               = isset( $user_data['mailchimp_user_id'] ) ? $user_data['mailchimp_user_id'] : '';
 		$status           = isset( $user_data['user_status'] ) ? $user_data['user_status'] : '';
@@ -331,6 +334,11 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 			$params['status'] = 'pending';
 			$http_method      = 'PUT';
 			$result           = $this->parent->mailchimp->send( $resource_type . '/' . $resource_id . '/' . $subresource_type, $http_method, $params );
+		}
+
+		// if possible, save the user's data to their meta record
+		if ( isset( $result['id'] ) ) {
+			$update_user = $this->wp_user_data->save_user_meta( $shortcode, $params );
 		}
 
 		return $result;

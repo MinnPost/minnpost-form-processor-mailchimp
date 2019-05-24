@@ -310,7 +310,17 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 				}
 
 				if ( 'lists' === $resource_type ) {
-					//list_member_statuses
+					$settings[ $section . '_user_meta_key' ]       = array(
+						'title'    => __( 'User meta key for MailChimp data', 'minnpost-form-processor-mailchimp' ),
+						'callback' => $callbacks['text'],
+						'page'     => $page,
+						'section'  => $section,
+						'args'     => array(
+							'desc'     => __( 'When subscribing users to this list, the plugin will save the data to this meta key.', 'minnpost-form-processor-mailchimp' ),
+							'constant' => '',
+							'type'     => 'text',
+						),
+					);
 					$settings[ $section . '_subresource_type' ]    = array(
 						'title'    => __( 'MailChimp object for users', 'minnpost-form-processor-mailchimp' ),
 						'callback' => $callbacks['select'],

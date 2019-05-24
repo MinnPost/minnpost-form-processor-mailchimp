@@ -18,6 +18,7 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	public $parent_option_prefix;
 	public $version;
 	public $slug;
+	public $wp_user_data;
 	public $parent;
 
 	/**
@@ -29,6 +30,7 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 		$this->parent_option_prefix = minnpost_form_processor_mailchimp()->parent_option_prefix;
 		$this->version              = minnpost_form_processor_mailchimp()->version;
 		$this->slug                 = minnpost_form_processor_mailchimp()->slug;
+		$this->wp_user_data         = minnpost_form_processor_mailchimp()->wp_user_data;
 		$this->parent               = minnpost_form_processor_mailchimp()->parent;
 	}
 
@@ -135,6 +137,18 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 	* @return array $user
 	*/
 	public function get_user_info( $shortcode, $resource_type, $resource_id, $email, $reset = false ) {
+		// is there a user with saved meta info?
+		$saved_user_meta = $this->wp_user_data->get_user_meta( $shortcode, $email );
+		// if the user has a status and it is not subscribed, we should bypass the cache
+		if ( isset( $saved_user_meta['status'] ) && 'subscribed' !== $saved_user_meta['status'] ) {
+			$reset = true;
+		}
+
+		// otherwise, we should return the user's saved data
+		if ( isset( $saved_user_meta['status'] ) && false === $reset ) {
+			return $saved_user_meta;
+		}
+
 		// email needs to be lowercase before being hashed
 		// see: https://developer.mailchimp.com/documentation/mailchimp/guides/manage-subscribers-with-the-mailchimp-api/
 		/*
@@ -148,6 +162,11 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 
 		// the parent plugin will cache the result as long as reset is false
 		$user = $this->parent->mailchimp->load( $resource_type . '/' . $resource_id . '/' . $user_subresource_type . '/' . $email, array(), $reset );
+
+		// if we've reset the cache for any reason, also try to update the user's meta values
+		if ( true === $reset ) {
+			$update_user_meta = $this->wp_user_data->save_user_meta( $shortcode, $user );
+		}
 
 		if ( isset( $user['status'] ) && 404 !== $user['status'] ) {
 			return $user;
