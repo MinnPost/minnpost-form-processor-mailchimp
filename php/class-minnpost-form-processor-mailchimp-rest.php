@@ -47,21 +47,24 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 	*/
 	public function register_routes() {
 		$namespace = $this->rest_namespace . $this->rest_version;
-
-		register_rest_route( $namespace, '/mailchimp/user', array(
+		register_rest_route(
+			$namespace,
+			'/mailchimp/user',
 			array(
-				'methods'  => array( WP_REST_Server::CREATABLE, WP_REST_Server::READABLE ),
-				'callback' => array( $this, 'process_rest' ),
-				'args'     => array(
-					'email' => array(
-						//'required'    => true,
-						//'type'        => 'string',
-						'description' => 'The user\'s email address',
-						//'format'      => 'email',
+				array(
+					'methods'  => array( WP_REST_Server::CREATABLE, WP_REST_Server::READABLE ),
+					'callback' => array( $this, 'process_rest' ),
+					'args'     => array(
+						'email' => array(
+							//'required'    => true,
+							//'type'        => 'string',
+							'description' => 'The user\'s email address',
+							//'format'      => 'email',
+						),
 					),
 				),
-			),
-		) );
+			)
+		);
 	}
 
 	/**
@@ -79,8 +82,8 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 
 		switch ( $http_method ) {
 			case 'GET':
-				$user_email            = $request->get_param( 'email' );
-				$reset_user_info       = true;
+				$user_email      = $request->get_param( 'email' );
+				$reset_user_info = true;
 
 				$result = $this->get_data->get_user_info( $shortcode, $resource_type, $resource_id, $user_email, $reset_user_info );
 
@@ -96,7 +99,6 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 				return $user;
 				break;
 			case 'POST':
-
 				// required form data
 				$mailchimp_user_id = $request->get_param( 'mailchimp_user_id' );
 				$status            = $request->get_param( 'mailchimp_status' );
