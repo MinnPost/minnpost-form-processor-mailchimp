@@ -118,7 +118,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 		$get_data = filter_input_array( INPUT_GET, FILTER_SANITIZE_STRING );
 		?>
 		<div class="wrap">
-			<h1><?php _e( get_admin_page_title() , 'minnpost-form-processor-mailchimp' ); ?></h1>
+			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 
 			<?php
 			$tabs = $this->tabs;
@@ -151,7 +151,8 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 		echo '<h2 class="nav-tab-wrapper">';
 		foreach ( $tabs as $tab_key => $tab_caption ) {
 			$active = $current_tab === $tab_key ? ' nav-tab-active' : '';
-			echo sprintf( '<a class="nav-tab%1$s" href="%2$s">%3$s</a>',
+			echo sprintf(
+				'<a class="nav-tab%1$s" href="%2$s">%3$s</a>',
 				esc_attr( $active ),
 				esc_url( '?page=' . $this->slug . '&tab=' . $tab_key ),
 				esc_html( $tab_caption )
@@ -260,7 +261,8 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 			foreach ( $form_sections as $key => $value ) {
 				$section = $key;
 				// translators: 1 is the name of the shortcode
-				$title = sprintf( 'Shortcode: [%1$s]',
+				$title = sprintf(
+					'Shortcode: [%1$s]',
 					esc_attr( strtolower( $value ) )
 				);
 
@@ -309,7 +311,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 
 				if ( 'lists' === $resource_type ) {
 					//list_member_statuses
-					$settings[ $section . '_subresource_type' ] = array(
+					$settings[ $section . '_subresource_type' ]    = array(
 						'title'    => __( 'MailChimp object for users', 'minnpost-form-processor-mailchimp' ),
 						'callback' => $callbacks['select'],
 						'page'     => $page,
@@ -810,12 +812,14 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 				esc_html( $checked )
 			);
 			if ( '' !== $desc ) {
-				echo sprintf( '<p class="description">%1$s</p>',
+				echo sprintf(
+					'<p class="description">%1$s</p>',
 					esc_html( $desc )
 				);
 			}
 		} else {
-			echo sprintf( '<p><code>%1$s</code></p>',
+			echo sprintf(
+				'<p><code>%1$s</code></p>',
 				esc_html__( 'Defined in wp-config.php', 'minnpost-form-processor-mailchimp' )
 			);
 		}
@@ -840,19 +844,22 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 				$value = $args['default'];
 			}
 
-			echo sprintf( '<textarea name="%1$s" id="%2$s" class="%3$s" rows="10">%4$s</textarea>',
+			echo sprintf(
+				'<textarea name="%1$s" id="%2$s" class="%3$s" rows="10">%4$s</textarea>',
 				esc_attr( $name ),
 				esc_attr( $id ),
 				minnpost_form_processor_mailchimp()->sanitize_html_classes( $class . esc_html( ' code' ) ),
 				esc_attr( $value )
 			);
 			if ( '' !== $desc ) {
-				echo sprintf( '<p class="description">%1$s</p>',
+				echo sprintf(
+					'<p class="description">%1$s</p>',
 					esc_html( $desc )
 				);
 			}
 		} else {
-			echo sprintf( '<p><code>%1$s</code></p>',
+			echo sprintf(
+				'<p><code>%1$s</code></p>',
 				esc_html__( 'Defined in wp-config.php', 'minnpost-form-processor-mailchimp' )
 			);
 		}
@@ -923,12 +930,14 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 
 			wp_editor( $value, $id, $settings );
 			if ( '' !== $desc ) {
-				echo sprintf( '<p class="description">%1$s</p>',
+				echo sprintf(
+					'<p class="description">%1$s</p>',
 					esc_html( $desc )
 				);
 			}
 		} else {
-			echo sprintf( '<p><code>%1$s</code></p>',
+			echo sprintf(
+				'<p><code>%1$s</code></p>',
 				esc_html__( 'Defined in wp-config.php', 'minnpost-form-processor-mailchimp' )
 			);
 		}
@@ -1018,7 +1027,8 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 
 			$input_name = $name;
 
-			echo sprintf( '<div class="radio"><label><input type="%1$s" value="%2$s" name="%3$s[]" id="%4$s"%5$s>%6$s</label></div>',
+			echo sprintf(
+				'<div class="radio"><label><input type="%1$s" value="%2$s" name="%3$s[]" id="%4$s"%5$s>%6$s</label></div>',
 				esc_attr( $type ),
 				esc_attr( $item_value ),
 				esc_attr( $input_name ),
@@ -1027,14 +1037,16 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 				esc_html( $text )
 			);
 			if ( '' !== $desc ) {
-				echo sprintf( '<p class="description">%1$s</p>',
+				echo sprintf(
+					'<p class="description">%1$s</p>',
 					esc_html( $desc )
 				);
 			}
 		}
 
 		if ( '' !== $group_desc ) {
-			echo sprintf( '<p class="description">%1$s</p>',
+			echo sprintf(
+				'<p class="description">%1$s</p>',
 				esc_html( $group_desc )
 			);
 		}
@@ -1054,9 +1066,11 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 		if ( ! isset( $args['constant'] ) || ! defined( $args['constant'] ) ) {
 			$current_value = get_option( $name );
 
-			echo sprintf( '<div class="select"><select id="%1$s" name="%2$s"><option value="">- Select one -</option>',
+			echo sprintf(
+				'<div class="select"><select id="%1$s" name="%2$s"><option value="">- %3$s -</option>',
 				esc_attr( $id ),
-				esc_attr( $name )
+				esc_attr( $name ),
+				__( 'Select one', 'minnpost-form-processor-mailchimp' )
 			);
 
 			foreach ( $args['items'] as $key => $value ) {
@@ -1067,7 +1081,8 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 					$selected = ' selected';
 				}
 
-				echo sprintf( '<option value="%1$s"%2$s>%3$s</option>',
+				echo sprintf(
+					'<option value="%1$s"%2$s>%3$s</option>',
 					esc_attr( $value ),
 					esc_attr( $selected ),
 					esc_html( $text )
@@ -1076,13 +1091,15 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 			}
 			echo '</select>';
 			if ( '' !== $desc ) {
-				echo sprintf( '<p class="description">%1$s</p>',
+				echo sprintf(
+					'<p class="description">%1$s</p>',
 					esc_html( $desc )
 				);
 			}
 			echo '</div>';
 		} else {
-			echo sprintf( '<p><code>%1$s</code></p>',
+			echo sprintf(
+				'<p><code>%1$s</code></p>',
 				esc_html__( 'Defined in wp-config.php', 'minnpost-form-processor-mailchimp' )
 			);
 		}
@@ -1098,20 +1115,23 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 		$desc  = $args['desc'];
 		$url   = $args['url'];
 		if ( isset( $args['link_class'] ) ) {
-			echo sprintf( '<p><a class="%1$s" href="%2$s">%3$s</a></p>',
+			echo sprintf(
+				'<p><a class="%1$s" href="%2$s">%3$s</a></p>',
 				esc_attr( $args['link_class'] ),
 				esc_url( $url ),
 				esc_html( $label )
 			);
 		} else {
-			echo sprintf( '<p><a href="%1$s">%2$s</a></p>',
+			echo sprintf(
+				'<p><a href="%1$s">%2$s</a></p>',
 				esc_url( $url ),
 				esc_html( $label )
 			);
 		}
 
 		if ( '' !== $desc ) {
-			echo sprintf( '<p class="description">%1$s</p>',
+			echo sprintf(
+				'<p class="description">%1$s</p>',
 				esc_html( $desc )
 			);
 		}
