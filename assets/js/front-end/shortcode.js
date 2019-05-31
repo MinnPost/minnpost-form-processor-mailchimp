@@ -59,6 +59,8 @@
 
 						if ( 'function' === typeof wp_analytics_tracking_event ) {
 							wp_analytics_tracking_event( 'event', 'Newsletter', analytics_action, location.pathname );
+						}
+						if ( 'function' === typeof gtag_report_conversion ) {
 							gtag_report_conversion( location.pathname );
 						}
 					} else {
