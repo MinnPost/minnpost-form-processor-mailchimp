@@ -52,10 +52,6 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 	* @return void
 	*/
 	public function front_end_scripts_and_styles() {
-		$js_dependencies = array( 'jquery' );
-		if ( wp_script_is( 'wp-analytics-tracking-generator-front-end' ) ) {
-			$js_dependencies[] = 'wp-analytics-tracking-generator-front-end';
-		}
 		wp_enqueue_script( $this->slug . '-front-end', plugins_url( 'assets/js/front-end.min.js', dirname( __FILE__ ) ), array( 'jquery' ), $this->version, true );
 		// localize
 		$params = array(

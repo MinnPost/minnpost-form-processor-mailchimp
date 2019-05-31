@@ -13,6 +13,18 @@
 		return false;
 	}
 
+	function wp_analytics_tracking_event( type, category, action, label, value ) {
+		if ( 'undefined' !== typeof ga ) {
+			if ( 'undefined' === typeof value ) {
+				ga( 'send', type, category, action, label );
+			} else {
+				ga( 'send', type, category, action, label, value );
+			}
+		} else {
+			return;
+		}
+	}
+
 	function shortcodeForm() {
 		if ( $( '.m-form-minnpost-form-processor-mailchimp' ).length > 0 ) {
 			$( '.m-form-minnpost-form-processor-mailchimp' ).submit( function( event ) {
