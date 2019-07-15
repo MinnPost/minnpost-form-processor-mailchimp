@@ -94,9 +94,9 @@ class MinnPost_Form_Processor_MailChimp {
 		$this->file          = $file;
 		$this->option_prefix = 'minnpost_form_processor_mailchimp_';
 		// parent plugin
-		$this->parent                = $this->load_parent();
-		$this->parent_option_prefix  = $this->parent->option_prefix;
-		$this->slug                  = 'minnpost-form-processor-mailchimp';
+		$this->parent               = $this->load_parent();
+		$this->parent_option_prefix = $this->parent->option_prefix;
+		$this->slug                 = 'minnpost-form-processor-mailchimp';
 
 	}
 

@@ -19,7 +19,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 	public $version;
 	public $slug;
 	public $get_data;
-	public $plugin_file;
+	public $file;
 
 	public $parent;
 
@@ -33,7 +33,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 		$this->version              = minnpost_form_processor_mailchimp()->version;
 		$this->slug                 = minnpost_form_processor_mailchimp()->slug;
 		$this->get_data             = minnpost_form_processor_mailchimp()->get_data;
-		$this->plugin_file          = minnpost_form_processor_mailchimp()->plugin_file;
+		$this->plugin_file          = minnpost_form_processor_mailchimp()->file;
 
 		$this->parent = minnpost_form_processor_mailchimp()->parent;
 
