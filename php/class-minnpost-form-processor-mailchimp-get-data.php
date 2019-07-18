@@ -358,6 +358,27 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 		$group_data        = array();
 		$mc_resource_items = $this->get_mc_resource_items( $resource_type, $resource_id );
 		foreach ( $groups_available as $key => $group ) {
+			if ( ! isset( $group['id'] ) ) {
+				// do an error log here because it shouldn't happen
+				$log_title   = sprintf(
+					esc_html__( 'MailChimp Error: Group Categorization failed: no group id', 'minnpost-form-processor-mailchimp' )
+				);
+				$log_message = sprintf(
+					// translators: placeholders are: 1) the key, 2) what the group's data is
+					'<p>Key: %1$s</p><p>Group: %2$s</p>',
+					esc_attr( $key ),
+					print_r( $group )
+				);
+				$log_entry = array(
+					'title'   => $log_title,
+					'message' => $log_message,
+					'trigger' => 0,
+					'parent'  => '',
+					'status'  => 'error',
+				);
+				$this->parent->logging->setup( $log_entry );
+				return;
+			}
 			$group_id          = $group['id'];
 			$resource_item_key = array_search(
 				$group_id,
@@ -377,6 +398,26 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 
 			$group_type   = get_option( $this->option_prefix . $shortcode . '_mc_resource_item_type', '' );
 			$subresources = array();
+			if ( ! is_array( $subresources_info ) ) {
+				// do an error log here because it shouldn't happen
+				$log_title   = sprintf(
+					esc_html__( 'MailChimp Error: Group Categorization failed: no subresources info array', 'minnpost-form-processor-mailchimp' )
+				);
+				$log_message = sprintf(
+					// translators: placeholders are: 1) subresources data
+					'<p>Subresources: %1$s</p>',
+					print_r( $subresources )
+				);
+				$log_entry = array(
+					'title'   => $log_title,
+					'message' => $log_message,
+					'trigger' => 0,
+					'parent'  => '',
+					'status'  => 'error',
+				);
+				$this->parent->logging->setup( $log_entry );
+				return;
+			}
 			foreach ( $subresources_info as $type => $ids ) {
 				foreach ( $ids as $id ) {
 					$groups = get_option( $this->parent_option_prefix . 'items_' . $resource_id . '_' . $type . '_' . $id . '_' . $group_type, array() );
