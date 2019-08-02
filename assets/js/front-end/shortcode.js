@@ -1,18 +1,5 @@
 ( function( $ ) {
 
-	function gtag_report_conversion( url ) {
-		var callback = function () {
-		  if ( 'undefined' !== typeof( url ) ) {
-		    window.location = url;
-		  }
-		};
-		gtag( 'event', 'conversion', {
-		  'send_to': params.gtag_sendto,
-		  'event_callback': callback
-		} );
-		return false;
-	}
-
 	function wp_analytics_tracking_event( type, category, action, label, value ) {
 		if ( 'undefined' !== typeof ga ) {
 			if ( 'undefined' === typeof value ) {
@@ -54,15 +41,15 @@
 						switch ( response.data.user_status ) {
 							case 'existing':
 								analytics_action = 'Update';
-								message = 'Thanks for updating your email preferences. They will go into effect immediately.';
+								message = 'Thanks for updating your email preferences. They will go into effect&nbsp;immediately.';
 								break;
 							case 'new':
 								analytics_action = 'Signup';
-								message = 'We have added you to the MinnPost mailing list.';
+								message = 'We have added you to the MinnPost mailing&nbsp;list.';
 								break;
 							case 'pending':
 								analytics_action = 'Signup';
-								message = 'We have added you to the MinnPost mailing list. You will need to click the confirmation link in the email we sent to begin receiving messages.';
+								message = 'We have added you to the MinnPost mailing list. You will need to click the confirmation link in the email we sent to begin receiving&nbsp;messages.';
 								break;
 						}
 						if ( '' !== response.data.confirm_message ) {
@@ -71,9 +58,6 @@
 
 						if ( 'function' === typeof wp_analytics_tracking_event ) {
 							wp_analytics_tracking_event( 'event', 'Newsletter', analytics_action, location.pathname );
-						}
-						if ( 'function' === typeof gtag_report_conversion ) {
-							gtag_report_conversion( location.pathname );
 						}
 					} else {
 						button.prop( 'disabled', false );
@@ -88,10 +72,12 @@
 					}
 					$( '.m-form-message-ajax' ).html( message );
 					$( '.m-form-message-ajax' ).addClass( 'm-form-message-' + message_class ).removeClass( 'm-form-message-ajax-placeholder' );
+					$( '.m-form-minnpost-form-processor-mailchimp' ).addClass( 'm-form-minnpost-form-processor-mailchimp-submitted' );
 				} )
 				.fail( function( response ) {
 					$( '.m-form-message-ajax' ).html( '<p>An error has occured. Please try again.</p>' );
 					$( '.m-form-message-ajax' ).addClass( 'm-form-message-error' ).removeClass( 'm-form-message-ajax-placeholder' );
+					$( '.m-form-minnpost-form-processor-mailchimp' ).removeClass( 'm-form-minnpost-form-processor-mailchimp-submitted' );
 					button.prop( 'disabled', false );
 					button.text( previous_button_text );
 					if ( 'function' === typeof wp_analytics_tracking_event ) {
