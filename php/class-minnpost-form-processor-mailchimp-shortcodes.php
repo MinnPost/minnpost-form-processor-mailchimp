@@ -91,20 +91,22 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		}
 		$form = shortcode_atts(
 			array(
-				'placement'        => '', // where this is used. fullpage, instory, or sidebar
-				'groups_available' => '', // mailchimp groups to make available for the user. default (plugin settings), all, or csv of group names. this should be whatever the form is making available to the user. if there are groups the user is not able to choose in this instance, they should be left out.
-				'show_elements'    => '', // title, description. default is based on placement
-				'hide_elements'    => '', // title, description. default is based on placement
-				'button_text'      => '', // button text for the form. default is 1) whatever is in the plugin settings, 2) if that is blank, Subscribe
-				'image_url'        => '', // if a local image url is specified, it will be added before the content_before value
-				'image_alt'        => '', // if adding an image, alt text should also be added
-				'content_before'   => '', // used before form. default is empty.
-				'content_after'    => '', // used after form. default is empty.
-				'categories'       => '', // categories corresponding to groups. default is empty.
-				'confirm_message'  => '', // after submission. default should be in the plugin settings, but it can be customized for specific usage
-				'error_message'    => '', // after submission. default should be in the plugin settings, but it can be customized for specific usage
-				'classes'          => '', // classes for css/js to target, if applicable. if there are values here, they will be added to the <form> (or other first markup element) in the template
-				'redirect_url'     => $this->get_current_url(), // if not ajax, form will go to this url.
+				'placement'                  => '', // where this is used. fullpage, instory, or sidebar
+				'groups_available'           => '', // mailchimp groups to make available for the user. default (plugin settings), all, or csv of group names. this should be whatever the form is making available to the user. if there are groups the user is not able to choose in this instance, they should be left out.
+				'show_elements'              => '', // title, description. default is based on placement
+				'hide_elements'              => '', // title, description. default is based on placement
+				'button_text'                => '', // button text for the form. default is 1) whatever is in the plugin settings, 2) if that is blank, Subscribe
+				'image_url'                  => '', // if a local image url is specified, it will be added before the content_before value
+				'image_alt'                  => '', // if adding an image, alt text should also be added
+				'content_before'             => '', // used before form. default is empty.
+				'content_after'              => '', // used after form. default is empty.
+				'in_content_label'           => '', // label text on in-content forms. default is empty. this applies to the email field.
+				'in_content_label_placement' => '', // if there is a label on the in-content form, where to put it? can be before or after
+				'categories'                 => '', // categories corresponding to groups. default is empty.
+				'confirm_message'            => '', // after submission. default should be in the plugin settings, but it can be customized for specific usage
+				'error_message'              => '', // after submission. default should be in the plugin settings, but it can be customized for specific usage
+				'classes'                    => '', // classes for css/js to target, if applicable. if there are values here, they will be added to the <form> (or other first markup element) in the template
+				'redirect_url'               => $this->get_current_url(), // if not ajax, form will go to this url.
 			),
 			$attributes
 		);
