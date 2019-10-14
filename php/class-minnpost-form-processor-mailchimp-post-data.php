@@ -47,7 +47,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 		add_action( 'admin_post_newsletter_form', array( $this, 'process_form_data' ) );
 		add_action( 'wp_ajax_nopriv_newsletter_form', array( $this, 'process_form_data' ) );
 		add_action( 'wp_ajax_newsletter_form', array( $this, 'process_form_data' ) );
-		add_filter('query_vars', array( $this, 'add_query_vars' ) );
+		add_filter( 'query_vars', array( $this, 'add_query_vars' ) );
 	}
 
 	/**
