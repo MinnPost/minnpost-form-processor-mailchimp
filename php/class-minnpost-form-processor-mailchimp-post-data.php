@@ -330,7 +330,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 		if ( 'unsubscribed' === $result['status'] ) {
 			$params['status'] = 'pending';
 			$http_method      = 'PUT';
-			$result = $this->parent->mailchimp->send( $resource_type . '/' . $resource_id . '/' . $subresource_type, $http_method, $params );
+			$result           = $this->parent->mailchimp->send( $resource_type . '/' . $resource_id . '/' . $subresource_type, $http_method, $params );
 		}
 
 		return $result;
