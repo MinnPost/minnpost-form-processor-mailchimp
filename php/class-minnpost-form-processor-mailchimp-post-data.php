@@ -119,44 +119,13 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 				$user_data['last_name'] = $last_name;
 			}
 
-			// honeypot checker
-			$honeypot_name    = isset( $_POST['mhp_name'] ) ? esc_attr( $_POST['mhp_name'] ) : '';
-			$honeypot_email   = isset( $_POST['mhp_email'] ) ? esc_attr( $_POST['mhp_email'] ) : '';
-			$honeypot_comment = isset( $_POST['mhp_comment'] ) ? esc_attr( $_POST['mhp_comment'] ) : '';
+			$use_honeypot         = get_option( $this->option_prefix . 'use_honeypot', false );
+			$honeypot_spam_result = array();
+			if ( true === $use_honeypot ) {
+				$honeypot_spam_result = $this->honeypot_checker( $_POST );
+			}
 
-			if ( '' !== $honeypot_name || '' !== $honeypot_email || '' !== $honeypot_comment ) {
-				$result          = array(
-					'status' => 'spam',
-					'local'  => true,
-				);
-				$confirm_message = __( 'Our system did not allow this submission because it has characteristics of a spambot submission.', 'minnpost-form-processor-mailchimp' );
-
-				$log_title   = sprintf(
-					esc_html__( 'MailChimp Send Error: Honeypot fields had values', 'form-processor-mailchimp' )
-				);
-				$log_message = sprintf(
-					'<p>' .
-					// translators: placeholders are: 1) submitted email address, 2) honeypot name, 3) honeypot email, 4) honeypot comment
-					esc_html__( 'Email address was %1$s.', 'form-processor-mailchimp' ) .
-					'</p>' .
-					'<ul><li><strong>mhp_name:</strong> %2$s</li><li><strong>mhp_email:</strong> %3$s</li><li><strong>mhp_comment:</strong> %4$s</li></ul>',
-					esc_html( $_POST['email'] ),
-					esc_html( $_POST['mhp_name'] ),
-					esc_html( $_POST['mhp_email'] ),
-					esc_html( $_POST['mhp_comment'] )
-				);
-
-				$log_entry = array(
-					'title'   => $log_title,
-					'message' => $log_message,
-					'trigger' => 0,
-					'parent'  => '',
-					'status'  => 'spam',
-				);
-
-				$this->parent->logging->setup( $log_entry );
-
-			} else {
+			if ( empty( $honeypot_spam_result ) ) {
 				// save to mailchimp
 				$result = $this->save_to_mailchimp( $action, $resource_type, $resource_id, $subresource_type, $user_data );
 			}
@@ -334,6 +303,53 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * If enabled, check the submission of honeypot fields
+	 *
+	 * @param  array  $form
+	 * @return  array   $honeypot_spam_result
+	 */
+	private function honeypot_checker( $form ) {
+		// honeypot checker
+		$honeypot_spam_result = array();
+		$honeypot_name        = isset( $form['mhp_name'] ) ? esc_attr( $form['mhp_name'] ) : '';
+		$honeypot_email       = isset( $form['mhp_email'] ) ? esc_attr( $form['mhp_email'] ) : '';
+		$honeypot_comment     = isset( $form['mhp_comment'] ) ? esc_attr( $form['mhp_comment'] ) : '';
+		if ( '' !== $honeypot_name || '' !== $honeypot_email || '' !== $honeypot_comment ) {
+			$honeypot_spam_result = array(
+				'status' => 'spam',
+				'local'  => true,
+			);
+			$confirm_message      = __( 'Our system did not allow this submission because it has characteristics of a spambot submission.', 'minnpost-form-processor-mailchimp' );
+
+			$log_title   = sprintf(
+				esc_html__( 'MailChimp Send Error: Honeypot fields had values', 'form-processor-mailchimp' )
+			);
+			$log_message = sprintf(
+				'<p>' .
+				// translators: placeholders are: 1) submitted email address, 2) honeypot name, 3) honeypot email, 4) honeypot comment
+				esc_html__( 'Email address was %1$s.', 'form-processor-mailchimp' ) .
+				'</p>' .
+				'<ul><li><strong>mhp_name:</strong> %2$s</li><li><strong>mhp_email:</strong> %3$s</li><li><strong>mhp_comment:</strong> %4$s</li></ul>',
+				esc_html( $form['email'] ),
+				esc_html( $form['mhp_name'] ),
+				esc_html( $form['mhp_email'] ),
+				esc_html( $form['mhp_comment'] )
+			);
+
+			$log_entry = array(
+				'title'   => $log_title,
+				'message' => $log_message,
+				'trigger' => 0,
+				'parent'  => '',
+				'status'  => 'spam',
+			);
+
+			$this->parent->logging->setup( $log_entry );
+		}
+		return $honeypot_spam_result;
 	}
 
 }
