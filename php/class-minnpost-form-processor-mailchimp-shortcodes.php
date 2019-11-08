@@ -213,11 +213,15 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		}
 
 		if ( '' !== $form['content_before'] ) {
-			$form['content_before'] = wp_kses_post( wpautop( $form['content_before'] ) );
+			$form['content_before'] = wp_kses_post( apply_filters( 'the_content', urldecode( $form['content_before'] ) ) );
 		}
 
 		if ( '' !== $form['content_after'] ) {
-			$form['content_after'] = wp_kses_post( wpautop( $form['content_after'] ) );
+			$form['content_after'] = wp_kses_post( apply_filters( 'the_content', urldecode( $form['content_after'] ) ) );
+		}
+
+		if ( '' !== $form['in_content_label'] ) {
+			$form['in_content_label'] = wp_kses_post( apply_filters( 'the_content', urldecode( $form['in_content_label'] ) ) );
 		}
 
 		if ( '' !== $form['classes'] ) {
