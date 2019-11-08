@@ -26,8 +26,6 @@
 		<input type="hidden" name="groups_available" value="<?php echo esc_html( $form['groups_available'] ); ?>">
 	<?php endif; ?>
 
-	<?php include_once( plugin_dir_path( __FILE__ ) . '../template-parts/honeypots.php' ); ?>
-
 	<?php echo $form['image']; ?>
 	<?php echo $form['content_before']; ?>
 	<?php echo $form['message']; ?>
