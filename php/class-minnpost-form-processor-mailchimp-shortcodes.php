@@ -116,7 +116,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		$form['action'] = $shortcode;
 
 		// there is a logged in user. we should check if they're a mailchimp user.
-		if ( 0 !== $form['user'] ) {
+		if ( 0 !== $form['user']->ID ) {
 			$user_mailchimp_groups = get_option( $this->option_prefix . $shortcode . '_mc_resource_item_type', '' );
 			$user_email            = $form['user']->user_email;
 
