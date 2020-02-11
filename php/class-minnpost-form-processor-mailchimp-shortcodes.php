@@ -207,7 +207,11 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 			$form['message'] = '<div class="m-form-message m-form-message-ajax m-form-message-ajax-placeholder"></div>';
 		}
 		if ( '' !== $form['image_url'] ) {
-			$form['image'] = '<figure class="a-shortcode-image"><img src="' . esc_url( $form['image_url'] ) . '"' . $form['image_alt'] . '></figure>';
+			$alt_attr = '';
+			if ( '' !== $form['image_alt'] ) {
+				$alt_attr = ' alt="' . $form['image_alt'] . '"';
+			}
+			$form['image'] = '<figure class="a-shortcode-image"><img src="' . esc_url( $form['image_url'] ) . '"' . $alt_attr . '></figure>';
 		} else {
 			$form['image'] = '';
 		}
