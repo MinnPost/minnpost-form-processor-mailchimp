@@ -54,7 +54,7 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 			array(
 				array(
 					'methods'  => array( WP_REST_Server::CREATABLE, WP_REST_Server::READABLE ),
-					'callback' => array( $this, 'process_rest' ),
+					'callback' => array( $this, 'process_user_request' ),
 					'args'     => array(
 						'email' => array(
 							//'required'    => true,
@@ -69,11 +69,11 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 	}
 
 	/**
-	* Process the REST API request
+	* Process the REST API request for the user endpoint
 	*
 	* @return $result
 	*/
-	public function process_rest( WP_REST_Request $request ) {
+	public function process_user_request( WP_REST_Request $request ) {
 		$http_method           = $request->get_method();
 		$shortcode             = 'newsletter_form'; // todo: we could make this configurable somehow?
 		$resource_type         = $this->get_data->get_resource_type( $shortcode );
