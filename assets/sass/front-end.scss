@@ -161,12 +161,6 @@ $form-width: 292px;
 	}
 }
 
-// if html is rtl, switch the honeypots
-html[dir="rtl"] .m-form-minnpost-form-processor-mailchimp .m-subscribe-field-shift {
-    right: -9999px;
-    left: auto;
-}
-
 // sticky needs a style for when the admin bar is active
 body.admin-bar {
 	.m-form-minnpost-form-processor-mailchimp.m-form-fullpage .m-subscribe-grouping .m-subscribe {
