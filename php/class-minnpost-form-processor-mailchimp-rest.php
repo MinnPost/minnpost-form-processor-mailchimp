@@ -66,6 +66,31 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 				),
 			)
 		);
+
+		register_rest_route(
+			$namespace,
+			'/mailchimp/form',
+			array(
+				array(
+					'methods'  => array( WP_REST_Server::READABLE ),
+					'callback' => array( $this, 'process_form_request' ),
+					'args'     => array(
+						'shortcode'        => array(
+							//'required'    => true,
+							//'type'        => 'string',
+							'description' => 'The form\'s shortcode name',
+							//'format'      => 'email',
+						),
+						'groups_available' => array(
+							//'required'    => true,
+							//'type'        => 'string',
+							'description' => 'The groups that should be available to this form',
+							//'format'      => 'email',
+						),
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -169,6 +194,37 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 				break;
 		}
 		return;
+	}
+
+	/**
+	* Process the REST API request for the form endpoint
+	*
+	* @return $result
+	*/
+	public function process_form_request( WP_REST_Request $request ) {
+		$http_method           = $request->get_method();
+		$shortcode             = $request->get_param( 'shortcode' );
+		$resource_type         = $this->get_data->get_resource_type( $shortcode );
+		$resource_id           = $this->get_data->get_resource_id( $shortcode );
+		$subresource_type      = $this->get_data->get_subresource_type( $shortcode );
+		$user_mailchimp_groups = get_option( $this->option_prefix . $shortcode . '_mc_resource_item_type', '' );
+		$groups_available      = $request->get_param( 'groups_available' );
+		$placement             = $request->get_param( 'placement' );
+		if ( ! isset( $groups_available ) ) {
+			$groups_available = 'all';
+		}
+		if ( ! isset( $placement ) ) {
+			$placement = '';
+		}
+		// this checks for allowed groups based on the settings
+		$groups         = $this->get_data->get_shortcode_groups( $shortcode, $resource_type, $resource_id, $groups_available );
+		$group_fields   = $this->get_data->get_shortcode_groups( $shortcode, $resource_type, $resource_id, $groups_available, $placement );
+		$groups         = array_column( $groups, 'id' );
+		$shortcode_data = array(
+			'groups_available' => $groups_available,
+			'group_fields'     => $group_fields,
+		);
+		return $shortcode_data;
 	}
 
 }
