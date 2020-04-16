@@ -3,7 +3,7 @@
 Plugin Name: MinnPost Form Processor for MailChimp
 Plugin URI:
 Description:
-Version: 0.0.6
+Version: 0.0.7
 Author: Jonathan Stegall
 Author URI: https://code.minnpost.com
 License: GPL2+
@@ -34,7 +34,7 @@ define( 'MINNPOST_FORM_PROCESSOR_MAILCHIMP_FILE', __FILE__ );
  * @since 0.0.6
  * @var string
  */
-define( 'MINNPOST_FORM_PROCESSOR_MAILCHIMP_VERSION', '0.0.6' );
+define( 'MINNPOST_FORM_PROCESSOR_MAILCHIMP_VERSION', '0.0.7' );
 
 // Load the autoloader.
 require_once( 'lib/autoloader.php' );
