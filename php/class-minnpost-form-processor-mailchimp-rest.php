@@ -134,7 +134,7 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 				$groups_available = $request->get_param( 'groups_available' );
 
 				// this checks for allowed groups based on the settings
-				$groups_available = $this->get_data->get_shortcode_groups( $action, $resource_type, $resource_id, $groups_available );
+				$groups_available = $this->get_data->get_shortcode_groups( $shortcode, $resource_type, $resource_id, $groups_available );
 
 				// this is the array of groups submitted by the user, if applicable
 				$groups_submitted = $request->get_param( 'groups_submitted' );
