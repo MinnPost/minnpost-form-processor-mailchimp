@@ -68,7 +68,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 
 			// required form data
 			$mailchimp_user_id = isset( $_POST['mailchimp_user_id'] ) ? esc_attr( $_POST['mailchimp_user_id'] ) : '';
-			$status            = isset( $_POST['mailchimp_status'] ) ? esc_attr( $_POST['mailchimp_status'] ) : get_option( $this->option_prefix . $action . '_default_user_status' );
+			$status            = isset( $_POST['mailchimp_status'] ) ? esc_attr( $_POST['mailchimp_status'] ) : get_option( $this->option_prefix . $action . '_default_user_status', '' );
 			$email             = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
 
 			// this is the mailchimp group settings field. it gets sanitized later.
@@ -241,7 +241,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 	public function save_to_mailchimp( $shortcode, $resource_type, $resource_id, $subresource_type, $user_data ) {
 		// send user data to mailchimp and create/update their info
 		$id               = isset( $user_data['mailchimp_user_id'] ) ? $user_data['mailchimp_user_id'] : '';
-		$status           = isset( $user_data['user_status'] ) ? $user_data['user_status'] : '';
+		$status           = isset( $user_data['user_status'] ) ? $user_data['user_status'] : get_option( $this->option_prefix . $shortcode . '_default_user_status', '' );
 		$email            = isset( $user_data['user_email'] ) ? $user_data['user_email'] : '';
 		$first_name       = isset( $user_data['first_name'] ) ? $user_data['first_name'] : '';
 		$last_name        = isset( $user_data['last_name'] ) ? $user_data['last_name'] : '';
