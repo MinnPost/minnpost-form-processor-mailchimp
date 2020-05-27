@@ -1,16 +1,20 @@
 // Dependencies
-const gulp = require('gulp');
-const sass = require('gulp-sass');
-const postcss = require('gulp-postcss');
-const autoprefixer = require('autoprefixer');
-const cssnano = require('cssnano');
-const sourcemaps = require('gulp-sourcemaps');
-const sassGlob = require('gulp-sass-glob');
-const uglify = require('gulp-uglify');
-const concat = require('gulp-concat');
-const rename = require('gulp-rename');
-const babel = require('gulp-babel');
-const browserSync = require('browser-sync').create();
+const autoprefixer = require("autoprefixer");
+const babel = require("gulp-babel");
+const browserSync = require("browser-sync").create();
+const concat = require("gulp-concat");
+const cssnano = require("cssnano");
+const fs = require("fs");
+const gulp = require("gulp");
+const packagejson = JSON.parse(fs.readFileSync("./package.json"));
+const mqpacker = require("css-mqpacker");
+const postcss = require("gulp-postcss");
+const rename = require("gulp-rename");
+const sass = require("gulp-sass");
+const sassGlob = require("gulp-sass-glob");
+const sourcemaps = require("gulp-sourcemaps");
+const uglify = require("gulp-uglify");
+const wpPot = require("gulp-wp-pot");
 
 // Some config data for our tasks
 const config = {
@@ -24,6 +28,18 @@ const config = {
     admin: './assets/js/admin/**/*.js',
     front_end: './assets/js/front-end/**/*.js',
     dest: './assets/js'
+  },
+  languages: {
+    src: [
+      "./**/*.php",
+      "!.git/*",
+      "!.svn/*",
+      "!bin/**/*",
+      "!node_modules/*",
+      "!release/**/*",
+      "!vendor/**/*"
+    ],
+    dest: "./languages/" + packagejson.name + ".pot"
   },
   browserSync: {
     active: false,
@@ -99,6 +115,19 @@ function frontendscripts() {
     .pipe(browserSync.stream());
 }
 
+// Generates translation file.
+function translate() {
+  return gulp
+    .src(config.languages.src)
+    .pipe(
+      wpPot({
+        domain: packagejson.name,
+        package: packagejson.name
+      })
+    )
+    .pipe(gulp.dest(config.languages.dest));
+}
+
 // Injects changes into browser
 function browserSyncTask() {
   if (config.browserSync.active) {
@@ -125,16 +154,18 @@ function watch() {
   }
 }
 
-// export tasks
-exports.adminstyles = adminstyles;
-exports.frontendstyles = frontendstyles;
-exports.adminscripts = adminscripts;
-exports.frontendscripts = frontendscripts;
-exports.watch = watch;
+// define complex tasks
+//const lint    = gulp.series(adminsasslint, frontendsasslint, adminscriptlint, frontendscriptlint);
+const styles  = gulp.series(adminstyles, frontendstyles);
+const scripts = gulp.series(adminscripts, frontendscripts);
+const build   = gulp.series(gulp.parallel(styles, scripts, translate));
 
-// What happens when we run gulp?
-gulp.task('default',
-  gulp.series(
-    gulp.parallel(adminstyles, frontendstyles, adminscripts, frontendscripts) // run these tasks asynchronously
-  )
-);
+// export tasks
+exports.styles    = styles;
+exports.scripts   = scripts;
+//exports.lint      = lint;
+exports.translate = translate;
+//exports.changelog = changelog;
+exports.watch     = watch;
+exports.build     = build;
+exports.default   = build;

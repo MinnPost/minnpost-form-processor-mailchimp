@@ -1,6 +1,6 @@
 {
   "name": "minnpost-form-processor-mailchimp",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "repository": {
     "type": "git",
@@ -13,11 +13,13 @@
   },
   "homepage": "https://github.com/MinnPost/minnpost-form-processor-mailchimp#readme",
   "devDependencies": {
-    "@babel/core": "^7.9.6",
-    "@babel/preset-env": "^7.9.6",
+    "@babel/core": "^7.10.0",
+    "@babel/preset-env": "^7.10.0",
     "autoprefixer": "^9.8.0",
     "browser-sync": "^2.26.7",
+    "css-mqpacker": "^7.0.0",
     "cssnano": "^4.1.10",
+    "fs": "0.0.2",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-concat": "^2.6.1",
@@ -27,6 +29,7 @@
     "gulp-sass-glob": "^1.1.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2",
+    "gulp-wp-pot": "^2.4.3",
     "node-sass": "^4.14.1",
     "npm-check-updates": "^6.0.1"
   },
