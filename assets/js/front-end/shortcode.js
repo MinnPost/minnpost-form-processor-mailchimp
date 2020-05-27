@@ -73,6 +73,12 @@
 					$( '.m-form-message-ajax' ).html( message );
 					$( '.m-form-message-ajax' ).addClass( 'm-form-message-' + message_class ).removeClass( 'm-form-message-ajax-placeholder' );
 					$( '.m-form-minnpost-form-processor-mailchimp' ).addClass( 'm-form-minnpost-form-processor-mailchimp-submitted' );
+					if ( $( '.m-form-fullpage' ).length > 0 ) {
+						// if we are on a fullpage, scroll to the result message
+						$( 'html, body' ).animate( {
+							scrollTop: $( '.m-form-message-ajax' ).offset().top - 50
+						}, 'slow' );
+					}
 				} )
 				.fail( function( response ) {
 					$( '.m-form-message-ajax' ).html( '<p>An error has occured. Please try again.</p>' );
