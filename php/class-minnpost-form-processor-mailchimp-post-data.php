@@ -164,7 +164,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 			} else {
 				// error handling
 				$user_status = 'error';
-				if ( 400 === $result['status'] ) {
+				if ( 400 === $result['status'] || 'spam' === $result['status'] ) {
 					$confirm_message = $result['detail'];
 				}
 				if ( isset( $_POST['ajaxrequest'] ) && 'true' === $_POST['ajaxrequest'] ) {
