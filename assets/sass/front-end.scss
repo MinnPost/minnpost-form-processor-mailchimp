@@ -1,77 +1,75 @@
 // variables
-$border-color-lighter: #e5e5e5;
-$border-color-darker: #cdcdd0;
+$border-color-lighter: #ebebfb;
+$border-color: #d6d6da;
 $vertical-space: 1em;
-$min-newsletter-width: 325px;
-$form-width: 292px;
+$min-newsletter-width: 25%;
+$form-width: 20%;
 
 .m-form-minnpost-form-processor-mailchimp {
+
 	// across all forms
 	input[type="email"] {
 		padding: 0.25em;
 	}
+
 	.m-form-message.m-form-message-ajax-placeholder {
 		display: none;
 	}
+
 	button[type="submit"] {
 		white-space: nowrap;
-	}
-	.m-subscribe-field-shift {
-	    left: -9999px; position: absolute;
 	}
 
 	// full page forms
 	&.m-form-fullpage {
-		h2 {
-			margin-bottom: $vertical-space / 2;
-		}
+
 		.m-form-container {
 			padding: 0;
 			position: relative;
 		}
-		p.a-instructions {
-			margin-top: 1em;
-		}
+
 		fieldset {
 			border: 0;
 			margin: 0;
 			padding: 0;
-			label {
-				margin-bottom: $vertical-space / 2;
-			}
 		}
+
 		input {
 			width: 100%;
 		}
-		.m-form-message, .m-subscribe-grouping {
-			margin-top: $vertical-space;
-		}
+
 		.m-subscribe-grouping {
 			display: flex;
 			align-items: flex-start;
 			flex-wrap: wrap;
+
 			article {
-				border: 1px solid $border-color-darker;
+				border: 1px solid $border-color;
 				padding: $vertical-space;
 			}
+
 			.m-subscribe-items {
 				display: flex;
 				flex-wrap: wrap;
 				justify-content: space-between;
 				flex: 1 0 $min-newsletter-width;
+				flex-direction: column;
+
 				article {
 					flex: 0 0 $min-newsletter-width;
 					padding: $vertical-space / 2;
 					margin-bottom: $vertical-space;
+
 					label {
 						cursor: pointer;
+						width: 100%;
+						position: relative;
+
 						h3 {
-							font-size: 123.1%;
 							margin: 0 0 $vertical-space / 4 0;
 							text-transform: none;
 						}
-						width: 100%;
-						position: relative;
+
 						input[type="checkbox"] {
 							width: auto;
 							position: absolute;
@@ -81,60 +79,77 @@ $form-width: 292px;
 					}
 				}
 			}
+
 			.m-subscribe {
 				margin-left: $vertical-space;
 				padding: $vertical-space;
-				flex: 0 0 $form-width;
+				flex: 1 0 $form-width;
 				position: sticky;
 				top: 0.25em;
+
 				button {
 					width: 100%;
 				}
+
 				input {
 					margin: $vertical-space / 2 0 0.75em 0;
 				}
+
 				aside {
 					font-size: 0.75em;
-					line-height: 1.65em;
 				}
 			}
 		}
 	}
+
 	// widget forms
 	&.m-widget {
 		font-size: 95%;
 		margin: $vertical-space auto 20px auto;
+
 		.m-form-container {
 			padding: 0;
-			p, fieldset {
+
+			p,
+			fieldset {
 				padding: 0 $vertical-space / 2;
 			}
 		}
+
 		fieldset {
 			border: 0;
 			margin: 0;
 			padding: 0;
 		}
+
 		input {
 			width: 90%;
 		}
+
 		input:last-of-type {
 			margin-bottom: $vertical-space / 2;
 		}
 	}
+
 	// instory forms
 	&.m-form-instory {
 		border: 1px solid $border-color-lighter;
 		padding: 0.5em 0 1.5em 0;
+
 		.m-form-container {
 			padding: 0 0.5em;
-			h3, p, fieldset {
+
+			h3,
+			p,
+			fieldset {
 				padding: 0 $vertical-space / 2;
 				margin-bottom: $vertical-space;
+
 				&:last-child {
 					margin-bottom: 0;
 				}
 			}
+
 			h3 {
 				padding: 0 $vertical-space / 2;
 			    margin-top: $vertical-space / 2;
@@ -142,19 +157,25 @@ $form-width: 292px;
 			    line-height: 1.15em;
 			}
 		}
+
 		fieldset {
 			border: 0;
 			margin: 0;
 			padding: 0;
+
 			input {
 				width: 100%;
 			}
 		}
 	}
+
 	// standalone forms that aren't full pages
 	&.m-form-standalone {
+
 		.checkboxes {
-			input[type="checkbox"], input[type="radio"] {
+
+			input[type="checkbox"],
+			input[type="radio"] {
 				margin-right: 0.5em;
 			}
 		}
@@ -163,6 +184,7 @@ $form-width: 292px;
 
 // sticky needs a style for when the admin bar is active
 body.admin-bar {
+
 	.m-form-minnpost-form-processor-mailchimp.m-form-fullpage .m-subscribe-grouping .m-subscribe {
 		top: 2.25em;
 	}
