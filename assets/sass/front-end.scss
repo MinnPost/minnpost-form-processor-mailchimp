@@ -1,6 +1,6 @@
 // variables
-$border-color-lighter: #ebebfb;
 $border-color: #d6d6da;
+$border-radius: 4px;
 $vertical-space: 1em;
 $min-newsletter-width: 25%;
 $form-width: 20%;
@@ -45,6 +45,7 @@ $form-width: 20%;
 
 			article {
 				border: 1px solid $border-color;
+				border-radius: $border-radius;
 				padding: $vertical-space;
 			}
 
@@ -133,7 +134,7 @@ $form-width: 20%;
 
 	// instory forms
 	&.m-form-instory {
-		border: 1px solid $border-color-lighter;
+		border: 1px solid $border-color;
 		padding: 0.5em 0 1.5em 0;
 
 		.m-form-container {
