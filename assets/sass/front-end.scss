@@ -151,6 +151,35 @@ $form-width: 292px;
 			}
 		}
 	}
+	// inpopup forms
+	&.m-form-inpopup {
+		border: 0;
+		padding: $vertical-space 0 $vertical-space / 2 0;
+		.m-form-container {
+			padding: 0;
+			h3, p, fieldset {
+				padding: 0;
+				margin-bottom: $vertical-space;
+				&:last-child {
+					margin-bottom: 0;
+				}
+			}
+			h3 {
+				padding: 0 $vertical-space / 2;
+			    margin-top: $vertical-space / 2;
+			    font-size: 138.5%;
+			    line-height: 1.15em;
+			}
+		}
+		fieldset {
+			border: 0;
+			margin: 0;
+			padding: 0;
+			input {
+				width: 100%;
+			}
+		}
+	}
 	// standalone forms that aren't full pages
 	&.m-form-standalone {
 		.checkboxes {
