@@ -49,6 +49,6 @@
 			<?php endif; ?>
 		</fieldset>
 	<?php endforeach; ?>
-	<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"><?php echo $form['button_text']; ?></button>
+	<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"<?php echo $form['button_styles']; ?>><?php echo $form['button_text']; ?></button>
 	<?php echo $form['content_after']; ?>
 </form>

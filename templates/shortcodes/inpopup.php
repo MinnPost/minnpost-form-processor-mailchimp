@@ -1,10 +1,10 @@
 <?php
 /**
- * The template for front page newsletter subscribe forms
+ * The template for in-popup newsletter subscribe forms
  *
  */
 ?>
-<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" class="m-form m-form-frontpage m-form-minnpost-form-processor-mailchimp<?php echo $form['classes']; ?>">
+<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" class="m-form m-form-inpopup m-form-minnpost-form-processor-mailchimp<?php echo $form['classes']; ?>">
 	<input type="hidden" name="minnpost_form_processor_mailchimp_nonce" value="<?php echo $form['newsletter_nonce']; ?>">
 	<?php if ( 0 !== $form['user'] ) : ?>
 		<input type="hidden" name="user_id" value="<?php echo $form['user']->ID; ?>">
@@ -35,16 +35,10 @@
 		<?php echo $form['content_before']; ?>
 		<?php echo $form['message']; ?>
 		<fieldset>
-			<?php if ( isset( $form['in_content_label'] ) && '' !== $form['in_content_label'] && 'before' === $form['in_content_label_placement'] ) : ?>
-				<label for="email"><?php echo $form['in_content_label']; ?></label>
-			<?php endif; ?>
 			<div class="a-input-with-button a-button-sentence">
-				<input type="email" name="email" value="<?php echo isset( $form['user']->user_email ) ? $form['user']->user_email : ''; ?>" required>
+				<input type="email" name="email" value="<?php echo isset( $form['user']->user_email ) ? $form['user']->user_email : ''; ?>" placeholder="Your email address" required>
 				<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"<?php echo $form['button_styles']; ?>><?php echo $form['button_text']; ?></button>
 			</div>
-			<?php if ( isset( $form['in_content_label'] ) && '' !== $form['in_content_label'] && 'after' === $form['in_content_label_placement'] ) : ?>
-				<label for="email"><?php echo $form['in_content_label']; ?></label>
-			<?php endif; ?>
 		</fieldset>
 		<?php echo $form['content_after']; ?>
 	</div>

@@ -91,11 +91,12 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		}
 		$form = shortcode_atts(
 			array(
-				'placement'                  => '', // where this is used. fullpage, instory, or sidebar
+				'placement'                  => '', // where this is used. fullpage, instory, inpopup, or sidebar
 				'groups_available'           => '', // mailchimp groups to make available for the user. default (plugin settings), all, or csv of group names. this should be whatever the form is making available to the user. if there are groups the user is not able to choose in this instance, they should be left out.
 				'show_elements'              => '', // title, description. default is based on placement
 				'hide_elements'              => '', // title, description. default is based on placement
 				'button_text'                => '', // button text for the form. default is 1) whatever is in the plugin settings, 2) if that is blank, Subscribe
+				'button_styles'              => '', // button css. will be inlined, if present.
 				'image_url'                  => '', // if a local image url is specified, it will be added before the content_before value
 				'image_alt'                  => '', // if adding an image, alt text should also be added
 				'content_before'             => '', // used before form. default is empty.
@@ -154,15 +155,20 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 			$form['button_text'] = get_option( $this->option_prefix . $shortcode . '_button_text', __( 'Subscribe', 'minnpost-form-processor-mailchimp' ) );
 		}
 
+		// if there is a button style value, write an inline style tag for it
+		if ( '' !== $form['button_styles'] ) {
+			$form['button_styles'] = ' style="' . esc_attr( $form['button_styles'] ) . '"';
+		}
+
 		// allow title and description to be hidden by shortcode attributes
 		$form['hide_description'] = false;
 		$form['hide_title']       = false;
 		if ( '' !== $form['hide_elements'] ) {
 			$hide_elements = explode( ',', $form['hide_elements'] );
-			if ( in_array( 'description', $hide_elements ) ) {
+			if ( in_array( 'description', $hide_elements, true ) ) {
 				$form['hide_description'] = true;
 			}
-			if ( in_array( 'title', $hide_elements ) ) {
+			if ( in_array( 'title', $hide_elements, true ) ) {
 				$form['hide_title'] = true;
 			}
 		}
@@ -172,10 +178,10 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		$form['show_title']       = false;
 		if ( '' !== $form['show_elements'] ) {
 			$show_elements = explode( ',', $form['show_elements'] );
-			if ( in_array( 'description', $hide_elements ) ) {
+			if ( in_array( 'description', $hide_elements, true ) ) {
 				$form['show_description'] = true;
 			}
-			if ( in_array( 'title', $hide_elements ) ) {
+			if ( in_array( 'title', $hide_elements, true ) ) {
 				$form['show_title'] = true;
 			}
 		}

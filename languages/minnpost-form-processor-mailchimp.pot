@@ -129,23 +129,23 @@ msgstr ""
 msgid "Defined in wp-config.php"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-get-data.php:365
+#: php/class-minnpost-form-processor-mailchimp-get-data.php:367
 msgid "MailChimp Error: Group Categorization failed: no group id"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-get-data.php:405
+#: php/class-minnpost-form-processor-mailchimp-get-data.php:407
 msgid "MailChimp Error: Group Categorization failed: no subresources info array"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-get-data.php:616
+#: php/class-minnpost-form-processor-mailchimp-get-data.php:618
 msgid "Thanks for updating your email preferences. They will go into effect immediately."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-get-data.php:619
+#: php/class-minnpost-form-processor-mailchimp-get-data.php:621
 msgid "We have added you to the MinnPost mailing list."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-get-data.php:622
+#: php/class-minnpost-form-processor-mailchimp-get-data.php:624
 msgid "We have added you to the MinnPost mailing list. You will need to click the confirmation link in the email we sent to begin receiving messages."
 msgstr ""
 
@@ -153,6 +153,6 @@ msgstr ""
 msgid "Invalid nonce specified"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-shortcodes.php:154
+#: php/class-minnpost-form-processor-mailchimp-shortcodes.php:155
 msgid "Subscribe"
 msgstr ""

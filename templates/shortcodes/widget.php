@@ -41,7 +41,7 @@
 				</label>
 			</div>
 			<div class="m-form-actions">
-				<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"><?php echo $form['button_text']; ?></button>
+				<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"<?php echo $form['button_styles']; ?>><?php echo $form['button_text']; ?></button>
 			</div>
 		</fieldset>
 		<?php echo $form['content_after']; ?>

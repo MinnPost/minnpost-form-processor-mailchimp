@@ -37,7 +37,7 @@
 		<fieldset>
 			<div class="a-input-with-button a-button-sentence">
 				<input type="email" name="email" value="<?php echo isset( $form['user']->user_email ) ? $form['user']->user_email : ''; ?>" placeholder="Your email address" required>
-				<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"><?php echo $form['button_text']; ?></button>
+				<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"<?php echo $form['button_styles']; ?>><?php echo $form['button_text']; ?></button>
 			</div>
 		</fieldset>
 		<?php echo $form['content_after']; ?>
