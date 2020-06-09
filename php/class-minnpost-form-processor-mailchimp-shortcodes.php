@@ -159,10 +159,10 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		$form['hide_title']       = false;
 		if ( '' !== $form['hide_elements'] ) {
 			$hide_elements = explode( ',', $form['hide_elements'] );
-			if ( in_array( 'description', $hide_elements ) ) {
+			if ( in_array( 'description', $hide_elements, true ) ) {
 				$form['hide_description'] = true;
 			}
-			if ( in_array( 'title', $hide_elements ) ) {
+			if ( in_array( 'title', $hide_elements, true ) ) {
 				$form['hide_title'] = true;
 			}
 		}
@@ -172,10 +172,10 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		$form['show_title']       = false;
 		if ( '' !== $form['show_elements'] ) {
 			$show_elements = explode( ',', $form['show_elements'] );
-			if ( in_array( 'description', $hide_elements ) ) {
+			if ( in_array( 'description', $hide_elements, true ) ) {
 				$form['show_description'] = true;
 			}
-			if ( in_array( 'title', $hide_elements ) ) {
+			if ( in_array( 'title', $hide_elements, true ) ) {
 				$form['show_title'] = true;
 			}
 		}
