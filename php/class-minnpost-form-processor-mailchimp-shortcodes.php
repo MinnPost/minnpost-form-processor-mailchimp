@@ -96,6 +96,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 				'show_elements'              => '', // title, description. default is based on placement
 				'hide_elements'              => '', // title, description. default is based on placement
 				'button_text'                => '', // button text for the form. default is 1) whatever is in the plugin settings, 2) if that is blank, Subscribe
+				'button_styles'              => '', // button css. will be inlined, if present.
 				'image_url'                  => '', // if a local image url is specified, it will be added before the content_before value
 				'image_alt'                  => '', // if adding an image, alt text should also be added
 				'content_before'             => '', // used before form. default is empty.
@@ -152,6 +153,11 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		// default button text is Subscribe if the form option has no value. Templates can override this as needed, or with an attribute value the individual forms can override it.
 		if ( '' === $form['button_text'] ) {
 			$form['button_text'] = get_option( $this->option_prefix . $shortcode . '_button_text', __( 'Subscribe', 'minnpost-form-processor-mailchimp' ) );
+		}
+
+		// if there is a button style value, write an inline style tag for it
+		if ( '' !== $form['button_styles'] ) {
+			$form['button_styles'] = ' style="' . esc_attr( $form['button_styles'] ) . '"';
 		}
 
 		// allow title and description to be hidden by shortcode attributes
