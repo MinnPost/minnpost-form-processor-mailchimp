@@ -245,11 +245,13 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 		$placements_user_groups_available = array(
 			'usersummary',
 			'instory',
+			'inpopup',
 		);
 
 		// this placement does not categorize groups
 		$placements_uncategorized = array(
 			'instory',
+			'inpopup',
 			'widget',
 		);
 
