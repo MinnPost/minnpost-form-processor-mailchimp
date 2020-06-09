@@ -91,7 +91,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		}
 		$form = shortcode_atts(
 			array(
-				'placement'                  => '', // where this is used. fullpage, instory, or sidebar
+				'placement'                  => '', // where this is used. fullpage, instory, inpopup, or sidebar
 				'groups_available'           => '', // mailchimp groups to make available for the user. default (plugin settings), all, or csv of group names. this should be whatever the form is making available to the user. if there are groups the user is not able to choose in this instance, they should be left out.
 				'show_elements'              => '', // title, description. default is based on placement
 				'hide_elements'              => '', // title, description. default is based on placement
