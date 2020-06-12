@@ -269,7 +269,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 		// default is false if a group is not allowed in the submitted form
 		// that is the only way we can remove a subscription option if a user chooses to uncheck it
 		foreach ( $groups_available as $group ) {
-			if ( ! isset( $user_data['groups'] ) || ( isset( $user_data['groups'] ) && ! in_array( $group, $user_data['groups'] ) ) ) {
+			if ( ! isset( $user_data['groups'] ) || ( isset( $user_data['groups'] ) && ! in_array( $group, $user_data['groups'], true ) ) ) {
 				$params[ $group_key ][ $group ] = 'false';
 			}
 		}
