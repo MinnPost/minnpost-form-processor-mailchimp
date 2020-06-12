@@ -168,7 +168,10 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 					$confirm_message = $result['detail'];
 				}
 				if ( isset( $_POST['ajaxrequest'] ) && 'true' === $_POST['ajaxrequest'] ) {
-					$local_error = ( true === $result['local'] ) ? true : false;
+					$local_error = false;
+					if ( isset( $result['local'] ) ) {
+						$local_error = ( true === $result['local'] ) ? true : false;
+					}
 					wp_send_json_error(
 						array(
 							'id'              => isset( $result['id'] ) ? $result['id'] : '',
