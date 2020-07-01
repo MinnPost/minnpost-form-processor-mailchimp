@@ -149,7 +149,7 @@ msgstr ""
 msgid "We have added you to the MinnPost mailing list. You will need to click the confirmation link in the email we sent to begin receiving messages."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-post-data.php:206
+#: php/class-minnpost-form-processor-mailchimp-post-data.php:209
 msgid "Invalid nonce specified"
 msgstr ""
 
