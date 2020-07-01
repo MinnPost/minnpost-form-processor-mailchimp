@@ -339,7 +339,9 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 			// set group layout attributes
 			$groups_available = $this->setup_categorized_layout_attributes( $shortcode, $resource_type, $resource_id, $groups_available );
 		} elseif ( in_array( $placement, $placements_uncategorized, true ) ) {
-			$groups_available = array_column( $groups_available, 'id' );
+			if ( isset( $groups_available ) && is_array( $groups_available ) ) {
+				$groups_available = array_column( $groups_available, 'id' );
+			}
 		}
 
 		return $groups_available;
