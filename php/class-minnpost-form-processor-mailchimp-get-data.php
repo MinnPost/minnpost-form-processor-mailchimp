@@ -401,7 +401,7 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 
 				$group_type   = get_option( $this->option_prefix . $shortcode . '_mc_resource_item_type', '' );
 				$subresources = array();
-				if ( ! is_array( $subresources_info ) ) {
+				if ( ! isset( $subresources_info ) || ! is_array( $subresources_info ) ) {
 					// do an error log here because it shouldn't happen
 					$log_title   = sprintf(
 						esc_html__( 'MailChimp Error: Group Categorization failed: no subresources info array', 'minnpost-form-processor-mailchimp' )
