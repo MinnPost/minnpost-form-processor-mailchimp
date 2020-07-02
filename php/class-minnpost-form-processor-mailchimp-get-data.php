@@ -72,15 +72,22 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 			if ( empty( $methods ) || empty( $subresources ) ) {
 				return $mc_resource_items;
 			}
+			if ( ! isset( $methods[ $resource_type ][ $resource_id ] ) ) {
+				return $mc_resource_items;
+			}
 			$methods = $methods[ $resource_type ][ $resource_id ][ $subresource_type ];
-			foreach ( $subresources as $subresource ) {
-				foreach ( $methods as $method ) {
-					$method_items = $this->get_all_items( $resource_type, $resource_id, $subresource_type, $subresource, $method );
-					foreach ( $method_items as $method_item ) {
-						$mc_resource_items[ $subresource_type . '_' . $subresource . '_' . $method . '_' . $method_item['id'] ] = $method_item;
-					} // End foreach().
+			if ( isset( $subresources ) && is_array( $subresources ) ) {
+				foreach ( $subresources as $subresource ) {
+					if ( isset( $methods ) && is_array( $methods ) ) {
+						foreach ( $methods as $method ) {
+							$method_items = $this->get_all_items( $resource_type, $resource_id, $subresource_type, $subresource, $method );
+							foreach ( $method_items as $method_item ) {
+								$mc_resource_items[ $subresource_type . '_' . $subresource . '_' . $method . '_' . $method_item['id'] ] = $method_item;
+							} // End foreach().
+						} // End foreach().
+					}
 				} // End foreach().
-			} // End foreach().
+			}
 		} // End foreach().
 		return $mc_resource_items;
 	}
