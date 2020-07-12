@@ -2,8 +2,11 @@
 $border-color: #d6d6da;
 $border-radius: 4px;
 $vertical-space: 1em;
-$min-newsletter-width: 25%;
-$form-width: 20%;
+$min-newsletter-width: 50%;
+$form-width: 45%;
+$media-query-small: 40em;
+$media-query-medium: 60em;
+$media-query-large: 65em;
 
 .m-form-minnpost-form-processor-mailchimp {
 
@@ -50,11 +53,22 @@ $form-width: 20%;
 			}
 
 			.m-subscribe-items {
-				display: flex;
-				flex-wrap: wrap;
-				justify-content: space-between;
-				flex: 1 0 $min-newsletter-width;
-				flex-direction: column;
+
+				@media screen and (min-width: $media-query-small) and (max-width: $media-query-medium) {
+					display: flex;
+					flex-wrap: wrap;
+					justify-content: space-between;
+					flex: 1 0 $min-newsletter-width;
+					flex-direction: column;
+				}
+
+				@media screen and (min-width: $media-query-large) {
+					display: flex;
+					flex-wrap: wrap;
+					justify-content: space-between;
+					flex: 1 0 $min-newsletter-width;
+					flex-direction: column;
+				}
 
 				article {
 					flex: 0 0 $min-newsletter-width;
@@ -82,11 +96,18 @@ $form-width: 20%;
 			}
 
 			.m-subscribe {
-				margin-left: $vertical-space;
 				padding: $vertical-space;
 				flex: 1 0 $form-width;
 				position: sticky;
 				top: 0.25em;
+
+				@media screen and (min-width: $media-query-small) and (max-width: $media-query-medium) {
+					margin-left: $vertical-space;
+				}
+
+				@media screen and (min-width: $media-query-large) {
+					margin-left: $vertical-space;
+				}
 
 				button {
 					width: 100%;
