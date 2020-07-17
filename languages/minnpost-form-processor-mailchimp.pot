@@ -25,127 +25,127 @@ msgstr ""
 msgid "MinnPost MailChimp Forms"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:223
+#: php/class-minnpost-form-processor-mailchimp-admin.php:224
 msgid "Newsletter form shortcodes"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:229
+#: php/class-minnpost-form-processor-mailchimp-admin.php:230
 msgid "Enter shortcodes, one on each line, that are managed by this plugin. Ex: newsletter_form will display as [newsletter_form]."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:270
+#: php/class-minnpost-form-processor-mailchimp-admin.php:272
 msgid "Button text"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:275
+#: php/class-minnpost-form-processor-mailchimp-admin.php:277
 msgid "This value will be the default text on submit buttons in this form. If there is a button_text attribute on the shortcode, that will overidde this setting for that instance of the shortcode."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:281
+#: php/class-minnpost-form-processor-mailchimp-admin.php:283
 msgid "Resource type"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:294
+#: php/class-minnpost-form-processor-mailchimp-admin.php:296
 msgid "Resource name"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:299
+#: php/class-minnpost-form-processor-mailchimp-admin.php:301
 msgid "This is the name (or id, if there is no name) of the MailChimp resource this form can modify."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:313
+#: php/class-minnpost-form-processor-mailchimp-admin.php:315
 msgid "MailChimp object for users"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:318
+#: php/class-minnpost-form-processor-mailchimp-admin.php:320
 msgid "When subscribing users to this list, the plugin will use this object."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:325
+#: php/class-minnpost-form-processor-mailchimp-admin.php:327
 msgid "Default status for new users"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:330
+#: php/class-minnpost-form-processor-mailchimp-admin.php:332
 msgid "When subscribing users to this list, unless otherwise specified they will be added with this status."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:341
+#: php/class-minnpost-form-processor-mailchimp-admin.php:343
 msgid "Default MailChimp item type"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:346
+#: php/class-minnpost-form-processor-mailchimp-admin.php:348
 msgid "This is the field are assigning to users in MailChimp."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:354
+#: php/class-minnpost-form-processor-mailchimp-admin.php:356
 msgid "Default MailChimp items"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:359
+#: php/class-minnpost-form-processor-mailchimp-admin.php:361
 msgid "If not otherwise specified, these will be the default settings given to users."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:370, php/class-minnpost-form-processor-mailchimp-admin.php:399
+#: php/class-minnpost-form-processor-mailchimp-admin.php:372, php/class-minnpost-form-processor-mailchimp-admin.php:401
 msgid "Title"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:376, php/class-minnpost-form-processor-mailchimp-admin.php:405
+#: php/class-minnpost-form-processor-mailchimp-admin.php:378, php/class-minnpost-form-processor-mailchimp-admin.php:407
 msgid "When a form shortcode displays information about this item, it will use this value for the title."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:387
+#: php/class-minnpost-form-processor-mailchimp-admin.php:389
 msgid "Grouping text"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:393
+#: php/class-minnpost-form-processor-mailchimp-admin.php:395
 msgid "This text is sometimes displayed above the title of the newsletter. Frequency is a good thing to put here."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:411
+#: php/class-minnpost-form-processor-mailchimp-admin.php:413
 msgid "Description"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:417
+#: php/class-minnpost-form-processor-mailchimp-admin.php:419
 msgid "When a form shortcode displays information about this item, it will use this value for the description."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:425
+#: php/class-minnpost-form-processor-mailchimp-admin.php:427
 msgid "Name in shortcode"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:431
+#: php/class-minnpost-form-processor-mailchimp-admin.php:433
 msgid "When a shortcode contains groups in its attribute list, this value can be used to specify this item."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:437
+#: php/class-minnpost-form-processor-mailchimp-admin.php:439
 msgid "Categories"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:443
+#: php/class-minnpost-form-processor-mailchimp-admin.php:445
 msgid "If a shortcode has categories associated with it and they match these categories, the user settings will include this item."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-admin.php:819, php/class-minnpost-form-processor-mailchimp-admin.php:856, php/class-minnpost-form-processor-mailchimp-admin.php:932, php/class-minnpost-form-processor-mailchimp-admin.php:1086
+#: php/class-minnpost-form-processor-mailchimp-admin.php:823, php/class-minnpost-form-processor-mailchimp-admin.php:863, php/class-minnpost-form-processor-mailchimp-admin.php:941, php/class-minnpost-form-processor-mailchimp-admin.php:1102
 msgid "Defined in wp-config.php"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-get-data.php:367
+#: php/class-minnpost-form-processor-mailchimp-get-data.php:376
 msgid "MailChimp Error: Group Categorization failed: no group id"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-get-data.php:407
+#: php/class-minnpost-form-processor-mailchimp-get-data.php:416
 msgid "MailChimp Error: Group Categorization failed: no subresources info array"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-get-data.php:618
+#: php/class-minnpost-form-processor-mailchimp-get-data.php:627
 msgid "Thanks for updating your email preferences. They will go into effect immediately."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-get-data.php:621
+#: php/class-minnpost-form-processor-mailchimp-get-data.php:630
 msgid "We have added you to the MinnPost mailing list."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-get-data.php:624
+#: php/class-minnpost-form-processor-mailchimp-get-data.php:633
 msgid "We have added you to the MinnPost mailing list. You will need to click the confirmation link in the email we sent to begin receiving messages."
 msgstr ""
 
