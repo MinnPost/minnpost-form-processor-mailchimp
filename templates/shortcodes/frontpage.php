@@ -39,11 +39,11 @@
 				<label for="email"><?php echo $form['in_content_label']; ?></label>
 			<?php endif; ?>
 			<div class="a-input-with-button a-button-sentence">
-				<input type="email" name="email" value="<?php echo isset( $form['user']->user_email ) ? $form['user']->user_email : ''; ?>" required>
+				<input id="front-page-email" type="email" name="email" value="<?php echo isset( $form['user']->user_email ) ? $form['user']->user_email : ''; ?>" required>
 				<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"<?php echo $form['button_styles']; ?>><?php echo $form['button_text']; ?></button>
 			</div>
 			<?php if ( isset( $form['in_content_label'] ) && '' !== $form['in_content_label'] && 'after' === $form['in_content_label_placement'] ) : ?>
-				<label for="email"><?php echo $form['in_content_label']; ?></label>
+				<label for="front-page-email"><?php echo $form['in_content_label']; ?></label>
 			<?php endif; ?>
 		</fieldset>
 		<?php echo $form['content_after']; ?>
