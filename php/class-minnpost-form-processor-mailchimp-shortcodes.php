@@ -282,9 +282,32 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		do_action( $this->option_prefix . 'after_' . $template_name );
 
 		$html = ob_get_contents();
+		$html = $this->filter_shortcode_text( $html );
 		ob_end_clean();
 
 		return $html;
+	}
+
+	/*
+	* Utility function to deal with the way
+	* WordPress auto formats text in a shortcode.
+	*/
+	private function filter_shortcode_text( $text = '' ) {
+		// Replace previous line breaks
+		$tags = array( "\n", "\n\n" );
+		$text = str_replace( $tags, '', $text );
+
+		// Replace all the poorly formatted P tags that WP adds by default.
+		$tags = array( '<p>', '</p>' );
+		$text = str_replace( $tags, "\n", $text );
+
+		// Remove any BR tags
+		$tags = array( '<br>', '<br/>', '<br />' );
+		$text = str_replace( $tags, '', $text );
+		return $text;
+
+		// Add back in the P and BR tags again, remove empty ones
+		return apply_filters( 'the_content', $text );
 	}
 
 	/**

@@ -60,7 +60,7 @@
 											<h3 class="a-newsletter-title"><?php echo $item['name']; ?></h3>
 										<?php endif; ?>
 										<?php if ( false === $form['hide_description'] || true === $form['show_description'] ) : ?>
-											<?php echo wpautop( $item['description'] ); ?>
+											<?php echo apply_filters( 'the_content', $item['description'] ); ?>
 										<?php endif; ?>
 									</label>
 								</article>
