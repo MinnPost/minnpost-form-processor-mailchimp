@@ -173,7 +173,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 			} else {
 				// error handling
 				$user_status = 'error';
-				if ( isset( $result['status'] ) && ( 400 === $result['status'] || 'spam' === $result['status'] ) ) {
+				if ( isset( $result['status'] ) && in_array( $result['status'], array( 400, 408, 'spam' ), true ) ) {
 					$confirm_message = $result['detail'];
 				}
 				if ( ! isset( $result['status'] ) ) {
