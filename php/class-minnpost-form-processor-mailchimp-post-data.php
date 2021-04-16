@@ -173,8 +173,12 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 			} else {
 				// error handling
 				$user_status = 'error';
-				if ( 400 === $result['status'] || 'spam' === $result['status'] ) {
+				if ( isset( $result['status'] ) && ( 400 === $result['status'] || 'spam' === $result['status'] ) ) {
 					$confirm_message = $result['detail'];
+				}
+				if ( ! isset( $result['status'] ) ) {
+					$result['local'] = true;
+					$confirm_message = __( 'Our newsletter system was unable to complete your request, and it did not send us an error message. You may be able to try again.', 'minnpost-form-processor-mailchimp' );
 				}
 				if ( isset( $_POST['ajaxrequest'] ) && 'true' === $_POST['ajaxrequest'] ) {
 					$local_error = false;
@@ -300,7 +304,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 		$result = $this->parent->mailchimp->send( $resource_type . '/' . $resource_id . '/' . $subresource_type, $http_method, $params );
 
 		// if a user has been unsubscribed and they filled out this form, set them to pending so they can confirm
-		if ( 'unsubscribed' === $result['status'] ) {
+		if ( isset( $result['status'] ) && 'unsubscribed' === $result['status'] ) {
 			$params['status'] = 'pending';
 			$http_method      = 'PUT';
 			$result           = $this->parent->mailchimp->send( $resource_type . '/' . $resource_id . '/' . $subresource_type, $http_method, $params );
