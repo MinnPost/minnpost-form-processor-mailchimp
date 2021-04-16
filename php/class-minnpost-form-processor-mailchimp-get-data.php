@@ -159,6 +159,8 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 		if ( isset( $user['status'] ) && 404 !== $user['status'] ) {
 			return $user;
 		}
+
+		// the user does not exist in Mailchimp.
 		$status = isset( $user['status'] ) ? $user['status'] : 'status missing';
 		$detail = isset( $user['detail'] ) ? $user['detail'] : 'detail missing';
 		return new WP_Error( $status, $detail );
