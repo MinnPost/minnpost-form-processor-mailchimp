@@ -91,7 +91,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		}
 		$form = shortcode_atts(
 			array(
-				'placement'                  => '', // where this is used. fullpage, instory, inpopup, useraccount, or sidebar
+				'placement'                  => '', // where this is used. fullpage, instory, inpopup, useraccount, usersummary, or sidebar
 				'groups_available'           => '', // mailchimp groups to make available for the user. default (plugin settings), all, or csv of group names. this should be whatever the form is making available to the user. if there are groups the user is not able to choose in this instance, they should be left out.
 				'show_elements'              => '', // title, description. default is based on placement
 				'hide_elements'              => '', // title, description. default is based on placement
@@ -134,7 +134,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 
 			// for places where we have to have user data before we submit the form, get it.
 			// todo: we could make an optional parameter on the shortcode to set this, as well.
-			if ( in_array( $form['placement'], array( 'fullpage', 'useraccount' ), true ) ) {
+			if ( in_array( $form['placement'], array( 'fullpage', 'useraccount', 'usersummary' ), true ) ) {
 				// if the user has already filled out the form, we should reset the cached data
 				$reset_user_info = false;
 				$message_code    = get_query_var( 'newsletter_message_code' );
