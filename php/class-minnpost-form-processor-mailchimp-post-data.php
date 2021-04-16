@@ -63,13 +63,22 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 			$resource_id      = $this->get_data->get_resource_id( $action );
 			$subresource_type = $this->get_data->get_subresource_type( $action );
 
-			// placement of this form
+			// placement of this form.
 			$placement = isset( $_POST['placement'] ) ? esc_attr( $_POST['placement'] ) : '';
 
-			// required form data
+			// form data about the user.
 			$mailchimp_user_id = isset( $_POST['mailchimp_user_id'] ) ? esc_attr( $_POST['mailchimp_user_id'] ) : '';
 			$status            = isset( $_POST['mailchimp_status'] ) ? esc_attr( $_POST['mailchimp_status'] ) : get_option( $this->option_prefix . $action . '_default_user_status', '' );
 			$email             = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
+
+			// if the user's form data is not present, try to get it now.
+			if ( '' === $mailchimp_user_id || '' === $status ) {
+				$user_info = $this->get_data->get_user_info( $action, $resource_type, $resource_id, $email, true );
+				if ( ! is_wp_error( $user_info ) ) {
+					$mailchimp_user_id = $user_info['id'];
+					$status            = $user_info['status'];
+				}
+			}
 
 			// this is the mailchimp group settings field. it gets sanitized later.
 			$groups_available = isset( $_POST['groups_available'] ) ? $_POST['groups_available'] : 'default';
