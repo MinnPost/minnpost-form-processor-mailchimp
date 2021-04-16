@@ -132,21 +132,25 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 
 			$form['user']->user_email = $user_email;
 
-			// if the user has already filled out the form, we should reset the cached data
-			$reset_user_info = false;
-			$message_code    = get_query_var( 'newsletter_message_code' );
-			if ( '' !== $message_code ) {
-				$reset_user_info = true;
-			}
-			$form['user']->mailchimp_info = $this->get_data->get_user_info( $shortcode, $resource_type, $resource_id, $user_email, $reset_user_info );
+			// for places where we have to have user data before we submit the form, get it.
+			// todo: we could make an optional parameter on the shortcode to set this, as well.
+			if ( in_array( $form['placement'], array( 'fullpage', 'useraccount' ), true ) ) {
+				// if the user has already filled out the form, we should reset the cached data
+				$reset_user_info = false;
+				$message_code    = get_query_var( 'newsletter_message_code' );
+				if ( '' !== $message_code ) {
+					$reset_user_info = true;
+				}
+				$form['user']->mailchimp_info = $this->get_data->get_user_info( $shortcode, $resource_type, $resource_id, $user_email, $reset_user_info );
 
-			if ( ! is_wp_error( $form['user']->mailchimp_info ) ) {
-				$form['user']->mailchimp_user_id = $form['user']->mailchimp_info['id'];
-				$form['user']->groups            = $form['user']->mailchimp_info[ $user_mailchimp_groups ];
-				$form['user']->mailchimp_status  = $form['user']->mailchimp_info['status'];
-			} else {
-				// if the user returns no status or a 404 from mailchimp, we need to log it to see what is happening
-				//error_log( 'error: user from mailchimp is ' . print_r( $form['user']->mailchimp_info, true ) );
+				if ( ! is_wp_error( $form['user']->mailchimp_info ) ) {
+					$form['user']->mailchimp_user_id = $form['user']->mailchimp_info['id'];
+					$form['user']->groups            = $form['user']->mailchimp_info[ $user_mailchimp_groups ];
+					$form['user']->mailchimp_status  = $form['user']->mailchimp_info['status'];
+				} else {
+					// if the user returns no status or a 404 from mailchimp, we need to log it to see what is happening
+					//error_log( 'error: user from mailchimp is ' . print_r( $form['user']->mailchimp_info, true ) );
+				}
 			}
 		}
 
