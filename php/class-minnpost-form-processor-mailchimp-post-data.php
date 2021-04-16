@@ -63,13 +63,22 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 			$resource_id      = $this->get_data->get_resource_id( $action );
 			$subresource_type = $this->get_data->get_subresource_type( $action );
 
-			// placement of this form
+			// placement of this form.
 			$placement = isset( $_POST['placement'] ) ? esc_attr( $_POST['placement'] ) : '';
 
-			// required form data
+			// form data about the user.
 			$mailchimp_user_id = isset( $_POST['mailchimp_user_id'] ) ? esc_attr( $_POST['mailchimp_user_id'] ) : '';
 			$status            = isset( $_POST['mailchimp_status'] ) ? esc_attr( $_POST['mailchimp_status'] ) : get_option( $this->option_prefix . $action . '_default_user_status', '' );
 			$email             = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
+
+			// if the user's form data is not present, try to get it now.
+			if ( '' === $mailchimp_user_id || '' === $status ) {
+				$user_info = $this->get_data->get_user_info( $action, $resource_type, $resource_id, $email, true );
+				if ( ! is_wp_error( $user_info ) ) {
+					$mailchimp_user_id = $user_info['id'];
+					$status            = $user_info['status'];
+				}
+			}
 
 			// this is the mailchimp group settings field. it gets sanitized later.
 			$groups_available = isset( $_POST['groups_available'] ) ? $_POST['groups_available'] : 'default';
@@ -164,8 +173,12 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 			} else {
 				// error handling
 				$user_status = 'error';
-				if ( 400 === $result['status'] || 'spam' === $result['status'] ) {
+				if ( isset( $result['status'] ) && in_array( $result['status'], array( 400, 408, 'spam' ), true ) ) {
 					$confirm_message = $result['detail'];
+				}
+				if ( ! isset( $result['status'] ) ) {
+					$result['local'] = true;
+					$confirm_message = __( 'Our newsletter system was unable to complete your request, and it did not send us an error message. You may be able to try again.', 'minnpost-form-processor-mailchimp' );
 				}
 				if ( isset( $_POST['ajaxrequest'] ) && 'true' === $_POST['ajaxrequest'] ) {
 					$local_error = false;
@@ -291,7 +304,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 		$result = $this->parent->mailchimp->send( $resource_type . '/' . $resource_id . '/' . $subresource_type, $http_method, $params );
 
 		// if a user has been unsubscribed and they filled out this form, set them to pending so they can confirm
-		if ( 'unsubscribed' === $result['status'] ) {
+		if ( isset( $result['status'] ) && 'unsubscribed' === $result['status'] ) {
 			$params['status'] = 'pending';
 			$http_method      = 'PUT';
 			$result           = $this->parent->mailchimp->send( $resource_type . '/' . $resource_id . '/' . $subresource_type, $http_method, $params );
