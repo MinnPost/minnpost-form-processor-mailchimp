@@ -8,12 +8,8 @@
 	<input type="hidden" name="minnpost_form_processor_mailchimp_nonce" value="<?php echo $form['newsletter_nonce']; ?>">
 	<?php if ( 0 !== $form['user'] ) : ?>
 		<input type="hidden" name="user_id" value="<?php echo $form['user']->ID; ?>">
-		<input type="hidden" name="mailchimp_user_id" value="<?php echo $form['user']->mailchimp_user_id; ?>">
 		<input type="hidden" name="first_name" value="<?php echo $form['user']->first_name; ?>">
 		<input type="hidden" name="last_name" value="<?php echo $form['user']->last_name; ?>">
-		<?php if ( isset( $form['user']->mailchimp_status ) ) : ?>
-			<input type="hidden" name="mailchimp_status" value="<?php echo $form['user']->mailchimp_status; ?>">
-		<?php endif; ?>
 	<?php endif; ?>
 	<?php if ( '' !== $form['action'] ) : ?>
 		<input type="hidden" name="action" value="<?php echo esc_attr( $form['action'] ); ?>">
@@ -33,19 +29,21 @@
 	<div class="m-form-container">
 		<?php echo $form['image']; ?>
 		<?php echo $form['content_before']; ?>
-		<?php echo $form['message']; ?>
-		<fieldset>
-			<?php if ( isset( $form['in_content_label'] ) && '' !== $form['in_content_label'] && 'before' === $form['in_content_label_placement'] ) : ?>
-				<label for="email"><?php echo $form['in_content_label']; ?></label>
-			<?php endif; ?>
-			<div class="a-input-with-button a-button-sentence">
-				<input id="front-page-email" type="email" name="email" value="<?php echo isset( $form['user']->user_email ) ? $form['user']->user_email : ''; ?>" required>
-				<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"<?php echo $form['button_styles']; ?>><?php echo $form['button_text']; ?></button>
-			</div>
-			<?php if ( isset( $form['in_content_label'] ) && '' !== $form['in_content_label'] && 'after' === $form['in_content_label_placement'] ) : ?>
-				<label for="front-page-email"><?php echo $form['in_content_label']; ?></label>
-			<?php endif; ?>
-		</fieldset>
+		<div class="m-message-and-fields">
+			<?php echo $form['message']; ?>
+			<fieldset>
+				<?php if ( isset( $form['in_content_label'] ) && '' !== $form['in_content_label'] && 'before' === $form['in_content_label_placement'] ) : ?>
+					<label for="email"><?php echo $form['in_content_label']; ?></label>
+				<?php endif; ?>
+				<div class="a-input-with-button a-button-sentence">
+					<input id="front-page-email" type="email" name="email" value="<?php echo isset( $form['user']->user_email ) ? $form['user']->user_email : ''; ?>" required>
+					<button type="submit" name="subscribe" class="a-button a-button-next a-button-choose"<?php echo $form['button_styles']; ?>><?php echo $form['button_text']; ?></button>
+				</div>
+				<?php if ( isset( $form['in_content_label'] ) && '' !== $form['in_content_label'] && 'after' === $form['in_content_label_placement'] ) : ?>
+					<label for="front-page-email"><?php echo $form['in_content_label']; ?></label>
+				<?php endif; ?>
+			</fieldset>
+		</div>
 		<?php echo $form['content_after']; ?>
 	</div>
 </form>
