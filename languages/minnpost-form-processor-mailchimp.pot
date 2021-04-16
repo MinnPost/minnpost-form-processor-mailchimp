@@ -1,4 +1,4 @@
-# Copyright (C) 2020 minnpost-form-processor-mailchimp
+# Copyright (C) 2021 minnpost-form-processor-mailchimp
 # This file is distributed under the same license as the minnpost-form-processor-mailchimp package.
 msgid ""
 msgstr ""
@@ -129,30 +129,34 @@ msgstr ""
 msgid "Defined in wp-config.php"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-get-data.php:376
+#: php/class-minnpost-form-processor-mailchimp-get-data.php:378
 msgid "MailChimp Error: Group Categorization failed: no group id"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-get-data.php:416
+#: php/class-minnpost-form-processor-mailchimp-get-data.php:418
 msgid "MailChimp Error: Group Categorization failed: no subresources info array"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-get-data.php:627
+#: php/class-minnpost-form-processor-mailchimp-get-data.php:629
 msgid "Thanks for updating your email preferences. They will go into effect immediately."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-get-data.php:630
+#: php/class-minnpost-form-processor-mailchimp-get-data.php:632
 msgid "We have added you to the MinnPost mailing list."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-get-data.php:633
+#: php/class-minnpost-form-processor-mailchimp-get-data.php:635
 msgid "We have added you to the MinnPost mailing list. You will need to click the confirmation link in the email we sent to begin receiving messages."
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-post-data.php:209
+#: php/class-minnpost-form-processor-mailchimp-post-data.php:222
 msgid "Invalid nonce specified"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-shortcodes.php:155
+#: php/class-minnpost-form-processor-mailchimp-post-data.php:181
+msgid "Our newsletter system was unable to complete your request, and it did not send us an error message. You may be able to try again."
+msgstr ""
+
+#: php/class-minnpost-form-processor-mailchimp-shortcodes.php:159
 msgid "Subscribe"
 msgstr ""
