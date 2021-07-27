@@ -237,7 +237,6 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 	public function can_process( WP_REST_Request $request ) {
 		// unless we specify otherwise, the method should return true.
 		$http_method = $request->get_method();
-		$class       = $request->get_url_params()['class'];
 		return true;
 	}
 
