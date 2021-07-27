@@ -53,9 +53,10 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 			'/mailchimp/user',
 			array(
 				array(
-					'methods'  => array( WP_REST_Server::CREATABLE, WP_REST_Server::READABLE ),
-					'callback' => array( $this, 'process_user_request' ),
-					'args'     => array(
+					'methods'             => array( WP_REST_Server::CREATABLE, WP_REST_Server::READABLE ),
+					'callback'            => array( $this, 'process_user_request' ),
+					'permission_callback' => array( $this, 'can_process' ),
+					'args'                => array(
 						'email' => array(
 							//'required'    => true,
 							//'type'        => 'string',
@@ -72,9 +73,10 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 			'/mailchimp/form',
 			array(
 				array(
-					'methods'  => array( WP_REST_Server::READABLE ),
-					'callback' => array( $this, 'process_form_request' ),
-					'args'     => array(
+					'methods'             => array( WP_REST_Server::READABLE ),
+					'callback'            => array( $this, 'process_form_request' ),
+					'permission_callback' => array( $this, 'can_process' ),
+					'args'                => array(
 						'shortcode'        => array(
 							//'required'    => true,
 							//'type'        => 'string',
@@ -225,6 +227,18 @@ class MinnPost_Form_Processor_MailChimp_Rest {
 			'group_fields'     => $group_fields,
 		);
 		return $shortcode_data;
+	}
+
+	/**
+	 * Check to see if the user has permission to do this
+	 *
+	 * @param WP_REST_Request $request the request object sent to the API.
+	 */
+	public function can_process( WP_REST_Request $request ) {
+		// unless we specify otherwise, the method should return true.
+		$http_method = $request->get_method();
+		$class       = $request->get_url_params()['class'];
+		return true;
 	}
 
 }
