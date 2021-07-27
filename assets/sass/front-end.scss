@@ -1,3 +1,6 @@
+// modules
+@use "sass:math";
+
 // variables
 $border-color: #d6d6da;
 $border-radius: 4px;
@@ -72,7 +75,7 @@ $media-query-large: 65em;
 
 				article {
 					flex: 0 0 $min-newsletter-width;
-					padding: $vertical-space / 2;
+					padding: math.div($vertical-space, 2);
 					margin-bottom: $vertical-space;
 
 					label {
@@ -81,7 +84,7 @@ $media-query-large: 65em;
 						position: relative;
 
 						h3 {
-							margin: 0 0 $vertical-space / 4 0;
+							margin: 0 0 math.div($vertical-space, 4) 0;
 							text-transform: none;
 						}
 
@@ -114,7 +117,7 @@ $media-query-large: 65em;
 				}
 
 				input {
-					margin: $vertical-space / 2 0 0.75em 0;
+					margin: math.div($vertical-space, 2) 0 0.75em 0;
 				}
 
 				aside {
@@ -134,7 +137,7 @@ $media-query-large: 65em;
 
 			p,
 			fieldset {
-				padding: 0 $vertical-space / 2;
+				padding: 0 math.div($vertical-space, 2);
 			}
 		}
 
@@ -149,7 +152,7 @@ $media-query-large: 65em;
 		}
 
 		input:last-of-type {
-			margin-bottom: $vertical-space / 2;
+			margin-bottom: math.div($vertical-space, 2);
 		}
 	}
 
@@ -164,7 +167,7 @@ $media-query-large: 65em;
 			h3,
 			p,
 			fieldset {
-				padding: 0 $vertical-space / 2;
+				padding: 0 math.div($vertical-space, 2);
 				margin-bottom: $vertical-space;
 
 				&:last-child {
@@ -173,8 +176,8 @@ $media-query-large: 65em;
 			}
 
 			h3 {
-				padding: 0 $vertical-space / 2;
-			    margin-top: $vertical-space / 2;
+				padding: 0 math.div($vertical-space, 2);
+				margin-top: math.div($vertical-space, 2);
 			    font-size: 138.5%;
 			    line-height: 1.15em;
 			}
@@ -194,7 +197,7 @@ $media-query-large: 65em;
 	// inpopup forms
 	&.m-form-inpopup {
 		border: 0;
-		padding: $vertical-space 0 $vertical-space / 2 0;
+		padding: $vertical-space 0 math.div($vertical-space, 2) 0;
 		.m-form-container {
 			padding: 0;
 			h3, p, fieldset {
@@ -205,8 +208,8 @@ $media-query-large: 65em;
 				}
 			}
 			h3 {
-				padding: 0 $vertical-space / 2;
-			    margin-top: $vertical-space / 2;
+				padding: 0 math.div($vertical-space, 2);
+				margin-top: math.div($vertical-space, 2);
 			    font-size: 138.5%;
 			    line-height: 1.15em;
 			}
