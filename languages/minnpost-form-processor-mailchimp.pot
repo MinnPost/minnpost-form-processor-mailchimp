@@ -137,16 +137,12 @@ msgstr ""
 msgid "MailChimp Error: Group Categorization failed: no subresources info array"
 msgstr ""
 
-#: php/class-minnpost-form-processor-mailchimp-get-data.php:629
-msgid "Thanks for updating your email preferences. They will go into effect immediately."
-msgstr ""
-
-#: php/class-minnpost-form-processor-mailchimp-get-data.php:632
-msgid "We have added you to the MinnPost mailing list."
+#: php/class-minnpost-form-processor-mailchimp-get-data.php:629, php/class-minnpost-form-processor-mailchimp-get-data.php:632
+msgid "Thanks for signing up!"
 msgstr ""
 
 #: php/class-minnpost-form-processor-mailchimp-get-data.php:635
-msgid "We have added you to the MinnPost mailing list. You will need to click the confirmation link in the email we sent to begin receiving messages."
+msgid "Thanks for signing up! Press the confirmation button in the email we sent to start getting email from MinnPost."
 msgstr ""
 
 #: php/class-minnpost-form-processor-mailchimp-post-data.php:222
