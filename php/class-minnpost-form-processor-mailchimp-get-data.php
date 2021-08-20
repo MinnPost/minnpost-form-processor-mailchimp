@@ -626,13 +626,13 @@ class MinnPost_Form_Processor_MailChimp_Get_Data {
 			if ( '' === $confirm_message ) {
 				switch ( $message_code ) {
 					case 'success-existing':
-						$message = __( 'Thanks for updating your email preferences. They will go into effect immediately.', 'minnpost-form-processor-mailchimp' );
+						$message = __( 'Thanks for signing up!', 'minnpost-form-processor-mailchimp' );
 						break;
 					case 'success-new':
-						$message = __( 'We have added you to the MinnPost mailing list.', 'minnpost-form-processor-mailchimp' );
+						$message = __( 'Thanks for signing up!', 'minnpost-form-processor-mailchimp' );
 						break;
 					case 'success-pending':
-						$message = __( 'We have added you to the MinnPost mailing list. You will need to click the confirmation link in the email we sent to begin receiving messages.', 'minnpost-form-processor-mailchimp' );
+						$message = __( 'Thanks for signing up! Press the confirmation button in the email we sent to start getting email from MinnPost.', 'minnpost-form-processor-mailchimp' );
 						break;
 					default:
 						$message = $confirm_message;
