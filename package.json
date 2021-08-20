@@ -13,12 +13,12 @@
   },
   "homepage": "https://github.com/MinnPost/minnpost-form-processor-mailchimp#readme",
   "devDependencies": {
-    "@babel/core": "^7.14.8",
-    "@babel/preset-env": "^7.14.8",
+    "@babel/core": "^7.15.0",
+    "@babel/preset-env": "^7.15.0",
     "autoprefixer": "^10.3.1",
     "browser-sync": "^2.27.5",
     "css-mqpacker": "^7.0.0",
-    "cssnano": "^5.0.7",
+    "cssnano": "^5.0.8",
     "fs": "0.0.2",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
@@ -32,7 +32,7 @@
     "gulp-wp-pot": "^2.5.0",
     "node-sass": "^6.0.1",
     "npm-check-updates": "^11.8.3",
-    "sass": "^1.35.2"
+    "sass": "^1.38.0"
   },
   "browserslist": [
     "last 2 version",

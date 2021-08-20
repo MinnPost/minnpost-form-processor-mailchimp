@@ -2,7 +2,7 @@
 @use "sass:math";
 
 // variables
-$border-color: #d6d6da;
+$border-color: #d6d6da; // this is from the redesign palette
 $border-radius: 4px;
 $vertical-space: 1em;
 $min-newsletter-width: 50%;
@@ -83,7 +83,8 @@ $media-query-large: 65em;
 						width: 100%;
 						position: relative;
 
-						h3 {
+						h3,
+						h4 {
 							margin: 0 0 math.div($vertical-space, 4) 0;
 							text-transform: none;
 						}
@@ -165,6 +166,7 @@ $media-query-large: 65em;
 			padding: 0 0.5em;
 
 			h3,
+			h4,
 			p,
 			fieldset {
 				padding: 0 math.div($vertical-space, 2);
@@ -175,11 +177,10 @@ $media-query-large: 65em;
 				}
 			}
 
-			h3 {
+			h3,
+			h4 {
 				padding: 0 math.div($vertical-space, 2);
 				margin-top: math.div($vertical-space, 2);
-			    font-size: 138.5%;
-			    line-height: 1.15em;
 			}
 		}
 
@@ -200,18 +201,17 @@ $media-query-large: 65em;
 		padding: $vertical-space 0 math.div($vertical-space, 2) 0;
 		.m-form-container {
 			padding: 0;
-			h3, p, fieldset {
+			h3, h4, p, fieldset {
 				padding: 0;
 				margin-bottom: $vertical-space;
 				&:last-child {
 					margin-bottom: 0;
 				}
 			}
-			h3 {
+			h3,
+			h4 {
 				padding: 0 math.div($vertical-space, 2);
 				margin-top: math.div($vertical-space, 2);
-			    font-size: 138.5%;
-			    line-height: 1.15em;
 			}
 		}
 		fieldset {
