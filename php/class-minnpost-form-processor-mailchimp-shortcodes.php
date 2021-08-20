@@ -238,11 +238,16 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 			$form['in_content_label'] = wp_kses_post( apply_filters( 'the_content', urldecode( $form['in_content_label'] ) ) );
 		}
 
+		// for forms that have content, we should set up the classes for good styling.
+		if ( '' !== $form['content_before'] || '' !== $form['content_after'] || '' !== $form['image'] ) {
+			$form['classes'] .= 'm-form-minnpost-form-processor-mailchimp-has-content';
+		}
+
 		if ( '' !== $form['classes'] ) {
 			$form['classes'] = ' ' . minnpost_form_processor_mailchimp()->sanitize_html_classes( $form['classes'] );
 		}
 
-		// Generate a custom nonce value for the WordPress form submission
+		// Generate a custom nonce value for the WordPress form submission.
 		$form['newsletter_nonce'] = wp_create_nonce( 'minnpost_form_processor_mailchimp_nonce' );
 
 		if ( '' !== $form['placement'] ) {

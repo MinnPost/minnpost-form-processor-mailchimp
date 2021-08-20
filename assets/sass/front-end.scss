@@ -163,30 +163,9 @@ $media-query-large: 65em;
 
 	// instory forms
 	&.m-form-instory {
-		border: 1px solid $border-color;
-		padding: $standard-block-padding 0 $standard-block-margin 0;
-		margin-bottom: $standard-block-margin;
 
 		.m-form-container {
-			padding: 0 $standard-block-padding;
-
-			h3,
-			h4,
-			p,
-			fieldset {
-				padding: 0 $standard-block-padding;
-				margin-bottom: $standard-heading-margin;
-
-				&:last-child {
-					margin-bottom: 0;
-				}
-			}
-
-			h3,
-			h4 {
-				padding: 0 $standard-block-padding;
-				margin-top: $standard-block-padding;
-			}
+			padding: 0;
 		}
 
 		fieldset {
@@ -237,6 +216,38 @@ $media-query-large: 65em;
 			input[type="checkbox"],
 			input[type="radio"] {
 				margin-right: $standard-block-padding;
+			}
+		}
+	}
+}
+
+.m-form-minnpost-form-processor-mailchimp.m-form-minnpost-form-processor-mailchimp-has-content {
+
+	// instory forms
+	&.m-form-instory {
+		border: 1px solid $border-color;
+		padding: $standard-block-padding 0 $standard-block-margin 0;
+		margin-bottom: $standard-block-margin;
+
+		.m-form-container {
+			padding: 0 $standard-block-padding;
+
+			h3,
+			h4,
+			p,
+			fieldset {
+				padding: 0 $standard-block-padding;
+				margin-bottom: $standard-heading-margin;
+
+				&:last-child {
+					margin-bottom: 0;
+				}
+			}
+
+			h3,
+			h4 {
+				padding: 0 $standard-block-padding;
+				margin-top: $standard-block-padding;
 			}
 		}
 	}
