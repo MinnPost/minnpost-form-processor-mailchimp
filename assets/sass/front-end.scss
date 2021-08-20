@@ -5,6 +5,9 @@
 $border-color: #d6d6da; // this is from the redesign palette
 $border-radius: 4px;
 $vertical-space: 1em;
+$standard-block-padding: 0.5em;
+$standard-heading-margin: 0.75em;
+$standard-block-margin: 1.5em;
 $min-newsletter-width: 50%;
 $form-width: 45%;
 $media-query-small: 40em;
@@ -15,7 +18,7 @@ $media-query-large: 65em;
 
 	// across all forms
 	input[type="email"] {
-		padding: 0.25em;
+		padding: math.div($standard-block-padding, 2);
 	}
 
 	.m-form-message.m-form-message-ajax-placeholder {
@@ -53,6 +56,7 @@ $media-query-large: 65em;
 				border: 1px solid $border-color;
 				border-radius: $border-radius;
 				padding: $vertical-space;
+				margin-bottom: $standard-block-margin;
 			}
 
 			.m-subscribe-items {
@@ -75,7 +79,7 @@ $media-query-large: 65em;
 
 				article {
 					flex: 0 0 $min-newsletter-width;
-					padding: math.div($vertical-space, 2);
+					padding: $standard-block-padding;
 					margin-bottom: $vertical-space;
 
 					label {
@@ -85,7 +89,7 @@ $media-query-large: 65em;
 
 						h3,
 						h4 {
-							margin: 0 0 math.div($vertical-space, 4) 0;
+							margin: 0 0 math.div($standard-block-padding, 2) 0;
 							text-transform: none;
 						}
 
@@ -103,7 +107,7 @@ $media-query-large: 65em;
 				padding: $vertical-space;
 				flex: 1 0 $form-width;
 				position: sticky;
-				top: 0.25em;
+				top: math.div($standard-block-padding, 2);
 
 				@media screen and (min-width: $media-query-small) and (max-width: $media-query-medium) {
 					margin-left: $vertical-space;
@@ -118,11 +122,11 @@ $media-query-large: 65em;
 				}
 
 				input {
-					margin: math.div($vertical-space, 2) 0 0.75em 0;
+					margin: $standard-block-padding 0 $standard-heading-margin 0;
 				}
 
 				aside {
-					font-size: 0.75em;
+					font-size: $standard-heading-margin;
 				}
 			}
 		}
@@ -138,7 +142,7 @@ $media-query-large: 65em;
 
 			p,
 			fieldset {
-				padding: 0 math.div($vertical-space, 2);
+				padding: 0 $standard-block-padding;
 			}
 		}
 
@@ -153,24 +157,25 @@ $media-query-large: 65em;
 		}
 
 		input:last-of-type {
-			margin-bottom: math.div($vertical-space, 2);
+			margin-bottom: $standard-block-padding;
 		}
 	}
 
 	// instory forms
 	&.m-form-instory {
 		border: 1px solid $border-color;
-		padding: 0.5em 0 1.5em 0;
+		padding: $standard-block-padding 0 $standard-block-margin 0;
+		margin-bottom: $standard-block-margin;
 
 		.m-form-container {
-			padding: 0 0.5em;
+			padding: 0 $standard-block-padding;
 
 			h3,
 			h4,
 			p,
 			fieldset {
-				padding: 0 math.div($vertical-space, 2);
-				margin-bottom: $vertical-space;
+				padding: 0 $standard-block-padding;
+				margin-bottom: $standard-heading-margin;
 
 				&:last-child {
 					margin-bottom: 0;
@@ -179,8 +184,8 @@ $media-query-large: 65em;
 
 			h3,
 			h4 {
-				padding: 0 math.div($vertical-space, 2);
-				margin-top: math.div($vertical-space, 2);
+				padding: 0 $standard-block-padding;
+				margin-top: $standard-block-padding;
 			}
 		}
 
@@ -198,20 +203,20 @@ $media-query-large: 65em;
 	// inpopup forms
 	&.m-form-inpopup {
 		border: 0;
-		padding: $vertical-space 0 math.div($vertical-space, 2) 0;
+		padding: $vertical-space 0 $standard-block-padding 0;
 		.m-form-container {
 			padding: 0;
 			h3, h4, p, fieldset {
 				padding: 0;
-				margin-bottom: $vertical-space;
+				margin-bottom: $standard-heading-margin;
 				&:last-child {
 					margin-bottom: 0;
 				}
 			}
 			h3,
 			h4 {
-				padding: 0 math.div($vertical-space, 2);
-				margin-top: math.div($vertical-space, 2);
+				padding: 0 $standard-block-padding;
+				margin-top: $standard-block-padding;
 			}
 		}
 		fieldset {
@@ -231,7 +236,7 @@ $media-query-large: 65em;
 
 			input[type="checkbox"],
 			input[type="radio"] {
-				margin-right: 0.5em;
+				margin-right: $standard-block-padding;
 			}
 		}
 	}
