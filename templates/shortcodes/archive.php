@@ -14,6 +14,12 @@
 	<?php if ( '' !== $form['action'] ) : ?>
 		<input type="hidden" name="action" value="<?php echo esc_attr( $form['action'] ); ?>">
 	<?php endif; ?>
+	<?php if ( '' !== $form['placement'] ) : ?>
+		<input type="hidden" name="placement" value="<?php echo esc_attr( $form['placement'] ); ?>">
+	<?php endif; ?>
+	<?php if ( '' !== $form['confirm_message'] ) : ?>
+		<input type="hidden" name="confirm_message" value="<?php echo wp_kses_post( wpautop( $form['confirm_message'] ) ); ?>">
+	<?php endif; ?>
 	<?php if ( '' !== $form['redirect_url'] ) : ?>
 		<input type="hidden" name="redirect_url" value="<?php echo esc_url( $form['redirect_url'] ); ?>">
 	<?php endif; ?>

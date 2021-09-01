@@ -41,15 +41,12 @@
 						switch ( response.data.user_status ) {
 							case 'existing':
 								analytics_action = 'Update';
-								message = 'Thanks for signing&nbsp;up!';
 								break;
 							case 'new':
 								analytics_action = 'Signup';
-								message = 'Thanks for signing&nbsp;up!';
 								break;
 							case 'pending':
 								analytics_action = 'Signup';
-								message = 'Thanks for signing up! Press the confirmation button in the email we sent to start getting email from&nbsp;MinnPost.';
 								break;
 						}
 						if ( '' !== response.data.confirm_message ) {
