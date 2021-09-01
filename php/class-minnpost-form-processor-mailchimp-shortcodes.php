@@ -204,12 +204,14 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		$newsletter_error = get_query_var( 'newsletter_error' );
 		$error_message    = $this->get_data->get_error_message( $newsletter_error, $form['error_message'] );
 
-		if ( '' !== $success_message ) {
-			$form['message'] = $success_message;
-		}
+		if ( isset( $_POST['minnpost_form_processor_mailchimp_nonce'] ) && wp_verify_nonce( $_POST['minnpost_form_processor_mailchimp_nonce'], 'minnpost_form_processor_mailchimp_nonce' ) ) {
+			if ( '' !== $success_message ) {
+				$form['message'] = $success_message;
+			}
 
-		if ( '' !== $error_message ) {
-			$form['message'] = $error_message;
+			if ( '' !== $error_message ) {
+				$form['message'] = $error_message;
+			}
 		}
 
 		// set message for ajax
