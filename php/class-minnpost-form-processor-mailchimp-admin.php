@@ -230,6 +230,16 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 					'desc' => __( 'Enter shortcodes, one on each line, that are managed by this plugin. Ex: newsletter_form will display as [newsletter_form].', 'minnpost-form-processor-mailchimp' ),
 				),
 			),
+			'test_mode'       => array(
+				'title'    => __( 'Test mode?', 'minnpost-form-processor-mailchimp' ),
+				'callback' => $callbacks['text'],
+				'page'     => $page,
+				'section'  => $section,
+				'args'     => array(
+					'type' => 'checkbox',
+					'desc' => __( 'If checked, no POST calls will be made to Mailchimp. This is useful for debugging what happens when a form is submitted.', 'minnpost-form-processor-mailchimp' ),
+				),
+			),
 		);
 
 		foreach ( $settings as $key => $attributes ) {

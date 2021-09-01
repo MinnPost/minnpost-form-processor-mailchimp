@@ -300,8 +300,24 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 			$http_method = 'POST';
 		}
 
-		// start mailchimp api call
+		// start mailchimp api call. check for test mode first.
+		$test_mode = filter_var( get_option( $this->option_prefix . 'test_mode', false ), FILTER_VALIDATE_BOOLEAN );
+		if ( true !== $test_mode ) {
 		$result = $this->parent->mailchimp->send( $resource_type . '/' . $resource_id . '/' . $subresource_type, $http_method, $params );
+		} else {
+			// by default, we just have a generic test result array. If necessary we could maybe allow the settings to choose what is populated.
+			$result = array(
+				'id'              => 8675309,
+				'email_address'   => 'test@test.com',
+				'unique_email_id' => md5( 'test@test.com' ),
+				'contact_id'      => rand(),
+				'full_name'       => 'Test Name',
+				'web_id'          => rand(),
+				'email_type'      => 'html',
+				'status'          => 'subscribed',
+				'method'          => 'POST',
+			);
+		}
 
 		// if a user has been unsubscribed and they filled out this form, set them to pending so they can confirm
 		if ( isset( $result['status'] ) && 'unsubscribed' === $result['status'] ) {
