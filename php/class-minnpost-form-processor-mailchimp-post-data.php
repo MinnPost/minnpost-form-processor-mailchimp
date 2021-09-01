@@ -131,6 +131,11 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 			// save to mailchimp
 			$result = $this->save_to_mailchimp( $action, $resource_type, $resource_id, $subresource_type, $user_data );
 
+			// the confirm message might come from the api. If it does, use that.
+			if ( isset( $result['confirm_message'] ) && '' !== $result['confirm_message'] ) {
+				$confirm_message = $result['confirm_message'];
+			}
+
 			if ( isset( $result['id'] ) ) {
 				if ( 'PUT' === $result['method'] ) {
 					$user_status = 'existing';
@@ -264,6 +269,9 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 		$groups           = isset( $user_data['groups'] ) ? $user_data['groups'] : array();
 		$groups_available = isset( $user_data['groups_available'] ) ? $user_data['groups_available'] : array();
 
+		// confirm message might come from the API.
+		$confirm_message = isset( $user_data['confirm_message'] ) ? $user_data['confirm_message'] : '';
+
 		// don't send any data to mailchimp if there are no settings, and there is no user id
 		// otherwise we need to, in case user wants to empty their preferences
 		if ( empty( $groups ) && '' === $id && empty( $groups_available ) ) {
@@ -303,7 +311,7 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 		// start mailchimp api call. check for test mode first.
 		$test_mode = filter_var( get_option( $this->option_prefix . 'test_mode', false ), FILTER_VALIDATE_BOOLEAN );
 		if ( true !== $test_mode ) {
-		$result = $this->parent->mailchimp->send( $resource_type . '/' . $resource_id . '/' . $subresource_type, $http_method, $params );
+			$result = $this->parent->mailchimp->send( $resource_type . '/' . $resource_id . '/' . $subresource_type, $http_method, $params );
 		} else {
 			// by default, we just have a generic test result array. If necessary we could maybe allow the settings to choose what is populated.
 			$result = array(
@@ -324,6 +332,10 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 			$params['status'] = 'pending';
 			$http_method      = 'PUT';
 			$result           = $this->parent->mailchimp->send( $resource_type . '/' . $resource_id . '/' . $subresource_type, $http_method, $params );
+		}
+
+		if ( '' !== $confirm_message ) {
+			$result['confirm_message'] = $confirm_message;
 		}
 
 		return $result;
