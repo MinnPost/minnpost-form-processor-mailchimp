@@ -325,6 +325,17 @@ class MinnPost_Form_Processor_MailChimp_Post_Data {
 				'status'          => 'subscribed',
 				'method'          => 'POST',
 			);
+			/*$result = array(
+				'email_address'   => 'test@test.com',
+				'unique_email_id' => md5( 'test@test.com' ),
+				'contact_id'      => rand(),
+				'full_name'       => 'Test Name',
+				'web_id'          => rand(),
+				'email_type'      => 'html',
+				'status'          => 408,
+				'detail'          => 'Test Mailchimp error',
+				'method'          => 'POST',
+			);*/
 		}
 
 		// if a user has been unsubscribed and they filled out this form, set them to pending so they can confirm
