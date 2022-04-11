@@ -52,7 +52,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 	* @return void
 	*/
 	public function front_end_scripts_and_styles() {
-		wp_enqueue_script( $this->slug . '-front-end', plugins_url( 'assets/js/front-end.min.js', dirname( __FILE__ ) ), array( 'jquery' ), $this->version, true );
+		wp_enqueue_script( $this->slug . '-front-end', plugins_url( 'assets/js/front-end.min.js', dirname( __FILE__ ) ), array( 'jquery', 'wp-hooks' ), $this->version, true );
 		// localize
 		$params = array(
 			'ajaxurl'     => admin_url( 'admin-ajax.php' ),

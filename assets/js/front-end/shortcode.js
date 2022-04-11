@@ -1,14 +1,17 @@
 ( function( $ ) {
 
-	function wp_analytics_tracking_event( type, category, action, label, value ) {
-		if ( 'undefined' !== typeof ga ) {
-			if ( 'undefined' === typeof value ) {
-				ga( 'send', type, category, action, label );
-			} else {
-				ga( 'send', type, category, action, label, value );
-			}
-		} else {
-			return;
+	/**
+	 * Allow the site theme or other plugins to create analytics tracking events
+	 *
+	 * @param {string} type
+	 * @param {string} category
+	 * @param {string} action
+	 * @param {string} label
+	 * @param {Array}  value
+	 */
+	function analyticsTrackingEvent(type, category, action, label, value) {
+		if ( typeof wp !== 'undefined' ) {
+			wp.hooks.doAction('minnpostFormProcessorMailchimpAnalyticsEvent', type, category, action, label, value);
 		}
 	}
 
@@ -17,7 +20,6 @@
 			$( '.m-form-minnpost-form-processor-mailchimp' ).submit( function( event ) {
 				event.preventDefault(); // Prevent the default form submit.
 				event.stopImmediatePropagation();
-				var that = this;
 				var button = $( 'button', this );
 				var previous_button_text = button.text();
 				var ajax_form_data = $( this ).serialize(); // serialize the form data
@@ -53,14 +55,14 @@
 							message = response.data.confirm_message;
 						}
 
-						if ( 'function' === typeof wp_analytics_tracking_event ) {
-							wp_analytics_tracking_event( 'event', 'Newsletter', analytics_action, location.pathname );
+						if ( 'function' === typeof analyticsTrackingEvent ) {
+							analyticsTrackingEvent( 'event', 'Newsletter', analytics_action, location.pathname );
 						}
 					} else {
 						button.prop( 'disabled', false );
 						button.text( previous_button_text );
-						if ( 'function' === typeof wp_analytics_tracking_event ) {
-							wp_analytics_tracking_event( 'event', 'Newsletter', 'Fail', location.pathname );
+						if ( 'function' === typeof analyticsTrackingEvent ) {
+							analyticsTrackingEvent( 'event', 'Newsletter', 'Fail', location.pathname );
 						}
 						if ( '' !== response.data.confirm_message ) {
 							message = response.data.confirm_message;
@@ -83,8 +85,8 @@
 					$( '.m-form-minnpost-form-processor-mailchimp' ).removeClass( 'm-form-minnpost-form-processor-mailchimp-submitted' );
 					button.prop( 'disabled', false );
 					button.text( previous_button_text );
-					if ( 'function' === typeof wp_analytics_tracking_event ) {
-						wp_analytics_tracking_event( 'event', 'Newsletter', 'Fail', location.pathname );
+					if ( 'function' === typeof analyticsTrackingEvent ) {
+						analyticsTrackingEvent( 'event', 'Newsletter', 'Fail', location.pathname );
 					}
 				} );
 			});
