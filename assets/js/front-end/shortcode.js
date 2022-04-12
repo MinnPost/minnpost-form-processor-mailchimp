@@ -9,9 +9,9 @@
 	 * @param {string} label
 	 * @param {Array}  value
 	 */
-	function analyticsTrackingEvent(type, category, action, label, value) {
+	function analyticsTrackingEvent(type, category, action, label) {
 		if ( typeof wp !== 'undefined' ) {
-			wp.hooks.doAction('minnpostFormProcessorMailchimpAnalyticsEvent', type, category, action, label, value);
+			wp.hooks.doAction('minnpostFormProcessorMailchimpAnalyticsEvent', type, category, action, label);
 		}
 	}
 
