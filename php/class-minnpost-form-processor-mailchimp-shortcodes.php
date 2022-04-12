@@ -62,7 +62,6 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		$google_ads_id_constant      = get_option( $this->option_prefix . $this->shortcode . '_google_ads_id_constant', '' );
 		$google_ads_conversion_label = get_option( $this->option_prefix . $this->shortcode . '_google_ads_conversion_label', '' );
 		if ( '' !== $google_ads_id_constant ) {
-			
 			$google_ads_id = defined( $google_ads_id_constant ) ? constant( $google_ads_id_constant ) : '';
 		}
 		// localize
