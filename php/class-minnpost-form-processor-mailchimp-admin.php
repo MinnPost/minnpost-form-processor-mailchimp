@@ -278,7 +278,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 
 				$page = $section;
 				add_settings_section( $section, $title, null, $page );
-				$settings[ $section . '_button_text' ]   = array(
+				$settings[ $section . '_button_text' ]                 = array(
 					'title'    => __( 'Button text', 'minnpost-form-processor-mailchimp' ),
 					'callback' => $callbacks['text'],
 					'page'     => $page,
@@ -289,7 +289,37 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 						'type'     => 'text',
 					),
 				);
-				$settings[ $section . '_resource_type' ] = array(
+				$settings[ $section . '_google_ads_id_value' ]         = array(
+					'title'    => __( 'Google Ads Account ID', 'minnpost-form-processor-mailchimp' ),
+					'callback' => $callbacks['text'],
+					'page'     => $page,
+					'section'  => $section,
+					'args'     => array(
+						'type' => 'text',
+						'desc' => __( 'To track Google Ads conversions, add the Google Ads account ID to this field.', 'minnpost-form-processor-mailchimp' ),
+					),
+				);
+				$settings[ $section . '_google_ads_id_constant' ]         = array(
+					'title'    => __( 'Google Ads ID Constant', 'minnpost-form-processor-mailchimp' ),
+					'callback' => $callbacks['text'],
+					'page'     => $page,
+					'section'  => $section,
+					'args'     => array(
+						'type' => 'text',
+						'desc' => __( 'Assuming that the Google Ads account ID is already stored in a PHP constant (from another plugin), add the constant name that contains the Google Ads ID. This value will override the above value.', 'minnpost-form-processor-mailchimp' ),
+					),
+				);
+				$settings[ $section . '_google_ads_conversion_label' ] = array(
+					'title'    => __( 'Google Ads Conversion Label', 'minnpost-form-processor-mailchimp' ),
+					'callback' => $callbacks['text'],
+					'page'     => $page,
+					'section'  => $section,
+					'args'     => array(
+						'type' => 'text',
+						'desc' => __( 'To track Google Ad conversions, this value will be added together with the Google Ads account ID to track conversions.', 'minnpost-form-processor-mailchimp' ),
+					),
+				);
+				$settings[ $section . '_resource_type' ]               = array(
 					'title'    => __( 'Resource type', 'minnpost-form-processor-mailchimp' ),
 					'callback' => $callbacks['select'],
 					'page'     => $page,
@@ -301,8 +331,8 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 						'items'    => $this->get_resource_types(),
 					),
 				);
-				$resource_type                           = get_option( $this->option_prefix . 'newsletter_form_resource_type', '' );
-				$settings[ $section . '_resource_id' ]   = array(
+				$resource_type                         = get_option( $this->option_prefix . 'newsletter_form_resource_type', '' );
+				$settings[ $section . '_resource_id' ] = array(
 					'title'    => __( 'Resource name', 'minnpost-form-processor-mailchimp' ),
 					'callback' => $callbacks['select'],
 					'page'     => $page,
@@ -314,7 +344,7 @@ class MinnPost_Form_Processor_MailChimp_Admin {
 						'items'    => $this->get_resource_ids( $resource_type ),
 					),
 				);
-				$resource_id                             = get_option( $this->option_prefix . 'newsletter_form_resource_id', '' );
+				$resource_id                           = get_option( $this->option_prefix . 'newsletter_form_resource_id', '' );
 				if ( '' === $resource_id ) {
 					continue;
 				}

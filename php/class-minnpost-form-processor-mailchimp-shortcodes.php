@@ -21,6 +21,8 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 	public $parent;
 	public $get_data;
 
+	private $shortcode;
+
 	/**
 	* Constructor which sets up shortcodes
 	*/
@@ -33,6 +35,8 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		$this->parent               = minnpost_form_processor_mailchimp()->parent;
 		$this->get_data             = minnpost_form_processor_mailchimp()->get_data;
 
+		$this->shortcode = 'newsletter_form';
+
 		add_action( 'plugins_loaded', array( $this, 'add_actions' ) );
 
 	}
@@ -42,7 +46,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 	*
 	*/
 	public function add_actions() {
-		add_shortcode( 'newsletter_form', array( $this, 'newsletter_form' ) );
+		add_shortcode( $this->shortcode, array( $this, 'newsletter_form' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'front_end_scripts_and_styles' ) );
 	}
 
@@ -52,11 +56,18 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 	* @return void
 	*/
 	public function front_end_scripts_and_styles() {
-		wp_enqueue_script( $this->slug . '-front-end', plugins_url( 'assets/js/front-end.min.js', dirname( __FILE__ ) ), array( 'jquery' ), $this->version, true );
+		wp_enqueue_script( $this->slug . '-front-end', plugins_url( 'assets/js/front-end.min.js', dirname( __FILE__ ) ), array( 'jquery', 'wp-hooks' ), $this->version, true );
+		// adwords values
+		$google_ads_id               = get_option( $this->option_prefix . $this->shortcode . '_google_ads_id_value', '' );
+		$google_ads_id_constant      = get_option( $this->option_prefix . $this->shortcode . '_google_ads_id_constant', '' );
+		$google_ads_conversion_label = get_option( $this->option_prefix . $this->shortcode . '_google_ads_conversion_label', '' );
+		if ( '' !== $google_ads_id_constant ) {
+			$google_ads_id = defined( $google_ads_id_constant ) ? constant( $google_ads_id_constant ) : '';
+		}
 		// localize
 		$params = array(
 			'ajaxurl'     => admin_url( 'admin-ajax.php' ),
-			'gtag_sendto' => 'AW-976620175/jqCyCL7atXkQj5XY0QM',
+			'gtag_sendto' => $google_ads_id . '/' . $google_ads_conversion_label,
 		);
 		wp_localize_script( $this->slug . '-front-end', 'params', $params );
 		wp_enqueue_style( $this->slug . '-front-end', plugins_url( 'assets/css/front-end.min.css', dirname( __FILE__ ) ), array(), $this->version, 'all' );
@@ -74,7 +85,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 		$html    = '';
 		$message = '';
 
-		$shortcode = 'newsletter_form';
+		$shortcode = $this->shortcode;
 
 		$resource_type = $this->get_data->get_resource_type( $shortcode );
 		if ( '' === $resource_type ) {
