@@ -4,8 +4,11 @@ const babel = require("gulp-babel");
 const browserSync = require("browser-sync").create();
 const concat = require("gulp-concat");
 const cssnano = require("cssnano");
+const eslint = require("gulp-eslint");
 const fs = require("fs");
 const gulp = require("gulp");
+const gulpStylelint = require("@ronilaukkarinen/gulp-stylelint");
+const iife = require('gulp-iife');
 const packagejson = JSON.parse(fs.readFileSync("./package.json"));
 const mqpacker = require("css-mqpacker");
 const postcss = require("gulp-postcss");
@@ -18,33 +21,37 @@ const wpPot = require("gulp-wp-pot");
 
 // Some config data for our tasks
 const config = {
-  styles: {
-    admin: 'assets/sass/admin.scss',
-    front_end: 'assets/sass/front-end.scss',
-    srcDir: 'assets/sass',
-    dest: 'assets/css'
-  },
-  scripts: {
-    admin: './assets/js/admin/**/*.js',
-    front_end: './assets/js/front-end/**/*.js',
-    dest: './assets/js'
-  },
-  languages: {
-    src: [
-      "./**/*.php",
-      "!.git/*",
-      "!.svn/*",
-      "!bin/**/*",
-      "!node_modules/*",
-      "!release/**/*",
-      "!vendor/**/*"
-    ],
-    dest: "./languages/" + packagejson.name + ".pot"
-  },
-  browserSync: {
-    active: false,
-    localURL: 'mylocalsite.local'
-  }
+	styles: {
+		admin: "assets/sass/" + packagejson.name + "-admin.scss",
+		front_end: "assets/sass/" + packagejson.name + "-front-end.scss",
+		srcDir: "assets/sass/*.scss",
+		dest: "assets/css",
+		lint_dest: "assets/sass/"
+	},
+	scripts: {
+		admin: "./assets/js/src/admin/**/*.js",
+		admin_lint: "./assets/js/src/admin/",
+		front_end: "./assets/js/src/front-end/**/*.js",
+		front_end_lint: "./assets/js/src/front-end/",
+		uglify: ["assets/js/*.js", "!assets/js/*.min.js"],
+		dest: "./assets/js"
+	},
+	languages: {
+		src: [
+			"./**/*.php",
+			"!.git/*",
+			"!.svn/*",
+			"!bin/**/*",
+			"!node_modules/*",
+			"!release/**/*",
+			"!vendor/**/*"
+		],
+		dest: "./languages/" + packagejson.name + ".pot"
+	},
+	browserSync: {
+		active: false,
+		localURL: "mylocalsite.local"
+	}
 };
 
 function adminstyles() {
@@ -83,36 +90,120 @@ function frontendstyles() {
     .pipe(browserSync.stream());
 }
 
+function adminsasslint() {
+  return gulp.src(config.styles.admin)
+    .pipe(gulpStylelint({
+      fix: true,
+	  reporters: [
+        {formatter: 'string', console: true}
+      ],
+    }))
+    .pipe(gulp.dest(config.styles.lint_dest));
+}
+
+function frontendsasslint() {
+  return gulp.src(config.styles.front_end)
+    .pipe(gulpStylelint({
+      fix: true,
+	  reporters: [
+        {formatter: 'string', console: true}
+      ]
+    }))
+    .pipe(gulp.dest(config.styles.lint_dest));
+}
+
 function adminscripts() {
-  return gulp.src(config.scripts.admin)
-    .pipe(sourcemaps.init())
-    .pipe(babel({
-      presets: ['@babel/preset-env']
-    }))
-    .pipe(concat('admin.js')) // Concatenate
-    .pipe(uglify()) // Minify + compress
-    .pipe(rename({
-      suffix: '.min'
-    }))
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest(config.scripts.dest))
-    .pipe(browserSync.stream());
+	return gulp
+		.src(config.scripts.admin)
+		.pipe(sourcemaps.init())
+		.pipe(
+			babel({
+				presets: ["@babel/preset-env"]
+			})
+		)
+		.pipe(concat(packagejson.name + "-admin.js")) // Concatenate
+		.pipe(sourcemaps.write())
+		.pipe(eslint( {
+			parserOptions: {
+				requireConfigFile: false
+			}}
+		))
+		.pipe(iife({
+	      useStrict: false,
+	      params: ['$'],
+	      args: ['jQuery']
+	    }))
+		.pipe(gulp.dest(config.scripts.dest))
+		.pipe(browserSync.stream());
 }
 
 function frontendscripts() {
-  return gulp.src(config.scripts.front_end)
-    .pipe(sourcemaps.init())
-    .pipe(babel({
-      presets: ['@babel/preset-env']
-    }))
-    .pipe(concat('front-end.js')) // Concatenate
-    .pipe(uglify()) // Minify + compress
-    .pipe(rename({
-      suffix: '.min'
-    }))
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest(config.scripts.dest))
-    .pipe(browserSync.stream());
+	return gulp
+		.src(config.scripts.front_end)
+		.pipe(sourcemaps.init())
+		.pipe(
+			babel({
+				presets: ["@babel/preset-env"]
+			})
+		)
+    	.pipe(iife())
+		.pipe(concat(packagejson.name + "-front-end.js")) // Concatenate
+		.pipe(sourcemaps.write())
+		.pipe(eslint( {
+			parserOptions: {
+				requireConfigFile: false
+			}}
+		))
+		.pipe(gulp.dest(config.scripts.dest))
+		.pipe(browserSync.stream());
+}
+
+function adminscriptlint() {
+	return gulp
+		.src(config.scripts.admin)
+		.pipe(eslint( {
+				fix:true,
+				parserOptions: {
+					requireConfigFile: false
+				}
+			}
+		))
+		.pipe(eslint.format())
+		.pipe(gulp.dest(config.scripts.admin_lint))
+		// Brick on failure to be super strict
+		//.pipe(eslint.failOnError());
+};
+
+function frontendscriptlint() {
+	return gulp
+		.src(config.scripts.front_end)
+		.pipe(eslint( {
+				fix:true,
+				parserOptions: {
+					requireConfigFile: false
+				}
+			}
+		))
+		.pipe(eslint.format())
+		.pipe(gulp.dest(config.scripts.front_end_lint))
+		// Brick on failure to be super strict
+		//.pipe(eslint.failOnError());
+};
+
+function uglifyscripts() {
+	return (
+		gulp
+			.src(config.scripts.uglify)
+			.pipe(uglify()) // Minify + compress
+			.pipe(
+				rename({
+					suffix: ".min"
+				})
+			)
+			.pipe(sourcemaps.write())
+			.pipe(gulp.dest(config.scripts.dest))
+			.pipe(browserSync.stream())
+	);
 }
 
 // Generates translation file.
@@ -155,15 +246,15 @@ function watch() {
 }
 
 // define complex tasks
-//const lint    = gulp.series(adminsasslint, frontendsasslint, adminscriptlint, frontendscriptlint);
+const lint    = gulp.series(adminsasslint, frontendsasslint, adminscriptlint, frontendscriptlint);
 const styles  = gulp.series(adminstyles, frontendstyles);
-const scripts = gulp.series(adminscripts, frontendscripts);
-const build   = gulp.series(gulp.parallel(styles, scripts, translate));
+const scripts = gulp.series(adminscripts, frontendscripts, uglifyscripts);
+const build   = gulp.series(lint, gulp.parallel(styles, scripts, translate));
 
 // export tasks
 exports.styles    = styles;
 exports.scripts   = scripts;
-//exports.lint      = lint;
+exports.lint      = lint;
 exports.translate = translate;
 //exports.changelog = changelog;
 exports.watch     = watch;

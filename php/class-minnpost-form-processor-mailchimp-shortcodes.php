@@ -56,7 +56,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 	* @return void
 	*/
 	public function front_end_scripts_and_styles() {
-		wp_enqueue_script( $this->slug . '-front-end', plugins_url( 'assets/js/front-end.min.js', dirname( __FILE__ ) ), array( 'jquery', 'wp-hooks' ), $this->version, true );
+		wp_enqueue_script( $this->slug . '-front-end', plugins_url( 'assets/js/' . $this->slug . '-front-end.min.js', dirname( __FILE__ ) ), array( 'wp-hooks' ), $this->version, true );
 		// adwords values
 		$google_ads_id               = get_option( $this->option_prefix . $this->shortcode . '_google_ads_id_value', '' );
 		$google_ads_id_constant      = get_option( $this->option_prefix . $this->shortcode . '_google_ads_id_constant', '' );
@@ -70,7 +70,7 @@ class MinnPost_Form_Processor_MailChimp_Shortcodes {
 			'gtag_sendto' => $google_ads_id . '/' . $google_ads_conversion_label,
 		);
 		wp_localize_script( $this->slug . '-front-end', 'params', $params );
-		wp_enqueue_style( $this->slug . '-front-end', plugins_url( 'assets/css/front-end.min.css', dirname( __FILE__ ) ), array(), $this->version, 'all' );
+		wp_enqueue_style( $this->slug . '-front-end', plugins_url( 'assets/css/' . $this->slug . '-front-end.min.css', dirname( __FILE__ ) ), array(), $this->version, 'all' );
 	}
 
 	/**
