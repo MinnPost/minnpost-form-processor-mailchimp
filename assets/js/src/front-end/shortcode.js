@@ -13,12 +13,32 @@ function analyticsTrackingEvent(type, category, action, label) {
 	}
 }
 
+/**
+ * Allow the plugin to send data to the dataLayer object for Google Tag Manager
+ *
+ * @param {string} type
+ * @param {string} formId
+ * @param {string} action
+ */
+function dataLayerEvent( type, formId, action ) {
+	if ( typeof wp !== 'undefined' ) {
+		dataLayer = {
+			'event': 'formSubmissionSuccess',
+			'type': type,
+			'formId': formId,
+			'action': action
+		};
+		wp.hooks.doAction('minnpostFormProcessorMailchimpDataLayerEvent', dataLayer );
+	}
+}
+
 function shortcodeForm() {
 
 	const mailchimpForms = document.querySelectorAll( '.m-form-minnpost-form-processor-mailchimp' );
 	if ( 0 < mailchimpForms.length ) {
 
 		mailchimpForms.forEach( function ( mailchimpForm ) {
+			let formId = mailchimpForm.id;
 			let button = mailchimpForm.querySelector( 'button' );
 			let messageElement = mailchimpForm.querySelector( '.m-form-message-ajax' );
 			if (messageElement ) {
@@ -35,6 +55,7 @@ function shortcodeForm() {
 					let message      = '';
 					let messageClass = 'info';
 					let analyticsAction = 'Signup';
+					let formType = 'Newsletter';
 
 					fetch( params.ajaxurl, {
 						method: 'POST',
@@ -60,14 +81,20 @@ function shortcodeForm() {
 								message = data.data.confirm_message;
 							}
 							if ( 'function' === typeof analyticsTrackingEvent ) {
-								analyticsTrackingEvent( 'event', 'Newsletter', analyticsAction, location.pathname );
+								analyticsTrackingEvent( 'event', formType, analyticsAction, location.pathname );
+							}
+							if ( 'function' === typeof dataLayerEvent ) {
+								dataLayerEvent( formType, formId, analyticsAction );
 							}
 						} else {
 							messageClass     = 'error';
 							button.disabled  = false;
 							button.innerHTML = buttonText;
 							if ( 'function' === typeof analyticsTrackingEvent ) {
-								analyticsTrackingEvent( 'event', 'Newsletter', 'Fail', location.pathname );
+								analyticsTrackingEvent( 'event', formType, 'Fail', location.pathname );
+							}
+							if ( 'function' === typeof dataLayerEvent ) {
+								dataLayerEvent( formType, formId, 'Fail' );
 							}
 							if ( '' !== data.data.confirm_message ) {
 								message = data.data.confirm_message;
@@ -92,6 +119,9 @@ function shortcodeForm() {
 						button.innerHTML = buttonText;
 						if ( 'function' === typeof analyticsTrackingEvent ) {
 							analyticsTrackingEvent( 'event', 'Newsletter', 'Fail', location.pathname );
+						}
+						if ( 'function' === typeof dataLayerEvent ) {
+							dataLayerEvent( formType, formId, 'Fail' );
 						}
 					} );
 
