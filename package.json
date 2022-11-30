@@ -13,9 +13,9 @@
   },
   "homepage": "https://github.com/MinnPost/minnpost-form-processor-mailchimp#readme",
   "devDependencies": {
-    "@ronilaukkarinen/gulp-stylelint": "^14.0.6",
-    "@wordpress/eslint-plugin": "^12.1.0",
-    "@wordpress/stylelint-config": "^20.0.2",
+    "@ronilaukkarinen/gulp-stylelint": "^14.0.9",
+    "@wordpress/eslint-plugin": "^13.6.0",
+    "@wordpress/stylelint-config": "^21.5.0",
     "@babel/core": "^7.20.5",
     "@babel/preset-env": "^7.20.2",
     "autoprefixer": "^10.4.13",
