@@ -146,14 +146,12 @@ function frontendscripts() {
 				presets: ["@babel/preset-env"]
 			})
 		)
-    	.pipe(iife())
 		.pipe(concat(packagejson.name + "-front-end.js")) // Concatenate
 		.pipe(sourcemaps.write())
-		.pipe(eslint( {
-			parserOptions: {
-				requireConfigFile: false
-			}}
-		))
+		.pipe(eslint())
+		.pipe(iife({
+				useStrict: false
+			}))
 		.pipe(gulp.dest(config.scripts.dest))
 		.pipe(browserSync.stream());
 }
