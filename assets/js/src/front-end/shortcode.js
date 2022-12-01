@@ -24,7 +24,7 @@ function analyticsTrackingEvent(type, category, action, label) {
 function dataLayerEvent( type, formId, formClasses, action ) {
 	if ( typeof wp !== 'undefined' ) {
 		let dataLayerContent = {
-			'event': 'formSubmissionSuccess',
+			'event': 'ajaxFormSubmission',
 			'type': type,
 			'formId': formId,
 			'formClasses': formClasses,
