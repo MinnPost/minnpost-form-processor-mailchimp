@@ -18,17 +18,19 @@ function analyticsTrackingEvent(type, category, action, label) {
  *
  * @param {string} type
  * @param {string} formId
+ * @param {string} formClasses
  * @param {string} action
  */
-function dataLayerEvent( type, formId, action ) {
+function dataLayerEvent( type, formId, formClasses, action ) {
 	if ( typeof wp !== 'undefined' ) {
-		dataLayer = {
+		let dataLayerContent = {
 			'event': 'formSubmissionSuccess',
 			'type': type,
 			'formId': formId,
+			'formClasses': formClasses,
 			'action': action
 		};
-		wp.hooks.doAction('minnpostFormProcessorMailchimpDataLayerEvent', dataLayer );
+		wp.hooks.doAction('minnpostFormProcessorMailchimpDataLayerEvent', dataLayerContent );
 	}
 }
 
@@ -39,6 +41,7 @@ function shortcodeForm() {
 
 		mailchimpForms.forEach( function ( mailchimpForm ) {
 			let formId = mailchimpForm.id;
+			let formClasses = mailchimpForm.className;
 			let button = mailchimpForm.querySelector( 'button' );
 			let messageElement = mailchimpForm.querySelector( '.m-form-message-ajax' );
 			if (messageElement ) {
@@ -84,7 +87,7 @@ function shortcodeForm() {
 								analyticsTrackingEvent( 'event', formType, analyticsAction, location.pathname );
 							}
 							if ( 'function' === typeof dataLayerEvent ) {
-								dataLayerEvent( formType, formId, analyticsAction );
+								dataLayerEvent( formType, formId, formClasses, analyticsAction );
 							}
 						} else {
 							messageClass     = 'error';
@@ -94,7 +97,7 @@ function shortcodeForm() {
 								analyticsTrackingEvent( 'event', formType, 'Fail', location.pathname );
 							}
 							if ( 'function' === typeof dataLayerEvent ) {
-								dataLayerEvent( formType, formId, 'Fail' );
+								dataLayerEvent( formType, formId, formClasses, 'Fail' );
 							}
 							if ( '' !== data.data.confirm_message ) {
 								message = data.data.confirm_message;
@@ -121,7 +124,7 @@ function shortcodeForm() {
 							analyticsTrackingEvent( 'event', 'Newsletter', 'Fail', location.pathname );
 						}
 						if ( 'function' === typeof dataLayerEvent ) {
-							dataLayerEvent( formType, formId, 'Fail' );
+							dataLayerEvent( formType, formId, formClasses, 'Fail' );
 						}
 					} );
 
